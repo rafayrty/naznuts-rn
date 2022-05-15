@@ -1,7 +1,4 @@
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from '@react-navigation/drawer';
+import {DrawerContentScrollView} from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
 import {Box, Text} from 'native-base';
 
@@ -10,7 +7,7 @@ import {TouchableOpacity} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
 const Drawer: React.FC<any> = props => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   return (
     <DrawerContentScrollView
       safeArea
@@ -72,6 +69,7 @@ const Drawer: React.FC<any> = props => {
             paddingBottom={5}
             borderTopColor={'#D4D4D4'}>
             <TouchableOpacity
+              onPress={() => navigation.navigate('Cart')}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
