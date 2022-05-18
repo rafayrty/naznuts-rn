@@ -5,15 +5,33 @@ import {Box, Text} from 'native-base';
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
+import {DeleteData, GetData} from './src/plugins/storage';
+import {StackActions, DrawerActions} from '@react-navigation/native';
+import axios from 'axios';
+// import {LoggedUser} from './src/types/User';
 
 const Drawer: React.FC<any> = props => {
   const navigation = useNavigation<any>();
+
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    GetData('user').then((res: any) => {
+      if (res !== undefined) {
+        setUser(JSON.parse(res));
+      }
+      return () => {
+        setUser({});
+      };
+    });
+  }, []);
+
   return (
     <DrawerContentScrollView
       safeArea
       style={{backgroundColor: '#79C143'}}
       {...props}>
-      <Box width="88%" mx="auto" px={1}>
+      <Box width="88%" mx="auto" px={1} py={6}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Svg width="142" height="100" viewBox="0 0 142 100" fill="none">
             <Path
@@ -57,7 +75,8 @@ const Drawer: React.FC<any> = props => {
             fontWeight={800}
             color="white"
             fontSize={24}>
-            محمود زعبي
+            {/* محمود زعبي */}
+            {user?.user.fullname}
           </Text>
 
           <Box
@@ -241,6 +260,12 @@ const Drawer: React.FC<any> = props => {
 
           <Box marginTop={4}>
             <TouchableOpacity
+              onPress={() => {
+                navigation.dispatch(DrawerActions.closeDrawer());
+                navigation.dispatch(StackActions.replace('Login'));
+                axios.defaults.headers.common.Authorization = false;
+                DeleteData('user');
+              }}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

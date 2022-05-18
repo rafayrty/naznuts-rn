@@ -2,19 +2,21 @@ import React from 'react';
 import Header from '../../components/Header';
 import {Box, Container, Pressable, Text} from 'native-base';
 import BackButton from '../../components/BackButton';
-import OrderTabs from '../Account/Orders/OrderTabs';
 import Svg, {Path} from 'react-native-svg';
+import {useNavigation} from '@react-navigation/native';
 
 const Cart = () => {
+  const navigation = useNavigation();
   return (
     <Box safeArea flex="1">
       <Header />
+      {/* <Spinner /> */}
 
       <Container flex="1" mx="auto" width="100%">
         <Box marginTop={4} flexDir={'row'} alignItems={'center'}>
           <BackButton />
           <Text
-            marginLeft={3}
+            marginLeft={1}
             fontFamily={'Cairo'}
             fontSize={22}
             fontWeight={800}>

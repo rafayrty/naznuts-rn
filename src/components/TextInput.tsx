@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Children} from 'react';
 import {FormControl, Text, Input, Stack} from 'native-base';
 
 type Props = {
@@ -6,12 +6,13 @@ type Props = {
   placeholder?: string;
   isInvalid: boolean;
   errorMsg?: string;
+  children?: React.ReactNode;
 };
 const TextInput: React.FC<Props> = ({
   label,
-  placeholder,
-  isInvalid,
+  isInvalid = false,
   errorMsg,
+  children,
 }) => {
   return (
     <FormControl width="100%" isInvalid={isInvalid}>
@@ -21,15 +22,12 @@ const TextInput: React.FC<Props> = ({
             {label}
           </Text>
         </FormControl.Label>
-        <Input
-          p={2}
-          fontSize={12}
-          fontFamily={'Cairo'}
-          fontWeight="600"
-          textAlign="right"
-          placeholder={placeholder}
-        />
-        <FormControl.ErrorMessage>{errorMsg}</FormControl.ErrorMessage>
+        {children}
+        <FormControl.ErrorMessage>
+          <Text fontFamily={'Cairo'} fontWeight={800} fontSize={14}>
+            {errorMsg}
+          </Text>
+        </FormControl.ErrorMessage>
       </Stack>
     </FormControl>
   );

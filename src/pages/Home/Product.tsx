@@ -3,8 +3,9 @@ import {Box, Text, Button, Image, Pressable} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 
-const Product = () => {
+const Product: React.FC<any> = ({info}) => {
   const navigation = useNavigation();
+
   return (
     <Box width={180} borderRadius="md" bg="#FFF" shadow={2} borderTopRadius={6}>
       <Image
@@ -15,7 +16,9 @@ const Product = () => {
           borderTopRightRadius: 6,
           borderTopLeftRadius: 6,
         }}
-        source={require('../../../assets/images/banner.jpg')}
+        source={{
+          uri: `http://localhost:1337${info.attributes.image.data.attributes.url}`,
+        }}
       />
       <Box py={2} px={3}>
         <Text
@@ -23,7 +26,20 @@ const Product = () => {
           fontFamily={'Cairo'}
           fontSize="10"
           fontWeight={500}>
-          المكسرات والبسكويت، المكسرات المحمصة المكسرات والبسكويت
+          {info.attributes.categories.data.map((cat, index) => {
+            return (
+              <Text
+                color="gray.400"
+                fontFamily={'Cairo'}
+                fontSize="10"
+                fontWeight={500}>
+                {cat.attributes.name}{' '}
+                {index !== info.attributes.categories.data.length - 1
+                  ? ','
+                  : ''}
+              </Text>
+            );
+          })}
         </Text>
         <Text
           color="black"
@@ -31,7 +47,7 @@ const Product = () => {
           fontSize="16"
           marginTop={2}
           fontWeight={700}>
-          اسم المنتج بشكل مطول يصل لسطرين
+          {info.attributes.name}
         </Text>
 
         <Text marginTop="3" fontFamily={'Cairo'} fontSize={10} color="gray.400">
@@ -55,7 +71,7 @@ const Product = () => {
           </Box>
           <Box flexDirection="row" justifyContent={'flex-end'}>
             <Text fontWeight={700} fontSize={17}>
-              6.50
+              {info.attributes.price}
             </Text>
             <Text fontSize={10} fontWeight={700} marginTop={2}>
               ₪
@@ -64,7 +80,10 @@ const Product = () => {
         </Box>
 
         <Box marginTop="4">
-          <Pressable onPress={() => navigation.navigate('Product')}>
+          <Pressable
+            onPress={() =>
+              navigation.navigate('Product', {slug: info.attributes.slug})
+            }>
             {({isPressed}) => {
               return (
                 <Box

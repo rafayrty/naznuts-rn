@@ -2,20 +2,69 @@ import {StatusBar, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 import {
-  useTheme,
+  // useTheme,
   Container,
   Box,
   Text,
   Button,
   Checkbox,
   ScrollView,
+  Input,
+  useToast,
 } from 'native-base';
-import PassInput from '../../components/PassInput';
+import register_request from '../../api/register_request';
 import MainInput from '../../components/TextInput';
-
+import {useNavigation} from '@react-navigation/native';
+import {useForm, Controller} from 'react-hook-form';
+import Eye from '../../icons/Eye';
+import {useMutation} from 'react-query';
 const Login: React.FC = () => {
-  const {colors} = useTheme();
-  console.log(colors.success['100']);
+  const {
+    control,
+    setError,
+    reset,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      fullname: '',
+      phone: '',
+      email: '',
+      password: '',
+    },
+  });
+  const mutation = useMutation(register_request);
+  const toast = useToast();
+  const onSubmit = (data: any) => {
+    mutation.mutate(
+      {username: data.email, ...data},
+      {
+        onError: (error: any) => {
+          if (error) {
+            setError('email', {
+              type: 'validate',
+              message: error.response.data.error.message,
+            });
+          }
+        },
+        onSuccess: (_data: any) => {
+          toast.show({
+            bg: 'primary.500',
+            title: 'User Created Successfully \n Login To Continue',
+            placement: 'bottom',
+          });
+          reset();
+        },
+      },
+    );
+  };
+
+  //For Handling Password Hide / Show
+  const [show, setShow] = React.useState(false);
+  const handleClick = () => setShow(!show);
+
+  const navigation = useNavigation();
+  // const {colors} = useTheme();
 
   return (
     <ScrollView flex="1">
@@ -92,42 +141,131 @@ const Login: React.FC = () => {
 
           {/* Form Starts */}
           <Box marginTop="10" width="100%">
-            {/* Email */}
+            {/* FullName */}
+
             <Box>
-              <MainInput
-                label="الايميل"
-                isInvalid={false}
-                errorMsg=""
-                placeholder="الرجاء كتابة الايميل"
+              <Controller
+                control={control}
+                rules={{
+                  required: {value: true, message: 'الحقل مطلوب'},
+                }}
+                render={({field: {onChange, onBlur, value}}) => (
+                  <MainInput
+                    label="الاسم الكامل"
+                    isInvalid={errors.fullname ? true : false}
+                    errorMsg={errors.fullname?.message}>
+                    <Input
+                      value={value}
+                      p={2}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      fontSize={12}
+                      fontFamily={'Cairo'}
+                      fontWeight="600"
+                      textAlign="right"
+                      placeholder={'الرجاء كتابة الاسم الكامل'}
+                    />
+                  </MainInput>
+                )}
+                name="fullname"
               />
             </Box>
 
+            {/* Phone */}
             <Box marginTop={5}>
-              <MainInput
-                label="الايميل"
-                isInvalid={false}
-                errorMsg=""
-                placeholder="الرجاء كتابة الايميل"
+              <Controller
+                control={control}
+                rules={{
+                  required: {value: true, message: 'الحقل مطلوب'},
+                }}
+                render={({field: {onChange, onBlur, value}}) => (
+                  <MainInput
+                    label="الهاتف"
+                    isInvalid={errors.phone ? true : false}
+                    errorMsg={errors.phone?.message}>
+                    <Input
+                      value={value}
+                      p={2}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      fontSize={12}
+                      fontFamily={'Cairo'}
+                      fontWeight="600"
+                      textAlign="right"
+                      placeholder={'الرجاء كتابة رقم الهاتف'}
+                    />
+                  </MainInput>
+                )}
+                name="phone"
               />
             </Box>
 
+            {/* Email */}
             <Box marginTop={5}>
-              <MainInput
-                label="الايميل"
-                isInvalid={false}
-                errorMsg=""
-                placeholder="الرجاء كتابة الايميل"
+              <Controller
+                control={control}
+                rules={{
+                  required: {value: true, message: 'الحقل مطلوب'},
+                }}
+                render={({field: {onChange, onBlur, value}}) => (
+                  <MainInput
+                    label="الايميل"
+                    isInvalid={errors.email ? true : false}
+                    errorMsg={errors.email?.message}>
+                    <Input
+                      value={value}
+                      p={2}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      fontSize={12}
+                      fontFamily={'Cairo'}
+                      fontWeight="600"
+                      textAlign="right"
+                      autoCapitalize="none"
+                      placeholder={'الرجاء كتابة الايميل'}
+                    />
+                  </MainInput>
+                )}
+                name="email"
               />
             </Box>
 
             {/* Password */}
 
             <Box marginTop={5}>
-              <PassInput
-                label="الايميل"
-                isInvalid={false}
-                errorMsg=""
-                placeholder="الرجاء كتابة الايميل"
+              <Controller
+                control={control}
+                rules={{
+                  required: {value: true, message: 'الحقل مطلوب'},
+                  minLength: {value: 8, message: 'مطلوب 8 أحرف على الأقل'},
+                }}
+                render={({field: {onChange, onBlur, value}}) => (
+                  <MainInput
+                    label="الايميل"
+                    isInvalid={errors.password ? true : false}
+                    errorMsg={errors.password?.message}>
+                    <Input
+                      p={2}
+                      fontFamily={'Cairo'}
+                      fontSize={12}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      type={show ? 'text' : 'password'}
+                      textAlign="right"
+                      placeholder="الرجاء كتابة الايميل"
+                      InputRightElement={
+                        <TouchableOpacity
+                          onPress={handleClick}
+                          style={{paddingRight: 15}}>
+                          {/* <Icon name="eye" size={30} color="#900" />; */}
+                          {show ? <Eye /> : <Eye />}
+                        </TouchableOpacity>
+                      }
+                    />
+                  </MainInput>
+                )}
+                name="password"
               />
             </Box>
 
@@ -153,13 +291,41 @@ const Login: React.FC = () => {
                 width={'80%'}
                 mx="auto"
                 colorScheme={'secondary'}
-                onPress={() => console.log('hello world')}
-                fontFamily={'Cairo'}>
-                <Text fontFamily={'Cairo'} color="#FFF" lineHeight={24}>
-                  تسجيل الدخول
-                </Text>
+                onPress={handleSubmit(onSubmit)}
+                fontFamily={'Cairo'}
+                isLoading={mutation.isLoading}>
+                <Box flexDirection={'row'}>
+                  {/* <Spinner
+                    marginRight={2}
+                    color="white"
+                    accessibilityLabel="Loading posts"
+                  /> */}
+
+                  <Text fontFamily={'Cairo'} color="#FFF" lineHeight={24}>
+                    إنشاء حساب{' '}
+                  </Text>
+                </Box>
               </Button>
             </Box>
+          </Box>
+          <Box
+            flexDir={'row'}
+            justifyContent="center"
+            width="100%"
+            marginTop={8}>
+            <Text fontFamily={'Cairo'}> لديك حساب مسبقاً؟ </Text>
+            <TouchableOpacity>
+              <Text
+                fontFamily={'Cairo'}
+                onPress={() => {
+                  navigation.navigate('Login');
+                }}
+                fontWeight="700"
+                color="primary.500">
+                {'  '}
+                تسجيل دخول
+              </Text>
+            </TouchableOpacity>
           </Box>
         </Container>
       </Box>

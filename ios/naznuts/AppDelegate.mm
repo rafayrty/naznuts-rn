@@ -3,6 +3,8 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+//Added RTL
+#import <React/RCTI18nUtil.h> //in top page AppDelegate.m
 
 #import <React/RCTAppSetupUtils.h>
 
@@ -13,8 +15,6 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-//Added RTL
-// #import <React/RCTI18nUtil.h> //in top page AppDelegate.m
 
 #import <react/config/ReactNativeConfig.h>
 
@@ -58,7 +58,9 @@
   [self.window makeKeyAndVisible];
   
     //Added For RTL Support
-  // [[RCTI18nUtil sharedInstance] allowRTL:YES];
+   [[RCTI18nUtil sharedInstance] allowRTL:YES];
+   [[RCTI18nUtil sharedInstance] forceRTL:YES];
+
   return YES;
 }
 

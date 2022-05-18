@@ -1,14 +1,20 @@
 import React from 'react';
 import {Box, Container, Input, Text, ScrollView, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import {TouchableOpacity, StatusBar, Image} from 'react-native';
+import {TouchableOpacity, StatusBar, Image, Alert} from 'react-native';
 import Slider from './Slider';
 import PropsNav from '../../types/Navigation';
 import Header from '../../components/Header';
 import CategorySlider from './CategorySlider';
 import Product from './Product';
+import {useQuery} from 'react-query';
+import {categories_product_request} from '../../api/categories_request';
 
 const Home: React.FC<PropsNav> = ({navigation}) => {
+  const {data: products} = useQuery(
+    ['products', 'hidaya'],
+    categories_product_request,
+  );
   return (
     <ScrollView flex="1">
       <Box safeArea flex="1" paddingBottom={32}>
@@ -130,7 +136,10 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
             <Text fontFamily={'Cairo'} fontSize="xl" fontWeight={800}>
               الهدايا
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CategoryView', {slug: 'hidaya'})
+              }>
               <Text fontFamily={'Cairo'}>عرض الكل {'>'} </Text>
             </TouchableOpacity>
           </Box>
@@ -141,17 +150,22 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
           horizontal
           flex="1"
           marginTop={4}>
-          <Box marginLeft={8}>
+          {products?.data.data.map((item, index) => {
+            return (
+              <Box
+                marginLeft={6}
+                marginRight={index === products?.data.data.length - 1 ? 3 : 0}>
+                <Product info={item} />
+              </Box>
+            );
+          })}
+          {/* <Box marginLeft={5}>
             <Product />
-          </Box>
-
-          <Box marginLeft={5}>
-            <Product />
-          </Box>
-
+          </Box> */}
+          {/*
           <Box marginLeft={5} marginRight={3}>
             <Product />
-          </Box>
+          </Box> */}
         </ScrollView>
       </Box>
     </ScrollView>

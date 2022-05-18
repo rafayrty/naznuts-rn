@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/core';
 const BackButton = () => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => navigation.goBack()}>
+    <TouchableOpacity style={{padding: 10}} onPress={() => navigation.goBack()}>
       <View style={{transform: [{rotate: '180deg'}]}}>
         <ArrowBackIcon style={{color: 'black'}} />
       </View>
