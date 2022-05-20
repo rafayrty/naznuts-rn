@@ -22,7 +22,9 @@ import {Actionsheet} from 'native-base';
 // import {RangeSlider} from '@sharcoux/slider';
 // import RangeSlider from 'rn-range-slider';
 import RangeSlider from 'react-native-range-slider-expo';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import Plus from '../../icons/Plus';
+import Minus from '../../icons/Minus';
 
 const CategoryView = ({route}: any) => {
   const [fromValue, setFromValue] = useState(0);
@@ -30,14 +32,22 @@ const CategoryView = ({route}: any) => {
   //   const [value, setValue] = useState(0);
   const {colors} = useTheme();
   const {slug} = route.params;
+  const [catSlug, setCatSlug] = useState<string>('');
   const navigation = useNavigation();
   const {data} = useQuery('categories', categories_request);
 
-  //  const filters =
-
-  const {data: products} = useQuery(
-    ['products', slug],
+  const {data: products, refetch} = useQuery(
+    ['products', catSlug],
     categories_product_request,
+  );
+
+  //  const filters =
+  useFocusEffect(
+    React.useCallback(() => {
+      setCatSlug(slug);
+      refetch();
+      return () => refetch();
+    }, [refetch, slug]),
   );
 
   const {isOpen, onOpen, onClose} = useDisclose();
@@ -81,7 +91,9 @@ const CategoryView = ({route}: any) => {
           <Box flexDir={'row'}>
             {data?.data.data.map((item: any): ReactNode => {
               return (
-                <TouchableOpacity style={{marginLeft: 15, paddingVertical: 15}}>
+                <TouchableOpacity
+                  onPress={() => setCatSlug(item.attributes.slug)}
+                  style={{marginLeft: 15, paddingVertical: 15}}>
                   <Box>
                     <Text
                       color="secondary.600"
@@ -272,14 +284,14 @@ const CategoryView = ({route}: any) => {
                       marginTop={2}
                       alignItems="center">
                       <Button height="6" bg="primary.500" width="6" p="0">
-                        +
+                        <Plus color="white" />
                       </Button>
                       <Text px="3" fontSize={12} fontWeight={500}>
                         x1
                       </Text>
 
                       <Button height="6" variant="outline" width="6" p="0">
-                        -
+                        <Minus color="black" />
                       </Button>
                     </Box>
                     <Box flexDirection="row" justifyContent={'flex-end'}>

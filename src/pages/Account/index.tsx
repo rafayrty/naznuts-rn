@@ -7,7 +7,6 @@ import Header from '../../components/Header';
 
 const Account = () => {
   const navigation = useNavigation();
-
   return (
     <ScrollView>
       <Box safeArea>
@@ -121,7 +120,7 @@ const Account = () => {
                     </Box>
 
                     <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
-                      طلباتي
+                      سجل العناوين
                     </Text>
                   </Box>
                 );
@@ -189,7 +188,7 @@ const Account = () => {
             <Pressable
               marginTop={5}
               width="46%"
-              onPress={() => navigation.navigate('Favourites')}>
+              onPress={() => navigation.navigate('Management')}>
               {({isPressed}) => {
                 return (
                   <Box

@@ -1,4 +1,4 @@
-import {TouchableOpacity, Platform} from 'react-native';
+import {TouchableOpacity, Platform, StatusBar} from 'react-native';
 import React from 'react';
 import {Box, Container, HStack} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
@@ -8,7 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 const Header = () => {
   const navigation = useNavigation();
   return (
-    <Box width="100%" borderBottomWidth={0}>
+    <Box width="100%" zIndex={5} borderBottomWidth={0}>
       {Platform.OS === 'ios' ? (
         <Container mx="auto" width="100%" marginTop={0}>
           <HStack
@@ -29,8 +29,8 @@ const Header = () => {
                   <Svg width="20" height="18" viewBox="0 0 20 18" fill="none">
                     <Path
                       d="M18 1.5H2M18 9H10M18 16.5H2"
-                      stroke="#51808E"
-                      stroke-width="4"
+                      stroke="black"
+                      stroke-width="3"
                       stroke-linecap="round"
                       stroke-linejoin="round"
                     />

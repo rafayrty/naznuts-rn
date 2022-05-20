@@ -41,27 +41,19 @@ const Favourites = () => {
     },
   );
 
-  const mutation = useMutation(async id => {
+  // For Refetching
+  const mutation = useMutation(async (id: number) => {
     axios.delete(`http://localhost:1337/api/favourites/${id}`);
-    // setRefresh(!refresh);
-
     refetch();
   });
-  // const isFocused = useIsFocused();
-
   useFocusEffect(
     React.useCallback(() => {
       refetch();
-
       return () => refetch();
     }, [refetch]),
   );
 
-  // if (isFocused) {
-  //   refetch();
-  // }
-
-  const deleteFav = id => {
+  const deleteFav = (id: number) => {
     mutation.mutate(id);
   };
 

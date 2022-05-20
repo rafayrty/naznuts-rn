@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../../../components/Header';
 import {Box, Container, Text} from 'native-base';
 import BackButton from '../../../components/BackButton';
-import Svg, {ClipPath, Defs, G, Path} from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 import {Image, ScrollView} from 'react-native';
 
 const Order = () => {

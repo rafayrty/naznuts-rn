@@ -2,6 +2,8 @@ import React from 'react';
 import {Box, Text, Button, Image, Pressable} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
+import Minus from '../../icons/Minus';
+import Plus from '../../icons/Plus';
 
 const Product: React.FC<any> = ({info}) => {
   const navigation = useNavigation();
@@ -59,14 +61,14 @@ const Product: React.FC<any> = ({info}) => {
           alignItems="center">
           <Box flexDirection={'row'} marginTop={2} alignItems="center">
             <Button height="6" bg="primary.500" width="6" p="0">
-              +
+              <Plus color="white" />
             </Button>
             <Text px="3" fontSize={12} fontWeight={500}>
               x1
             </Text>
 
             <Button height="6" variant="outline" width="6" p="0">
-              -
+              <Minus color="black" />
             </Button>
           </Box>
           <Box flexDirection="row" justifyContent={'flex-end'}>

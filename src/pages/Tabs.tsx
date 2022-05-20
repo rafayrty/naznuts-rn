@@ -91,6 +91,7 @@ const Tabs = () => {
       <Tab.Screen
         name="Search"
         component={Search}
+        initialParams={{searchQuery: ''}}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({focused}): React.ReactNode => {

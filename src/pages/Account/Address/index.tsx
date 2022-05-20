@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/core';
 
 const Address = () => {
   const navigation = useNavigation();
+
   return (
     <Box safeArea flex="1">
       <Header />

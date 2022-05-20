@@ -33,6 +33,8 @@ import Orders from './src/pages/Account/Orders';
 import Order from './src/pages/Account/Orders/Order';
 import Address from './src/pages/Account/Address';
 import NewAddress from './src/pages/Account/Address/New';
+import EditAddress from './src/pages/Account/Address/Edit';
+
 import Terms from './src/pages/Account/Terms';
 import Contact from './src/pages/Account/Contact';
 
@@ -46,6 +48,7 @@ import axios from 'axios';
 import CategoryView from './src/pages/CategoryView';
 import {AppState} from 'react-native';
 import {focusManager} from 'react-query';
+import Management from './src/pages/Account/Management';
 
 focusManager.setEventListener(handleFocus => {
   const subscription = AppState.addEventListener('change', state => {
@@ -159,6 +162,10 @@ const StackNavigator = () => {
         <Stack.Screen name="Order" component={Order} />
         <Stack.Screen name="Address" component={Address} />
         <Stack.Screen name="NewAddress" component={NewAddress} />
+        <Stack.Screen name="EditAddress" component={EditAddress} />
+        {/* Management */}
+        <Stack.Screen name="Management" component={Management} />
+
         <Stack.Screen name="Terms" component={Terms} />
         <Stack.Screen name="Contact" component={Contact} />
         <Stack.Screen name="Cart" component={Cart} />

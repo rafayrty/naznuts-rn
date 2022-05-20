@@ -22,7 +22,7 @@ const Login: React.FC<Props> = ({navigation}) => {
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
   const [user, setUser] = React.useState<any>(null);
-
+  // const scroller = React.useRef();
   React.useEffect(() => {
     GetData('user').then(res => {
       setUser(res);

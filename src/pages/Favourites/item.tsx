@@ -3,6 +3,8 @@ import React from 'react';
 import {Box, Pressable, Text, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import axios from 'axios';
+import Plus from '../../icons/Plus';
+import Minus from '../../icons/Minus';
 
 type Props = {
   item: any;
@@ -34,7 +36,7 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
               {item.attributes.product.data.attributes.name}
             </Text>
           </Box>
-          <Box width="100%" flex="1" flexDir={'row'}>
+          <Box width="100%" flex="1" flexWrap={'wrap'} flexDir={'row'}>
             {/* <Text
               textAlign={'left'}
               flex="1"
@@ -49,22 +51,23 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             {item.attributes.product.data.attributes.categories.data.map(
               (cat, index) => {
                 return (
-                  <Text
-                    textAlign={'left'}
-                    flex="1"
-                    flexWrap={'wrap'}
-                    color="gray.400"
-                    fontFamily={'Cairo'}
-                    fontSize="10"
-                    fontWeight={500}>
-                    {cat.attributes.name}{' '}
-                    {index !==
-                    item.attributes.product.data.attributes.categories.data
-                      .length -
-                      1
-                      ? ','
-                      : ''}
-                  </Text>
+                  <>
+                    <Text
+                      textAlign={'left'}
+                      flexWrap={'wrap'}
+                      color="gray.400"
+                      fontFamily={'Cairo'}
+                      fontSize="10"
+                      fontWeight={500}>
+                      {cat.attributes.name}{' '}
+                      {index !==
+                      item.attributes.product.data.attributes.categories.data
+                        .length -
+                        1
+                        ? ','
+                        : ''}
+                    </Text>
+                  </>
                 );
               },
             )}
@@ -75,14 +78,14 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             alignItems="center">
             <Box flexDirection={'row'} marginTop={2} alignItems="center">
               <Button height="6" bg="primary.500" width="6" p="0">
-                +
+                <Plus color="white" />
               </Button>
               <Text px="2" fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
                 250 غرام
               </Text>
 
-              <Button height="6" variant="outline" width="6" p="0">
-                -
+              <Button height="6" variant="outline" p="0" width="6">
+                <Minus color="black" />
               </Button>
             </Box>
             <Box flexDirection="row" justifyContent={'flex-end'}>

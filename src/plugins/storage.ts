@@ -1,6 +1,5 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 // import UserContext from '../../UserContext';
-import React from 'react';
 
 const StoreData = async (key: string, data: any) => {
   // const [, setUser] = React.useContext<any>(UserContext);

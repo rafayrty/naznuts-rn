@@ -18,35 +18,37 @@ import BackButton from '../../../components/BackButton';
 import Svg, {Path} from 'react-native-svg';
 import TextInput from '../../../components/TextInput';
 import {useMutation, useQuery} from 'react-query';
-import {cities_request, address_add} from '../../../api/address_request';
+import {cities_request, address_update} from '../../../api/address_request';
 import {Controller, useForm} from 'react-hook-form';
+import {useNavigation} from '@react-navigation/native';
 
-const New = () => {
+const Edit = ({route}: any) => {
   const toast = useToast();
-
+  const {data: address} = route.params;
+  const navigation = useNavigation();
   const {
-    reset,
     control,
     handleSubmit,
     formState: {errors},
   } = useForm({
     defaultValues: {
-      name: '',
-      phone: '',
-      address_text: '',
-      note: '',
-      type: '',
-      city: '',
+      name: address.attributes.name,
+      phone: address.attributes.phone,
+      address_text: address.attributes.address_text,
+      note: address.attributes.note,
+      type: address.attributes.type,
+      city: address.attributes.city.data.id,
     },
-  }); // const myRef = React.useRef({});
+  });
 
   const {data: cities} = useQuery('cities', cities_request);
-  const mutation = useMutation(address_add, {
+  const mutation = useMutation(address_update, {
     onSuccess: _ => {
-      reset();
+      // reset();
+      navigation.goBack();
       toast.show({
         bg: 'primary.500',
-        title: 'Address Created Successfully',
+        title: 'Address Updated Successfully',
         placement: 'top',
       });
     },
@@ -55,8 +57,7 @@ const New = () => {
     },
   });
   const onSubmit = (data: any) => {
-    mutation.mutate(data);
-    console.log({data: data});
+    mutation.mutate({id: address.id, data});
   };
 
   return (
@@ -394,8 +395,9 @@ const New = () => {
                       onValueChange={onChange}
                       placeholderTextColor={'gray.600'}
                       _selectedItem={{
-                        bg: 'teal.600',
-                        endIcon: <CheckIcon size={5} />,
+                        bg: 'primary.500',
+                        color: 'white',
+                        endIcon: <CheckIcon size={5} color="white" />,
                       }}
                       mt="1">
                       {cities?.data.data.map((item: any) => {
@@ -532,4 +534,4 @@ const New = () => {
   );
 };
 
-export default New;
+export default Edit;
