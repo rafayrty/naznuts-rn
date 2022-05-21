@@ -6,7 +6,7 @@ import {Shadow} from 'react-native-shadow-2';
 import {useNavigation} from '@react-navigation/native';
 
 const Header = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<{openDrawer: Function}>();
   return (
     <Box width="100%" zIndex={5} borderBottomWidth={0}>
       {Platform.OS === 'ios' ? (
@@ -29,7 +29,7 @@ const Header = () => {
                   <Svg width="20" height="18" viewBox="0 0 20 18" fill="none">
                     <Path
                       d="M18 1.5H2M18 9H10M18 16.5H2"
-                      stroke="black"
+                      stroke="#3F636E"
                       stroke-width="3"
                       stroke-linecap="round"
                       stroke-linejoin="round"

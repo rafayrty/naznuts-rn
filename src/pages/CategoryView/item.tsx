@@ -1,93 +1,94 @@
+import {Image} from 'react-native';
 import React from 'react';
-import {Box, Text, Button, Pressable} from 'native-base';
+import {Box, Button, Text, Pressable} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import {useNavigation} from '@react-navigation/native';
 import Minus from '../../icons/Minus';
 import Plus from '../../icons/Plus';
-import {Image} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
-const Product: React.FC<any> = ({info}) => {
+type Props = {
+  item: any;
+  index: number;
+};
+const Item: React.FC<Props> = ({item, index}) => {
   const navigation = useNavigation();
+
   const [qty, setQty] = React.useState<number>(0);
   const [price, setPrice] = React.useState<number>(6.5);
 
   React.useEffect(() => {
-    setQty(info.attributes.type === 'weight' ? 250 : 1);
-    setPrice(info.attributes.price);
-  }, [info]);
+    setQty(item.attributes.type === 'weight' ? 250 : 1);
+  }, [item]);
+
+  React.useEffect(() => {
+    setQty(item.attributes.type === 'weight' ? 250 : 1);
+    setPrice(item.attributes.price);
+  }, [item]);
 
   const addQty = () => {
     setQty(
-      prevState => prevState + (info?.attributes.type === 'weight' ? 250 : 1),
+      prevState => prevState + (item.attributes.type === 'weight' ? 250 : 1),
     );
-    setPrice(prevPrice => prevPrice + info.attributes.price);
+    setPrice(prevPrice => prevPrice + item.attributes.price);
   };
   const subQty = () => {
     setQty(prevState =>
-      prevState > (info.attributes.type === 'weight' ? 250 : 1)
-        ? prevState - (info.attributes.type === 'weight' ? 250 : 1)
+      prevState > (item.attributes.type === 'weight' ? 250 : 1)
+        ? prevState - (item.attributes.type === 'weight' ? 250 : 1)
         : prevState,
     );
     setPrice(prevPrice =>
-      info.attributes.price < prevPrice
-        ? prevPrice - info.attributes.price
+      item.attributes.price < prevPrice
+        ? prevPrice - item.attributes.price
         : prevPrice,
     );
   };
-
   return (
-    <Box width={180} borderRadius="md" bg="#FFF" shadow={2} borderTopRadius={6}>
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('Product', {slug: info.attributes.slug})
-        }>
-        <Image
-          accessibilityLabel={info.attributes.name}
-          style={{
-            height: 120,
-            width: '100%',
-            resizeMode: 'cover',
-            borderTopRightRadius: 6,
-            borderTopLeftRadius: 6,
-          }}
-          source={{
-            uri: `http://localhost:1337${info.attributes.image.data.attributes.url}`,
-          }}
-        />
-      </TouchableOpacity>
-
+    <Box
+      key={`item-${index}`}
+      width="48%"
+      borderRadius="md"
+      bg="#FFF"
+      shadow={2}
+      borderTopRadius={6}>
+      <Image
+        style={{
+          height: 120,
+          width: '100%',
+          resizeMode: 'cover',
+          borderTopRightRadius: 6,
+          borderTopLeftRadius: 6,
+        }}
+        source={{
+          uri: `http://localhost:1337${item.attributes.image.data.attributes.url}`,
+        }}
+      />
       <Box py={2} px={3}>
-        <Text
-          color="gray.400"
-          fontFamily={'Cairo'}
-          fontSize="10"
-          fontWeight={500}>
-          {info.attributes.categories.data.map((cat: any, index: number) => {
+        <Box flexDir={'row'} flexWrap="wrap">
+          {item.attributes.categories.data.map((cat: any, ind: number) => {
             return (
               <Text
+                key={`cat-${ind}`}
                 color="gray.400"
                 fontFamily={'Cairo'}
                 fontSize="10"
                 fontWeight={500}>
                 {cat.attributes.name}{' '}
-                {index !== info.attributes.categories.data.length - 1
-                  ? ','
-                  : ''}
+                {ind !== item.attributes.categories.data.length - 1 ? ',' : ''}
               </Text>
             );
           })}
-        </Text>
+        </Box>
         <Text
           color="black"
           fontFamily={'Cairo'}
           fontSize="16"
-          marginTop={2}
+          textAlign={'left'}
           fontWeight={700}>
-          {info.attributes.name}
+          {item.attributes.name}
         </Text>
 
-        <Text marginTop="3" fontFamily={'Cairo'} fontSize={10} color="gray.400">
+        <Text fontFamily={'Cairo'} fontSize={10} color="gray.400">
           كمية
         </Text>
         <Box
@@ -96,35 +97,35 @@ const Product: React.FC<any> = ({info}) => {
           alignItems="center">
           <Box flexDirection={'row'} marginTop={2} alignItems="center">
             <Button
+              onPress={() => addQty()}
               height="6"
               bg="primary.500"
-              onPress={() => addQty()}
               width="6"
               p="0">
               <Plus color="white" />
             </Button>
-            <Text px="3" fontSize={12} fontFamily={'Cairo'} fontWeight={500}>
-              {info?.attributes.type === 'weight'
+            <Text px="2" fontFamily={'Cairo'} fontSize={12} fontWeight={500}>
+              {item.attributes.type === 'weight'
                 ? qty >= 1000
                   ? qty / 1000 + ' كلغ'
                   : qty + ' غرام'
-                : 'x' + qty}
+                : 'x' + qty}{' '}
             </Text>
 
             <Button
+              onPress={() => subQty()}
               height="6"
               variant="outline"
               width="6"
-              p="0"
-              onPress={() => subQty()}>
+              p="0">
               <Minus color="black" />
             </Button>
           </Box>
           <Box flexDirection="row" justifyContent={'flex-end'}>
-            <Text fontWeight={700} fontSize={17}>
+            <Text fontWeight={700} fontSize={16}>
               {price}
             </Text>
-            <Text fontSize={10} fontWeight={700} marginTop={2}>
+            <Text fontSize={8} fontWeight={700} marginTop={2}>
               ₪
             </Text>
           </Box>
@@ -133,7 +134,9 @@ const Product: React.FC<any> = ({info}) => {
         <Box marginTop="4">
           <Pressable
             onPress={() =>
-              navigation.navigate('Product', {slug: info.attributes.slug})
+              navigation.navigate('Product', {
+                slug: item.attributes.slug,
+              })
             }>
             {({isPressed}) => {
               return (
@@ -188,4 +191,4 @@ const Product: React.FC<any> = ({info}) => {
   );
 };
 
-export default Product;
+export default Item;

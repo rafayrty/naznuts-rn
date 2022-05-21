@@ -49,11 +49,19 @@ export const AuthReducer = (state: initialStateType, action: actionType) => {
           loading: undefined,
         };
       }
+    case 'LOGIN_FAILED':
+      return {
+        ...state,
+        user: undefined,
+        jwt: undefined,
+        loading: false,
+      };
     case 'LOGOUT':
       return {
         ...state,
         user: undefined,
         jwt: undefined,
+        loading: false,
       };
 
     default:

@@ -1,15 +1,43 @@
 import {Image} from 'react-native';
 import React from 'react';
-import {Box, Pressable, Text, Button} from 'native-base';
+import {Box, Text, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import axios from 'axios';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import Plus from '../../icons/Plus';
+import Minus from '../../icons/Minus';
 
 type Props = {
   item: any;
-  deleteItem: any;
+  deleteItem: Function;
 };
 const Item: React.FC<Props> = ({item, deleteItem}) => {
+  const [qty, setQty] = React.useState<number>(0);
+  const [price, setPrice] = React.useState<number>(6.5);
+
+  React.useEffect(() => {
+    setQty(item.attributes.type === 'weight' ? 250 : 1);
+    setPrice(item.attributes.price);
+  }, [item]);
+
+  const addQty = () => {
+    setQty(
+      prevState => prevState + (item?.attributes.type === 'weight' ? 250 : 1),
+    );
+    setPrice(prevPrice => prevPrice + item.attributes.price);
+  };
+  const subQty = () => {
+    setQty(prevState =>
+      prevState > (item.attributes.type === 'weight' ? 250 : 1)
+        ? prevState - (item.attributes.type === 'weight' ? 250 : 1)
+        : prevState,
+    );
+    setPrice(prevPrice =>
+      item.attributes.price < prevPrice
+        ? prevPrice - item.attributes.price
+        : prevPrice,
+    );
+  };
+
   return (
     <Box width="100%" px={1}>
       <Box
@@ -39,33 +67,24 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
                 </Text>
               </Box>
               <Box width="100%" flex="1" py={2} flexDir={'row'}>
-                {/* <Text
-              textAlign={'left'}
-              flex="1"
-              flexWrap={'wrap'}
-              fontSize={10}
-              fontWeight={600}
-              fontFamily={'Cairo'}
-              color="gray.400">
-              المكسرات والبسكويت، المكسرات المحمصة
-            </Text> */}
-
-                {item.attributes.categories.data.map((cat, index) => {
-                  return (
-                    <Text
-                      textAlign={'left'}
-                      flexWrap={'wrap'}
-                      color="gray.400"
-                      fontFamily={'Cairo'}
-                      fontSize="10"
-                      fontWeight={500}>
-                      {cat.attributes.name}{' '}
-                      {index !== item.attributes.categories.data.length - 1
-                        ? ','
-                        : ''}
-                    </Text>
-                  );
-                })}
+                {item.attributes.categories.data.map(
+                  (cat: any, index: number) => {
+                    return (
+                      <Text
+                        textAlign={'left'}
+                        flexWrap={'wrap'}
+                        color="gray.400"
+                        fontFamily={'Cairo'}
+                        fontSize="10"
+                        fontWeight={500}>
+                        {cat.attributes.name}{' '}
+                        {index !== item.attributes.categories.data.length - 1
+                          ? ','
+                          : ''}
+                      </Text>
+                    );
+                  },
+                )}
               </Box>
             </Box>
             <TouchableOpacity
@@ -85,20 +104,34 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             alignItems="center"
             marginTop={2}>
             <Box flexDirection={'row'} alignItems="center">
-              <Button height="6" bg="primary.500" width="6" p="0">
-                +
+              <Button
+                onPress={() => addQty()}
+                height="6"
+                bg="primary.500"
+                width="6"
+                p="0">
+                <Plus color="white" />
               </Button>
               <Text px="2" fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                {item.quantity} غرام
+                {item?.attributes.type === 'weight'
+                  ? qty >= 1000
+                    ? qty / 1000 + ' كلغ'
+                    : qty + ' غرام'
+                  : 'x' + qty}
               </Text>
 
-              <Button height="6" variant="outline" width="6" p="0">
-                -
+              <Button
+                onPress={() => subQty()}
+                height="6"
+                variant="outline"
+                width="6"
+                p="0">
+                <Minus color="black" />
               </Button>
             </Box>
             <Box flexDirection="row" justifyContent={'flex-end'}>
               <Text fontWeight={700} fontSize={17}>
-                {item.attributes.price}
+                {price}
               </Text>
               <Text fontSize={10} fontWeight={700} marginTop={2}>
                 ₪

@@ -29,12 +29,15 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
 
   const {slug}: any = route.params;
   const [qty, setQty] = React.useState<number>(0);
+  const [price, setPrice] = React.useState<number>(6.5);
 
   const [isFav, setFav] = React.useState<boolean>(false);
 
   const {data: product} = useQuery(['product', slug], product_request, {
     onSuccess: data => {
       setQty(data.data.data[0].attributes.type === 'weight' ? 250 : 1);
+      setPrice(data.data.data[0].attributes.price);
+
       if (user.user !== undefined) {
         axios
           .get(
@@ -46,14 +49,12 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
             } else {
               setFav(false);
             }
-            // console.log(res.data.data.length);
           });
       }
     },
   });
 
   const addToCart = () => {
-    // addItem({name: 'rafay', id: 2});
     addItem({...product?.data.data[0], quantity: qty}, toast);
   };
 
@@ -90,6 +91,28 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
         });
     }
     //http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=11&populate=*
+  };
+
+  const addQty = () => {
+    setQty(
+      prevState =>
+        prevState +
+        (product?.data.data[0].attributes.type === 'weight' ? 250 : 1),
+    );
+    setPrice(prevPrice => prevPrice + product?.data.data[0].attributes.price);
+  };
+  const subQty = () => {
+    setQty(prevState =>
+      prevState > (product?.data.data[0].attributes.type === 'weight' ? 250 : 1)
+        ? prevState -
+          (product?.data.data[0].attributes.type === 'weight' ? 250 : 1)
+        : prevState,
+    );
+    setPrice(prevPrice =>
+      product?.data.data[0].attributes.price < prevPrice
+        ? prevPrice - product?.data.data[0].attributes.price
+        : prevPrice,
+    );
   };
 
   return (
@@ -246,15 +269,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               </Text>
               <Box flexDirection={'row'} alignItems={'center'}>
                 <Button
-                  onPress={() =>
-                    setQty(
-                      prevState =>
-                        prevState +
-                        (product?.data.data[0].attributes.type === 'weight'
-                          ? 250
-                          : 1),
-                    )
-                  }
+                  onPress={() => addQty()}
                   p={0}
                   height={36}
                   width={36}
@@ -270,19 +285,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                     : 'x' + qty}
                 </Text>
                 <Button
-                  onPress={() =>
-                    setQty(prevState =>
-                      prevState >
-                      (product?.data.data[0].attributes.type === 'weight'
-                        ? 250
-                        : 1)
-                        ? prevState -
-                          (product?.data.data[0].attributes.type === 'weight'
-                            ? 250
-                            : 1)
-                        : prevState,
-                    )
-                  }
+                  onPress={() => subQty()}
                   height={36}
                   width={36}
                   variant={'outline'}
@@ -477,7 +480,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
             <Box>
               <Box flexDirection="row" justifyContent={'flex-end'}>
                 <Text fontWeight={700} fontSize={24}>
-                  {product?.data.data[0].attributes.price}
+                  {price}
                 </Text>
                 <Text fontSize={16} fontWeight={700} marginTop={2}>
                   ₪

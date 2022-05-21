@@ -15,7 +15,9 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState<any>([]);
   useEffect(() => {
     GetData('cart').then(res => {
-      setCartItems(JSON.parse(res));
+      if (res !== undefined && res !== null) {
+        setCartItems(JSON.parse(res));
+      }
     });
   }, []);
 
@@ -30,7 +32,9 @@ const Cart = () => {
       });
 
       GetData('cart').then(res => {
-        setCartItems(JSON.parse(res));
+        if (res !== undefined && res !== null) {
+          setCartItems(JSON.parse(res));
+        }
       });
     });
   };

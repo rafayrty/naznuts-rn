@@ -126,7 +126,7 @@ const StackNavigator = () => {
   // const [user, setUser] = useState<any>(null);
   const dispatch = useAuthDispatch();
   const user = useAuthState();
-  useEffect(() => {
+  React.useEffect(() => {
     dispatch({type: 'REQUEST_LOGIN'});
     GetData('user').then((res: any) => {
       if (res !== undefined) {
@@ -160,21 +160,25 @@ const StackNavigator = () => {
             <Stack.Screen name="Register" component={Register} />
           </>
         )}
-        <Stack.Screen name="Tabs" component={Tabs} />
-        <Stack.Screen name="CategoryView" component={CategoryView} />
+        {user.user !== undefined && (
+          <>
+            <Stack.Screen name="Tabs" component={Tabs} />
+            <Stack.Screen name="CategoryView" component={CategoryView} />
 
-        <Stack.Screen name="Product" component={Product} />
-        <Stack.Screen name="Orders" component={Orders} />
-        <Stack.Screen name="Order" component={Order} />
-        <Stack.Screen name="Address" component={Address} />
-        <Stack.Screen name="NewAddress" component={NewAddress} />
-        <Stack.Screen name="EditAddress" component={EditAddress} />
-        {/* Management */}
-        <Stack.Screen name="Management" component={Management} />
+            <Stack.Screen name="Product" component={Product} />
+            <Stack.Screen name="Orders" component={Orders} />
+            <Stack.Screen name="Order" component={Order} />
+            <Stack.Screen name="Address" component={Address} />
+            <Stack.Screen name="NewAddress" component={NewAddress} />
+            <Stack.Screen name="EditAddress" component={EditAddress} />
+            {/* Management */}
+            <Stack.Screen name="Management" component={Management} />
 
-        <Stack.Screen name="Terms" component={Terms} />
-        <Stack.Screen name="Contact" component={Contact} />
-        <Stack.Screen name="Cart" component={Cart} />
+            <Stack.Screen name="Terms" component={Terms} />
+            <Stack.Screen name="Contact" component={Contact} />
+            <Stack.Screen name="Cart" component={Cart} />
+          </>
+        )}
       </Stack.Navigator>
     </>
   );
@@ -187,7 +191,7 @@ const App = () => {
   //   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   // };
   // I18nManager.forceRTL(true);
-  useEffect(() => {
+  React.useEffect(() => {
     // console.log('test 222', state.user);
     I18nManager.forceRTL(true);
     !I18nManager.isRTL && RNRestart.Restart();

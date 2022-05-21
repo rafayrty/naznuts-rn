@@ -1,7 +1,6 @@
 import React from 'react';
 import {Box, Text, Container, ScrollView, Stack, Pressable} from 'native-base';
 import Header from '../../components/Header';
-import Svg, {Path} from 'react-native-svg';
 import {Shadow} from 'react-native-shadow-2';
 import {categories_request} from '../../api/categories_request';
 import {useQuery} from 'react-query';
@@ -26,9 +25,13 @@ const Categories: React.FC = () => {
               direction={'row'}
               justifyContent="space-between"
               flexWrap={'wrap'}>
-              {data?.data.data.map((item: any, index: number): ReactNode => {
+              {data?.data.data.map((item: any): React.ReactNode => {
                 return (
-                  <Box width="48%" height="40" marginTop={3}>
+                  <Box
+                    key={item.attributes.slug}
+                    width="48%"
+                    height="40"
+                    marginTop={3}>
                     <Shadow
                       distance={6}
                       viewStyle={{width: '100%', borderRadius: 12}}>
@@ -36,7 +39,6 @@ const Categories: React.FC = () => {
                         onPress={() =>
                           navigation.navigate('CategoryView', {
                             slug: item.attributes.slug,
-                            id: item.id,
                           })
                         }
                         width="100%"

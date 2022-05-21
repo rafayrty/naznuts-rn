@@ -2,7 +2,6 @@ import {Image} from 'react-native';
 import React from 'react';
 import {Box, Pressable, Text, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import axios from 'axios';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
 
@@ -11,6 +10,43 @@ type Props = {
   deleteItem: any;
 };
 const Item: React.FC<Props> = ({item, deleteItem}) => {
+  const [qty, setQty] = React.useState<number>(0);
+  const [price, setPrice] = React.useState<number>(6.5);
+
+  React.useEffect(() => {
+    setQty(item.attributes.product.data.attributes.type === 'weight' ? 250 : 1);
+  }, [item]);
+
+  React.useEffect(() => {
+    setQty(item.attributes.product.data.attributes.type === 'weight' ? 250 : 1);
+    setPrice(item.attributes.product.data.attributes.price);
+  }, [item]);
+
+  const addQty = () => {
+    setQty(
+      prevState =>
+        prevState +
+        (item.attributes.product.data.attributes.type === 'weight' ? 250 : 1),
+    );
+    setPrice(
+      prevPrice => prevPrice + item.attributes.product.data.attributes.price,
+    );
+  };
+  const subQty = () => {
+    setQty(prevState =>
+      prevState >
+      (item.attributes.product.data.attributes.type === 'weight' ? 250 : 1)
+        ? prevState -
+          (item.attributes.product.data.attributes.type === 'weight' ? 250 : 1)
+        : prevState,
+    );
+    setPrice(prevPrice =>
+      item.attributes.product.data.attributes.price < prevPrice
+        ? prevPrice - item.attributes.product.data.attributes.price
+        : prevPrice,
+    );
+  };
+
   return (
     <Box width="100%">
       <Box
@@ -37,19 +73,8 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             </Text>
           </Box>
           <Box width="100%" flex="1" flexWrap={'wrap'} flexDir={'row'}>
-            {/* <Text
-              textAlign={'left'}
-              flex="1"
-              flexWrap={'wrap'}
-              fontSize={10}
-              fontWeight={600}
-              fontFamily={'Cairo'}
-              color="gray.400">
-              المكسرات والبسكويت، المكسرات المحمصة
-            </Text> */}
-
             {item.attributes.product.data.attributes.categories.data.map(
-              (cat, index) => {
+              (cat: any, index: number) => {
                 return (
                   <>
                     <Text
@@ -77,20 +102,34 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             justifyContent={'space-between'}
             alignItems="center">
             <Box flexDirection={'row'} marginTop={2} alignItems="center">
-              <Button height="6" bg="primary.500" width="6" p="0">
+              <Button
+                height="6"
+                bg="primary.500"
+                onPress={() => addQty()}
+                width="6"
+                p="0">
                 <Plus color="white" />
               </Button>
               <Text px="2" fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                250 غرام
+                {item.attributes.product.data.attributes.type === 'weight'
+                  ? qty >= 1000
+                    ? qty / 1000 + ' كلغ'
+                    : qty + ' غرام'
+                  : 'x' + qty}
               </Text>
 
-              <Button height="6" variant="outline" p="0" width="6">
+              <Button
+                height="6"
+                onPress={() => subQty()}
+                variant="outline"
+                p="0"
+                width="6">
                 <Minus color="black" />
               </Button>
             </Box>
             <Box flexDirection="row" justifyContent={'flex-end'}>
               <Text fontWeight={700} fontSize={17}>
-                {item.attributes.product.data.attributes.price}
+                {price}
               </Text>
               <Text fontSize={10} fontWeight={700} marginTop={2}>
                 ₪

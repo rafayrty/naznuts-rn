@@ -5,26 +5,17 @@ import {Box, Text} from 'native-base';
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
-import {DeleteData, GetData} from './src/plugins/storage';
+import {DeleteData} from './src/plugins/storage';
 import {StackActions, DrawerActions} from '@react-navigation/native';
 import axios from 'axios';
+import {useAuthDispatch, useAuthState} from './src/AuthContext';
 // import {LoggedUser} from './src/types/User';
 
 const Drawer: React.FC<any> = props => {
   const navigation = useNavigation<any>();
 
-  const [user, setUser] = React.useState<any>(null);
-
-  React.useEffect(() => {
-    GetData('user').then((res: any) => {
-      if (res !== undefined) {
-        setUser(JSON.parse(res));
-      }
-      return () => {
-        setUser({});
-      };
-    });
-  }, []);
+  const user = useAuthState();
+  const dispatch = useAuthDispatch();
 
   return (
     <DrawerContentScrollView
@@ -76,7 +67,7 @@ const Drawer: React.FC<any> = props => {
             color="white"
             fontSize={24}>
             {/* محمود زعبي */}
-            {user?.user.fullname}
+            {user.user?.fullname}
           </Text>
 
           <Box
@@ -262,9 +253,10 @@ const Drawer: React.FC<any> = props => {
             <TouchableOpacity
               onPress={() => {
                 navigation.dispatch(DrawerActions.closeDrawer());
-                navigation.dispatch(StackActions.replace('Login'));
+                // navigation.dispatch(StackActions.replace('Login'));
                 axios.defaults.headers.common.Authorization = false;
                 DeleteData('user');
+                dispatch({type: 'LOGOUT'});
               }}
               style={{
                 flexDirection: 'row',

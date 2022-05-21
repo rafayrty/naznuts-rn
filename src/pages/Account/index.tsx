@@ -3,10 +3,12 @@ import {Box, Container, Pressable, Text} from 'native-base';
 import React from 'react';
 import {ScrollView} from 'react-native';
 import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
+import {useAuthState} from '../../AuthContext';
 import Header from '../../components/Header';
 
 const Account = () => {
   const navigation = useNavigation();
+  const user = useAuthState();
   return (
     <ScrollView>
       <Box safeArea>
@@ -21,7 +23,7 @@ const Account = () => {
             fontSize={24}
             fontWeight={800}
             fontFamily={'Cairo'}>
-            محمود زعبي
+            {user.user?.fullname}
           </Text>
 
           <Box
