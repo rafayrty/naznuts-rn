@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Container, Input, Text, ScrollView, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import {TouchableOpacity, StatusBar, Image, Alert} from 'react-native';
+import {TouchableOpacity, StatusBar, Image} from 'react-native';
 import Slider from './Slider';
 import PropsNav from '../../types/Navigation';
 import Header from '../../components/Header';
@@ -9,7 +9,6 @@ import CategorySlider from './CategorySlider';
 import Product from './Product';
 import {useQuery} from 'react-query';
 import {categories_product_request} from '../../api/categories_request';
-
 const Home: React.FC<PropsNav> = ({navigation}) => {
   const [query, setQuery] = React.useState<any>();
   const {data: products} = useQuery(
@@ -85,6 +84,7 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
 
         <Box>
           <Image
+            accessibilityLabel="banner"
             style={{height: 250, width: '100%', resizeMode: 'cover'}}
             source={require('../../../assets/images/banner.jpg')}
           />
@@ -157,7 +157,7 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
           horizontal
           flex="1"
           marginTop={4}>
-          {products?.data.data.map((item, index) => {
+          {products?.data.data.map((item: any, index: number) => {
             return (
               <Box
                 marginLeft={6}
@@ -166,13 +166,6 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
               </Box>
             );
           })}
-          {/* <Box marginLeft={5}>
-            <Product />
-          </Box> */}
-          {/*
-          <Box marginLeft={5} marginRight={3}>
-            <Product />
-          </Box> */}
         </ScrollView>
       </Box>
     </ScrollView>

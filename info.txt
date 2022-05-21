@@ -1,0 +1,3 @@
+
+Issue With The Type When Using navigation.navigate()
+https://github.com/react-navigation/react-navigation/issues/9741#issuecomment-955947433

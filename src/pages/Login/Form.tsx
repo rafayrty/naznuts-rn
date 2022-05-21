@@ -9,6 +9,8 @@ import login_request from '../../api/login_request';
 import {useMutation} from 'react-query';
 import {StoreData} from '../../plugins/storage';
 import axios from 'axios';
+
+import {useAuthState, useAuthDispatch} from '../../AuthContext';
 // import {useNavigation} from '@react-navigation/native';
 type Props = {route: any; navigation: any};
 
@@ -25,16 +27,21 @@ const Form: React.FC<Props> = ({route, navigation}) => {
       password: '',
     },
   });
-  console.log('test');
+
+  const dispatch = useAuthDispatch();
+  const auth = useAuthState();
+
   const onSubmit = (data: any) => mutation.mutate(data);
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
   const mutation = useMutation(login_request, {
+    onMutate: _ => {
+      // dispatch({type: 'REQUEST_LOGIN'});
+    },
     onSuccess: (data: any) => {
+      dispatch({type: 'LOGIN_SUCCESS', payload: data.data});
       StoreData('user', data.data);
-      console.log(data.data.jwt);
       axios.defaults.headers.common.Authorization = `Bearer ${data.data.jwt}`;
-
       navigation.replace('Tabs');
       reset();
     },
@@ -46,12 +53,6 @@ const Form: React.FC<Props> = ({route, navigation}) => {
           message: 'Invalid Email or Password',
         });
       }
-      // }
-      // setError('email', {
-      //   type: 'validate',
-      //   message: error.response.data.error.message,
-      // });
-      // console.error(error.response.data.error);
     },
   });
 
@@ -60,6 +61,7 @@ const Form: React.FC<Props> = ({route, navigation}) => {
       <Box marginTop="10" width="100%">
         {/* Email */}
         <Box width="100%">
+          {/* {JSON.stringify(auth)} */}
           <Controller
             control={control}
             rules={{

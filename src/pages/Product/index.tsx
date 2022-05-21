@@ -1,5 +1,5 @@
 import {Dimensions, Image, StatusBar, TouchableOpacity} from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -11,127 +11,84 @@ import {
   useToast,
 } from 'native-base';
 import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useQuery} from 'react-query';
 import {product_request} from '../../api/product_request';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import axios from 'axios';
-import {GetData} from '../../plugins/storage';
 import {addItem} from '../../plugins/cart';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
+import {useAuthState} from '../../AuthContext';
+import PropsNav from '../../types/Navigation';
 
-type RootStackParamList = {
-  Home: undefined;
-  Register: undefined;
-  Login: undefined;
-};
-type NavProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
-
-const Product: React.FC<NavProps> = ({route, navigation}) => {
-  const {slug} = route.params;
+const Product: React.FC<PropsNav> = ({route, navigation}) => {
   const insets = useSafeAreaInsets();
   const toast = useToast();
+  const user = useAuthState();
 
-  const [user, setUser] = React.useState<any>(null);
+  const {slug}: any = route.params;
   const [qty, setQty] = React.useState<number>(0);
 
   const [isFav, setFav] = React.useState<boolean>(false);
 
-  useEffect(() => {
-    GetData('cart').then(res => {
-      console.log('hey', JSON.parse(res));
-    });
-    GetData('user').then(res => {
-      if (res !== undefined) {
-        setUser(JSON.parse(res));
-      }
-
-      // console.log(JSON.parse(res).user);
-    });
-  }, []);
-
   const {data: product} = useQuery(['product', slug], product_request, {
     onSuccess: data => {
-      // console.log();
-      // if (product !== undefined) {
       setQty(data.data.data[0].attributes.type === 'weight' ? 250 : 1);
-      // }
-
-      axios
-        .get(
-          `http://localhost:1337/api/favourites?filters[$and][0][product][slug][$in]=${slug}&filters[$and][1][users_permissions_user][id][$in]=${user.user.id}`,
-        )
-        .then(res => {
-          if (res.data.data.length > 0) {
-            setFav(true);
-          } else {
-            setFav(false);
-          }
-          // console.log(res.data.data.length);
-        });
+      if (user.user !== undefined) {
+        axios
+          .get(
+            `http://localhost:1337/api/favourites?filters[$and][0][product][slug][$in]=${slug}&filters[$and][1][users_permissions_user][id][$in]=${user.user.id}`,
+          )
+          .then(res => {
+            if (res.data.data.length > 0) {
+              setFav(true);
+            } else {
+              setFav(false);
+            }
+            // console.log(res.data.data.length);
+          });
+      }
     },
   });
 
   const addToCart = () => {
     // addItem({name: 'rafay', id: 2});
-
-    addItem({...product?.data.data[0], quantity: qty}, toast)
-      .then(res => {
-        console.log('res is', res);
-      })
-      .catch(err => {
-        console.log('err', err);
-      });
+    addItem({...product?.data.data[0], quantity: qty}, toast);
   };
 
   const addToFav = () => {
-    axios
-      .get(
-        `http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=${user.user.id}&filters[product][id][$eq]=${product?.data.data[0].id}&populate=*`,
-      )
-      .then(res => {
-        if (res.data.data.length === 0) {
-          console.log({
-            users_permissions_user: user.user.id,
-            product: product?.data.data[0].id,
-          });
-          axios
-            .post('http://localhost:1337/api/favourites', {
-              data: {
-                users_permissions_user: user.user.id,
-                product: product?.data.data[0].id,
-              },
-            })
-            .then(_ => {
-              setFav(true);
-              toast.show({
-                bg: 'primary.500',
-                title: 'Added to Favourites',
-                placement: 'top',
+    if (user.user !== undefined) {
+      axios
+        .get(
+          `http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=${user.user.id}&filters[product][id][$eq]=${product?.data.data[0].id}&populate=*`,
+        )
+        .then(res => {
+          if (res.data.data.length === 0 && user.user !== undefined) {
+            axios
+              .post('http://localhost:1337/api/favourites', {
+                data: {
+                  users_permissions_user: user.user.id,
+                  product: product?.data.data[0].id,
+                },
+              })
+              .then(_ => {
+                setFav(true);
+                toast.show({
+                  bg: 'primary.500',
+                  title: 'Added to Favourites',
+                  placement: 'top',
+                });
               });
+          } else {
+            toast.show({
+              bg: 'danger.500',
+              title: 'Already Added to Favourites',
+              placement: 'top',
             });
-        } else {
-          toast.show({
-            bg: 'danger.500',
-            title: 'Already Added to Favourites',
-            placement: 'top',
-          });
-        }
-        // console.log(res.data);
-      });
-
-    // let userFav =
-    //   product?.data.data[0].attributes.favourites.data[0].attributes
-    //     .users_permissions_user;
-    // let productsFav =
-    //   product?.data.data[0].attributes.favourites.data.attributes.products;
-    // console.log(userFav);
-    // console.log(
-    //   product?.data.data[0].attributes.favourites.data[0].attributes
-    //     .users_permissions_user.data.id,
-    // );
+          }
+        });
+    }
     //http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=11&populate=*
   };
 
@@ -223,28 +180,30 @@ const Product: React.FC<NavProps> = ({route, navigation}) => {
               </Button>
             </Box>
             <Box flexDirection={'row'} marginTop={-1}>
-              {product?.data.data[0].attributes.tags.data.map((tag, index) => {
-                return (
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: '#3F636E',
-                      marginLeft: index !== 0 ? 5 : 0,
-                      paddingHorizontal: 12,
-                      paddingVertical: 6,
-                      borderRadius: 4,
-                    }}
-                    activeOpacity={0.7}>
-                    <Text color="#FFF" fontFamily={'Cairo'}>
-                      {tag.attributes.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+              {product?.data.data[0].attributes.tags.data.map(
+                (tag: any, index: number) => {
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: '#3F636E',
+                        marginLeft: index !== 0 ? 5 : 0,
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: 4,
+                      }}
+                      activeOpacity={0.7}>
+                      <Text color="#FFF" fontFamily={'Cairo'}>
+                        {tag.attributes.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                },
+              )}
             </Box>
 
             <Box marginTop={4}>
               {product?.data.data[0].attributes.categories.data.map(
-                (cat, index) => {
+                (cat: any, index: number) => {
                   return (
                     <Text
                       textAlign={'left'}

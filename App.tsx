@@ -17,6 +17,8 @@ import Register from './src/pages/Register';
 import Home from './src/pages/Home';
 import Product from './src/pages/Product';
 
+import {AuthProvider, useAuthDispatch, useAuthState} from './src/AuthContext';
+
 import {
   Alert,
   AlertDialog,
@@ -121,19 +123,23 @@ const theme = extendTheme({
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
-  const [user, setUser] = useState<any>(null);
-
+  // const [user, setUser] = useState<any>(null);
+  const dispatch = useAuthDispatch();
+  const user = useAuthState();
   useEffect(() => {
+    dispatch({type: 'REQUEST_LOGIN'});
     GetData('user').then((res: any) => {
-      setUser(res);
       if (res !== undefined) {
         axios.defaults.headers.common.Authorization = `Bearer ${
           JSON.parse(res).jwt
         }`;
+        dispatch({type: 'LOGIN_SUCCESS', payload: JSON.parse(res)});
+      } else {
+        dispatch({type: 'LOGIN_FAILED'});
       }
     });
-  }, []);
-  if (user === null) {
+  }, [dispatch]);
+  if (user.loading === true) {
     return <Text>Loading...</Text>;
   }
 
@@ -148,12 +154,12 @@ const StackNavigator = () => {
           //   backgroundColor: isDarkMode ? '#1C1C1E' : '#FFF',
           // },
         }}>
-        {/* {user === undefined && (
-          <> */}
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        {/* </>
-        )} */}
+        {user.user === undefined && (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+          </>
+        )}
         <Stack.Screen name="Tabs" component={Tabs} />
         <Stack.Screen name="CategoryView" component={CategoryView} />
 
@@ -193,21 +199,23 @@ const App = () => {
     },
   };
   return (
-    <QueryClientProvider client={queryClient}>
-      <NativeBaseProvider theme={theme} config={config}>
-        <NavigationContainer>
-          <Drawer.Navigator
-            useLegacyImplementation={true}
-            screenOptions={{
-              headerShown: false,
-              swipeEnabled: false,
-            }}
-            drawerContent={props => <DrawerMenu {...props} />}>
-            <Drawer.Screen name="Main" component={StackNavigator} />
-          </Drawer.Navigator>
-        </NavigationContainer>
-      </NativeBaseProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <NativeBaseProvider theme={theme} config={config}>
+          <NavigationContainer>
+            <Drawer.Navigator
+              useLegacyImplementation={true}
+              screenOptions={{
+                headerShown: false,
+                swipeEnabled: false,
+              }}
+              drawerContent={props => <DrawerMenu {...props} />}>
+              <Drawer.Screen name="Main" component={StackNavigator} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </NativeBaseProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };
 export default App;

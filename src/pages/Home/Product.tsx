@@ -1,9 +1,10 @@
 import React from 'react';
-import {Box, Text, Button, Image, Pressable} from 'native-base';
+import {Box, Text, Button, Pressable} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 import Minus from '../../icons/Minus';
 import Plus from '../../icons/Plus';
+import {Image} from 'react-native';
 
 const Product: React.FC<any> = ({info}) => {
   const navigation = useNavigation();
@@ -11,6 +12,7 @@ const Product: React.FC<any> = ({info}) => {
   return (
     <Box width={180} borderRadius="md" bg="#FFF" shadow={2} borderTopRadius={6}>
       <Image
+        accessibilityLabel={info.attributes.name}
         style={{
           height: 120,
           width: '100%',
@@ -28,7 +30,7 @@ const Product: React.FC<any> = ({info}) => {
           fontFamily={'Cairo'}
           fontSize="10"
           fontWeight={500}>
-          {info.attributes.categories.data.map((cat, index) => {
+          {info.attributes.categories.data.map((cat: any, index: number) => {
             return (
               <Text
                 color="gray.400"
