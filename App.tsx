@@ -2,6 +2,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import RNBootSplash from 'react-native-bootsplash';
+
 import {
   useQuery,
   useMutation,
@@ -38,6 +40,7 @@ import NewAddress from './src/pages/Account/Address/New';
 import EditAddress from './src/pages/Account/Address/Edit';
 
 import Terms from './src/pages/Account/Terms';
+RNBootSplash.hide();
 import Contact from './src/pages/Account/Contact';
 
 import DrawerMenu from './Drawer';
@@ -51,6 +54,13 @@ import CategoryView from './src/pages/CategoryView';
 import {AppState} from 'react-native';
 import {focusManager} from 'react-query';
 import Management from './src/pages/Account/Management';
+
+// Checkout
+
+import AddressCheckout from './src/pages/Checkout/Address';
+import Receipt from './src/pages/Checkout/Receipt';
+import Payment from './src/pages/Checkout/Payment';
+import Success from './src/pages/Checkout/Success';
 
 focusManager.setEventListener(handleFocus => {
   const subscription = AppState.addEventListener('change', state => {
@@ -126,21 +136,26 @@ const StackNavigator = () => {
   // const [user, setUser] = useState<any>(null);
   const dispatch = useAuthDispatch();
   const user = useAuthState();
+
   React.useEffect(() => {
-    dispatch({type: 'REQUEST_LOGIN'});
-    GetData('user').then((res: any) => {
-      if (res !== undefined) {
-        axios.defaults.headers.common.Authorization = `Bearer ${
-          JSON.parse(res).jwt
-        }`;
-        dispatch({type: 'LOGIN_SUCCESS', payload: JSON.parse(res)});
-      } else {
-        dispatch({type: 'LOGIN_FAILED'});
-      }
-    });
+    setTimeout(() => {
+      dispatch({type: 'REQUEST_LOGIN'});
+
+      GetData('user').then((res: any) => {
+        if (res !== undefined) {
+          axios.defaults.headers.common.Authorization = `Bearer ${
+            JSON.parse(res).jwt
+          }`;
+          dispatch({type: 'LOGIN_SUCCESS', payload: JSON.parse(res)});
+        } else {
+          dispatch({type: 'LOGIN_FAILED'});
+        }
+      });
+    }, 100);
   }, [dispatch]);
-  if (user.loading === true) {
-    return <Text>Loading...</Text>;
+
+  if (user.loading === false) {
+    RNBootSplash.hide();
   }
 
   return (
@@ -166,17 +181,22 @@ const StackNavigator = () => {
             <Stack.Screen name="CategoryView" component={CategoryView} />
 
             <Stack.Screen name="Product" component={Product} />
+            {/* Management */}
+
             <Stack.Screen name="Orders" component={Orders} />
             <Stack.Screen name="Order" component={Order} />
             <Stack.Screen name="Address" component={Address} />
             <Stack.Screen name="NewAddress" component={NewAddress} />
             <Stack.Screen name="EditAddress" component={EditAddress} />
-            {/* Management */}
             <Stack.Screen name="Management" component={Management} />
-
             <Stack.Screen name="Terms" component={Terms} />
             <Stack.Screen name="Contact" component={Contact} />
+            {/* Checkout */}
             <Stack.Screen name="Cart" component={Cart} />
+            <Stack.Screen name="AddressCheckout" component={AddressCheckout} />
+            <Stack.Screen name="Receipt" component={Receipt} />
+            <Stack.Screen name="Payment" component={Payment} />
+            <Stack.Screen name="Success" component={Success} />
           </>
         )}
       </Stack.Navigator>

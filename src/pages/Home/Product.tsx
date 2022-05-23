@@ -66,6 +66,7 @@ const Product: React.FC<any> = ({info}) => {
           {info.attributes.categories.data.map((cat: any, index: number) => {
             return (
               <Text
+                key={`cat-${index}`}
                 color="gray.400"
                 fontFamily={'Cairo'}
                 fontSize="10"

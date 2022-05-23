@@ -40,6 +40,7 @@ const Login: React.FC = () => {
       {username: data.email, ...data},
       {
         onError: (error: any) => {
+          console.log(error.response.data);
           if (error) {
             setError('email', {
               type: 'validate',

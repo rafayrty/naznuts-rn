@@ -3,37 +3,18 @@ import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 // import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTheme, Container, Box, Text} from 'native-base';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Form from './Form';
 import {Dimensions} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {GetData} from '../../plugins/storage';
+import {useAuthState} from '../../AuthContext';
 
-type RootStackParamList = {
-  Home: undefined;
-  Register: undefined;
-  Login: undefined;
-  Tabs: undefined;
-};
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
-
-const Login: React.FC<Props> = ({navigation}) => {
+const Login: React.FC = () => {
   // const user = React.useContext(UserContext);
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
-  const [user, setUser] = React.useState<any>(null);
-  // const scroller = React.useRef();
-  React.useEffect(() => {
-    GetData('user').then(res => {
-      setUser(res);
-    });
-  });
+  const auth = useAuthState();
 
-  if (user === null) {
-    return <Text>Loadingg...</Text>;
-  }
-
-  if (user === undefined) {
+  if (!auth.loading) {
     return (
       <ScrollView contentContainerStyle={{flex: 1}}>
         <Box
@@ -121,7 +102,7 @@ const Login: React.FC<Props> = ({navigation}) => {
               <Box
                 paddingTop={Dimensions.get('window').width > 400 ? 100 : '0'}
                 width="100%">
-                <Form navigation={navigation} />
+                <Form />
               </Box>
             </Container>
           </Box>
@@ -203,7 +184,6 @@ const Login: React.FC<Props> = ({navigation}) => {
       </ScrollView>
     );
   } else {
-    navigation.replace('Tabs');
     return <></>;
   }
 };

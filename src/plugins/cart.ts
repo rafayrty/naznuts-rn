@@ -1,6 +1,4 @@
-import {reject} from 'lodash';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Toast} from 'native-base';
 const addItem = async (item: any, toast: any) => {
   let newObj: Array<any>[];
   try {
@@ -56,4 +54,24 @@ const deleteItem = async (id: number) => {
   }
 };
 
-export {addItem, deleteItem};
+const updateItem = async (id: number, qty: number, price: number) => {
+  console.log(id, qty, price);
+  try {
+    await EncryptedStorage.getItem('cart').then(async res => {
+      let newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
+      const index = newObj.findIndex(x => x.id === id);
+
+      if (index !== -1) {
+        newObj[index].quantity = qty;
+        newObj[index].attributes.price = price;
+        await EncryptedStorage.setItem('cart', JSON.stringify(newObj));
+      } else {
+        Promise.reject('Not Found');
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export {addItem, deleteItem, updateItem};

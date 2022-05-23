@@ -33,31 +33,44 @@ const Categories: React.FC = () => {
                     height="40"
                     marginTop={3}>
                     <Shadow
-                      distance={6}
+                      distance={4}
                       viewStyle={{width: '100%', borderRadius: 12}}>
                       <Pressable
                         onPress={() =>
                           navigation.navigate('CategoryView', {
                             slug: item.attributes.slug,
                           })
-                        }
-                        width="100%"
-                        borderRadius={12}
-                        height="100%"
-                        background={'#FFF'}
-                        justifyContent={'center'}
-                        alignItems={'center'}>
-                        <SvgUri
-                          width="25"
-                          height="25"
-                          source={{
-                            uri: `http://localhost:1337${item.attributes.icon.data.attributes.url}`,
-                          }}
-                        />
-                        <Text fontFamily={'Cairo'} marginTop={2}>
-                          {' '}
-                          {item.attributes.name}
-                        </Text>
+                        }>
+                        {({isPressed}) => {
+                          return (
+                            <Box
+                              width="100%"
+                              borderRadius={12}
+                              height="100%"
+                              background={'#FFF'}
+                              justifyContent={'center'}
+                              alignItems={'center'}
+                              style={{
+                                transform: [
+                                  {
+                                    scale: isPressed ? 0.96 : 1,
+                                  },
+                                ],
+                              }}>
+                              <SvgUri
+                                width="25"
+                                height="25"
+                                source={{
+                                  uri: `http://localhost:1337${item.attributes.icon.data.attributes.url}`,
+                                }}
+                              />
+                              <Text fontFamily={'Cairo'} marginTop={2}>
+                                {' '}
+                                {item.attributes.name}
+                              </Text>
+                            </Box>
+                          );
+                        }}
                       </Pressable>
                     </Shadow>
                   </Box>

@@ -1,3 +1,4 @@
+import axios from 'axios';
 export interface User {
   id: number;
   username: string;
@@ -10,6 +11,7 @@ export interface User {
   fullname: string;
   phone: string;
 }
+
 export type initialStateType = {
   user: User | undefined;
   jwt: string | undefined;
@@ -24,7 +26,7 @@ export const initialState = {
 
 export type actionType = {
   type: string;
-  payload?: initialStateType;
+  payload?: any;
 };
 
 export const AuthReducer = (state: initialStateType, action: actionType) => {
@@ -35,20 +37,13 @@ export const AuthReducer = (state: initialStateType, action: actionType) => {
         loading: true,
       };
     case 'LOGIN_SUCCESS':
-      if (action.payload) {
-        return {
-          ...state,
-          user: action.payload.user,
-          jwt: action.payload.jwt,
-          loading: false,
-        };
-      } else {
-        return {
-          ...state,
-          user: undefined,
-          loading: undefined,
-        };
-      }
+      return {
+        ...state,
+        user: action.payload?.user,
+        jwt: action.payload?.jwt,
+        loading: false,
+      };
+
     case 'LOGIN_FAILED':
       return {
         ...state,
@@ -57,13 +52,18 @@ export const AuthReducer = (state: initialStateType, action: actionType) => {
         loading: false,
       };
     case 'LOGOUT':
+      axios.defaults.headers.common.Authorization = false;
       return {
         ...state,
         user: undefined,
         jwt: undefined,
         loading: false,
       };
-
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        user: action.payload,
+      };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }

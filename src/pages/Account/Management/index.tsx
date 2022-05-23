@@ -1,64 +1,283 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
+  AlertDialog,
   Box,
   Button,
-  CheckIcon,
+  Center,
   Container,
-  FormControl,
   Input,
-  Pressable,
-  Radio,
   ScrollView,
-  Select,
   Text,
-  TextArea,
   useToast,
 } from 'native-base';
+import {Modal} from 'native-base';
+
 import Header from '../../../components/Header';
 import BackButton from '../../../components/BackButton';
-import Svg, {Path} from 'react-native-svg';
 import TextInput from '../../../components/TextInput';
-import {useMutation, useQuery} from 'react-query';
-import {cities_request, address_add} from '../../../api/address_request';
+import {useMutation} from 'react-query';
 import {Controller, useForm} from 'react-hook-form';
+import {useAuthDispatch, useAuthState} from '../../../AuthContext';
+import {
+  user_delete,
+  user_passchange,
+  user_update,
+} from '../../../api/user_request';
+import {DeleteData} from '../../../plugins/storage';
 
-const Management = () => {
+type PassProps = {
+  showModal: boolean;
+  setShowModal: Function;
+};
+
+type AlertProps = {
+  isOpen: boolean;
+  setIsOpen: Function;
+};
+const DeleteAlert: React.FC<AlertProps> = ({setIsOpen, isOpen}) => {
+  const cancelRef = React.useRef(null);
   const toast = useToast();
+  const dispatch = useAuthDispatch();
+  const user = useAuthState();
+  const mutation = useMutation(user_delete, {
+    onSuccess: _ => {
+      setIsOpen(!isOpen);
+      toast.show({
+        bg: 'danger.500',
+        title: 'Account Deleted Successfully',
+        placement: 'top',
+      });
+      DeleteData('cart');
+      DeleteData('user');
+      dispatch({type: 'LOGOUT'});
+    },
+  });
+  const deleteAcc = (): void => {
+    if (user.user !== undefined) {
+      mutation.mutate(user.user.id);
+    }
+  };
+  return (
+    <Center>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(!isOpen)}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
 
+          <AlertDialog.Header>
+            <Text
+              fontFamily={'Cairo'}
+              fontWeight={800}
+              fontSize={16}
+              textAlign={'left'}>
+              حذف حسابك
+            </Text>
+          </AlertDialog.Header>
+          <AlertDialog.Body>
+            <Text fontFamily={'Cairo'} textAlign={'left'}>
+              سيؤدي هذا إلى إزالة جميع البيانات. هذا العمل لا يمكن أن يكون عكس.
+              لا يمكن استعادة البيانات المحذوفة.
+            </Text>
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="unstyled"
+                colorScheme="coolGray"
+                onPress={() => setIsOpen(!isOpen)}
+                ref={cancelRef}>
+                <Text fontFamily={'Cairo'}>يلغي</Text>
+              </Button>
+              <Button colorScheme="danger" onPress={() => deleteAcc()}>
+                <Text fontFamily={'Cairo'} color="white">
+                  حذف
+                </Text>
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
+    </Center>
+  );
+};
+
+const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
+  const user = useAuthState();
+  const toast = useToast();
   const {
-    reset,
     control,
+    setError,
+    reset,
     handleSubmit,
     formState: {errors},
   } = useForm({
     defaultValues: {
-      name: '',
+      new_pass: '',
+      confirm_pass: '',
+    },
+  });
+
+  const mutation = useMutation(user_passchange);
+  const onSubmit = (data: any) => {
+    if (data.new_pass !== data.confirm_pass) {
+      setError('confirm_pass', {
+        type: 'validate',
+        message: 'Passwords Do Not Match',
+      });
+    } else {
+      mutation.mutate(
+        {id: user.user?.id, data: data},
+        {
+          onSuccess: _ => {
+            toast.show({
+              bg: 'primary.500',
+              title: 'Password Updated Successfully',
+              placement: 'top',
+            });
+            setShowModal(false);
+            reset();
+          },
+        },
+      );
+    }
+  };
+
+  return (
+    <Center>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>
+            <Text textAlign={'left'} fontFamily={'Cairo'}>
+              تطوير كلمة السر
+            </Text>
+          </Modal.Header>
+          <Modal.Body>
+            <Controller
+              control={control}
+              rules={{
+                required: {value: true, message: 'الحقل مطلوب'},
+                minLength: {value: 8, message: 'مطلوب 8 أحرف على الأقل'},
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <TextInput
+                  isInvalid={errors.new_pass ? true : false}
+                  errorMsg={errors.new_pass?.message}
+                  label="كلمة المرور الجديدة">
+                  <Input
+                    value={value}
+                    p={2}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    width="100%"
+                    fontFamily={'Cairo'}
+                    fontSize={12}
+                    paddingRight="6"
+                    type={'password'}
+                    bg="#FFF"
+                    textAlign="right"
+                  />
+                </TextInput>
+              )}
+              name="new_pass"
+            />
+            <Box marginTop={3}>
+              <Controller
+                control={control}
+                rules={{
+                  required: {value: true, message: 'الحقل مطلوب'},
+                }}
+                render={({field: {onChange, onBlur, value}}) => (
+                  <TextInput
+                    isInvalid={errors.confirm_pass ? true : false}
+                    errorMsg={errors.confirm_pass?.message}
+                    label="تأكيد كلمة المرور">
+                    <Input
+                      value={value}
+                      p={2}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      width="100%"
+                      fontFamily={'Cairo'}
+                      fontSize={12}
+                      paddingRight="6"
+                      type={'password'}
+                      bg="#FFF"
+                      textAlign="right"
+                    />
+                  </TextInput>
+                )}
+                name="confirm_pass"
+              />
+            </Box>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                fontFamily={'Cairo'}
+                onPress={() => {
+                  setShowModal(false);
+                }}>
+                <Text fontFamily={'Cairo'}>يلغي</Text>
+              </Button>
+              <Button onPress={handleSubmit(onSubmit)}>
+                <Text fontFamily={'Cairo'} color="#FFF">
+                  يحفظ
+                </Text>
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </Center>
+  );
+};
+const Management = () => {
+  const toast = useToast();
+  const user = useAuthState();
+  const dispatch = useAuthDispatch();
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      name: user?.user?.fullname,
       phone: '',
-      address_text: '',
-      note: '',
-      type: '',
-      city: '',
+      email: '',
     },
   }); // const myRef = React.useRef({});
+  const [showModal, setShowModal] = useState(false);
+  React.useEffect(() => {
+    setValue('name', user?.user?.fullname ?? '');
+    setValue('phone', user?.user?.phone ?? '');
+    setValue('email', user?.user?.email ?? '');
+  }, [user, setValue]);
 
-  const {data: cities} = useQuery('cities', cities_request);
-  const mutation = useMutation(address_add, {
-    onSuccess: _ => {
-      reset();
+  const mutation = useMutation(user_update, {
+    onSuccess: (res: any) => {
       toast.show({
         bg: 'primary.500',
-        title: 'Address Created Successfully',
+        title: 'User Updated Successfully',
         placement: 'top',
       });
+
+      dispatch({type: 'UPDATE_USER', payload: res.data});
     },
     onError: err => {
-      console.log(err);
+      console.error(err);
     },
   });
   const onSubmit = (data: any) => {
-    mutation.mutate(data);
-    console.log({data: data});
+    mutation.mutate({id: user?.user?.id, data});
   };
+
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <ScrollView>
@@ -151,8 +370,8 @@ const Management = () => {
                   control={control}
                   render={({field: {onChange, onBlur, value}}) => (
                     <TextInput
-                      isInvalid={errors.phone ? true : false}
-                      errorMsg={errors.phone?.message}
+                      isInvalid={errors.email ? true : false}
+                      errorMsg={errors.email?.message}
                       label="البريد الالكتروني">
                       <Input
                         value={value}
@@ -165,14 +384,22 @@ const Management = () => {
                         paddingRight="6"
                         type={'text'}
                         bg="#FFF"
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
+                        autoCompleteType="email"
                         textAlign="right"
                       />
                     </TextInput>
                   )}
-                  name="phone"
+                  name="email"
                 />
               </Box>
-              <Button color="primary" bg="primary.500" px={6} marginTop={4}>
+              <Button
+                onPress={handleSubmit(onSubmit)}
+                color="primary"
+                bg="primary.500"
+                px={6}
+                marginTop={4}>
                 <Text fontFamily={'Cairo'} fontWeight={600} color="#FFF">
                   حفظ
                 </Text>
@@ -200,6 +427,7 @@ const Management = () => {
                 marginTop={2}
                 colorScheme={'secondary'}
                 width="2/5"
+                onPress={() => setShowModal(true)}
                 bg="secondary.500">
                 <Text fontFamily={'Cairo'} color="white">
                   تغيير كلمة المرور
@@ -218,6 +446,7 @@ const Management = () => {
                 marginTop={2}
                 colorScheme={'danger'}
                 width="2/5"
+                onPress={() => setIsOpen(true)}
                 bg="danger.500">
                 <Text fontFamily={'Cairo'} color="white">
                   تعطيل حسابك
@@ -227,6 +456,8 @@ const Management = () => {
           </Box>
         </Box>
       </Box>
+      <DeleteAlert isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ChangePass setShowModal={setShowModal} showModal={showModal} />
     </ScrollView>
   );
 };

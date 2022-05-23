@@ -6,7 +6,7 @@ import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {DeleteData} from './src/plugins/storage';
-import {StackActions, DrawerActions} from '@react-navigation/native';
+import {DrawerActions} from '@react-navigation/native';
 import axios from 'axios';
 import {useAuthDispatch, useAuthState} from './src/AuthContext';
 // import {LoggedUser} from './src/types/User';

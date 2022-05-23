@@ -8,12 +8,12 @@ import Header from '../../components/Header';
 import CategorySlider from './CategorySlider';
 import Product from './Product';
 import {useQuery} from 'react-query';
-import {categories_product_request} from '../../api/categories_request';
+import {categories_product_home_request} from '../../api/categories_request';
 const Home: React.FC<PropsNav> = ({navigation}) => {
   const [query, setQuery] = React.useState<any>();
   const {data: products} = useQuery(
-    ['products', 'hidaya'],
-    categories_product_request,
+    ['home_products', 'hidaya'],
+    categories_product_home_request,
   );
   return (
     <ScrollView flex="1">
@@ -160,6 +160,7 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
           {products?.data.data.map((item: any, index: number) => {
             return (
               <Box
+                key={`item-${index}`}
                 marginLeft={6}
                 marginRight={index === products?.data.data.length - 1 ? 3 : 0}>
                 <Product info={item} />

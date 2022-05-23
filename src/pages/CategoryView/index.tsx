@@ -24,6 +24,7 @@ import RangeSlider from 'react-native-range-slider-expo';
 import {useFocusEffect} from '@react-navigation/native';
 
 import Item from './item';
+import {tags_request} from '../../api/tags_request';
 
 const CategoryView = ({route}: any) => {
   const [fromValue, setFromValue] = useState(0);
@@ -31,12 +32,18 @@ const CategoryView = ({route}: any) => {
   const {colors} = useTheme();
   const {slug} = route.params;
   const [catSlug, setCatSlug] = useState<string>('');
+  const [filters, setFilters] = useState<any>([]);
+  const [order, setOrder] = useState<string>('asc');
+
   const {data} = useQuery('categories', categories_request);
+  const [selectedTags, setSelectedTags] = React.useState<Array<any>>([]);
 
   const {data: products, refetch} = useQuery(
-    ['products', catSlug],
+    ['products', [catSlug, filters]],
     categories_product_request,
   );
+
+  const {data: tags} = useQuery('tags', tags_request);
 
   //  const filters =
   useFocusEffect(
@@ -46,6 +53,37 @@ const CategoryView = ({route}: any) => {
       return () => refetch();
     }, [refetch, slug]),
   );
+
+  const toggleTags = (id: number) => {
+    const find = selectedTags.findIndex((tag: number) => tag === id);
+    if (find !== -1) {
+      setSelectedTags(prevState =>
+        prevState.filter(prevItem => prevItem !== id),
+      );
+      return;
+    }
+    setSelectedTags((prevState: Array<any>[]) => [...prevState, id]);
+  };
+
+  const checkBGTagColor = (id: number) => {
+    if (selectedTags.find((cat: number) => cat === id)) {
+      return 'primary.500';
+    } else {
+      return 'white';
+    }
+  };
+  const checkFGTagColor = (id: number) => {
+    if (selectedTags.find((cat: number) => cat === id)) {
+      return 'white';
+    } else {
+      return colors.primary['500'];
+    }
+  };
+
+  const applyFilters = () => {
+    setFilters([{from: fromValue, to: toValue}, [...selectedTags], order]);
+    refetch();
+  };
 
   const {isOpen, onOpen, onClose} = useDisclose();
   return (
@@ -62,11 +100,7 @@ const CategoryView = ({route}: any) => {
             alignItems={'center'}>
             <Box flexDir={'row'} alignItems={'center'}>
               <BackButton />
-              <Text
-                marginLeft={1}
-                fontFamily={'Cairo'}
-                fontSize={22}
-                fontWeight={800}>
+              <Text fontFamily={'Cairo'} fontSize={22} fontWeight={800}>
                 تفاصيل الطلب
               </Text>
             </Box>
@@ -175,9 +209,37 @@ const CategoryView = ({route}: any) => {
                   fontWeight={600}>
                   حسب الوسوم
                 </Text>
-                <TouchableOpacity>
-                  <Text>حسب الوسوم</Text>
-                </TouchableOpacity>
+                <Box flexDir={'row'} flexWrap={'wrap'}>
+                  {tags?.data.data.map((item: any, index: number) => {
+                    return (
+                      <TouchableOpacity
+                        key={`item-${index}`}
+                        onPress={() => toggleTags(item.id)}
+                        style={{marginTop: 14, marginLeft: 8}}>
+                        <Box
+                          shadow={2}
+                          borderColor="primary.500"
+                          borderWidth={1}
+                          borderRadius={8}
+                          bg={checkBGTagColor(item.id)}>
+                          <Box
+                            py={2}
+                            px={3}
+                            flexDir={'row'}
+                            alignItems={'center'}>
+                            <Text
+                              fontFamily={'Cairo'}
+                              fontSize={12}
+                              color={checkFGTagColor(item.id)}
+                              fontWeight={600}>
+                              {item.attributes.name}
+                            </Text>
+                          </Box>
+                        </Box>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </Box>
               </Box>
 
               <Box marginTop={4}>
@@ -188,20 +250,73 @@ const CategoryView = ({route}: any) => {
                   fontWeight={600}>
                   الترتيب حسب
                 </Text>
-                <TouchableOpacity>
-                  <Text>حسب الوسوم</Text>
-                </TouchableOpacity>
+                <Box flexDir={'row'}>
+                  <TouchableOpacity
+                    onPress={() => setOrder('asc')}
+                    style={{marginTop: 14, marginLeft: 8}}>
+                    <Box
+                      shadow={2}
+                      borderColor="primary.500"
+                      borderWidth={1}
+                      borderRadius={8}
+                      bg={order === 'asc' ? 'primary.500' : 'white'}>
+                      <Box py={2} px={3} flexDir={'row'} alignItems={'center'}>
+                        <Text
+                          fontFamily={'Cairo'}
+                          fontSize={12}
+                          color={order === 'asc' ? 'white' : 'primary.500'}
+                          fontWeight={600}>
+                          الأقل سعراً{' '}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setOrder('desc')}
+                    style={{marginTop: 14, marginLeft: 8}}>
+                    <Box
+                      shadow={2}
+                      borderColor="primary.500"
+                      borderWidth={1}
+                      borderRadius={8}
+                      bg={order === 'desc' ? 'primary.500' : 'white'}>
+                      <Box py={2} px={3} flexDir={'row'} alignItems={'center'}>
+                        <Text
+                          fontFamily={'Cairo'}
+                          fontSize={12}
+                          color={order === 'desc' ? 'white' : 'primary.500'}
+                          fontWeight={600}>
+                          الأعلى سعراً{' '}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </TouchableOpacity>
+                </Box>
               </Box>
             </Box>
-            <Button
-              width="80%"
-              marginTop={6}
-              bg="primary.500"
-              colorScheme={'primary'}>
-              <Text color="#FFF" fontFamily={'Cairo'}>
-                Apply
-              </Text>
-            </Button>
+            <Box flexDir={'row'} justifyContent={'space-between'}>
+              <Button
+                width="40%"
+                marginTop={6}
+                bg="primary.500"
+                onPress={() => applyFilters()}
+                colorScheme={'primary'}>
+                <Text color="#FFF" fontFamily={'Cairo'}>
+                  يتقدم
+                </Text>
+              </Button>
+
+              <Button
+                width="40%"
+                marginTop={6}
+                marginLeft={2}
+                bg="secondary.500"
+                colorScheme={'secondary'}>
+                <Text color="#FFF" fontFamily={'Cairo'}>
+                  إعادة ضبط
+                </Text>
+              </Button>
+            </Box>
           </Actionsheet.Content>
         </Actionsheet>
 

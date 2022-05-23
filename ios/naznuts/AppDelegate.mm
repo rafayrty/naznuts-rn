@@ -5,6 +5,9 @@
 #import <React/RCTRootView.h>
 //Added RTL
 #import <React/RCTI18nUtil.h> //in top page AppDelegate.m
+//Add Splash
+#import "RNBootSplash.h" // <- add this
+
 
 #import <React/RCTAppSetupUtils.h>
 
@@ -60,6 +63,9 @@
     //Added For RTL Support
    [[RCTI18nUtil sharedInstance] allowRTL:YES];
    [[RCTI18nUtil sharedInstance] forceRTL:YES];
+
+   //Splash
+   [RNBootSplash initWithStoryboard:@"BootSplash" rootView:rootView];
 
   return YES;
 }

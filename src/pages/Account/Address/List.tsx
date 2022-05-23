@@ -1,20 +1,108 @@
 import {FlatList} from 'react-native';
 import React from 'react';
 
-import {Box, Text, Container, Pressable, useTheme} from 'native-base';
+import {
+  Box,
+  Text,
+  Container,
+  Pressable,
+  useTheme,
+  useToast,
+  AlertDialog,
+  Button,
+  Center,
+} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import {address_request} from '../../../api/address_request';
 import {useQuery} from 'react-query';
 import axios from 'axios';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
+
+type AlertProps = {
+  isOpen: boolean;
+  setIsOpen: Function;
+  refetch: Function;
+  id: number;
+};
+
+const DeleteAlert: React.FC<AlertProps> = ({
+  setIsOpen,
+  isOpen,
+  refetch,
+  id,
+}) => {
+  const cancelRef = React.useRef(null);
+  const toast = useToast();
+
+  const deleteAddress = (address_id: number): void => {
+    axios
+      .delete('http://localhost:1337/api/addresses/' + address_id)
+      .then(_ => {
+        refetch();
+        toast.show({
+          bg: 'primary.500',
+          title: 'Address Deleted Successfully',
+          placement: 'top',
+        });
+      });
+  };
+
+  return (
+    <Center>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(!isOpen)}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+
+          <AlertDialog.Header>
+            <Text
+              fontFamily={'Cairo'}
+              fontWeight={800}
+              fontSize={16}
+              textAlign={'left'}>
+              حذف العنوان{' '}
+            </Text>
+          </AlertDialog.Header>
+          <AlertDialog.Body>
+            <Text fontFamily={'Cairo'} textAlign={'left'}>
+              هل تريد حذف العنوان
+            </Text>
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="unstyled"
+                colorScheme="coolGray"
+                onPress={() => setIsOpen(!isOpen)}
+                ref={cancelRef}>
+                <Text fontFamily={'Cairo'}>يلغي</Text>
+              </Button>
+              <Button colorScheme="danger" onPress={() => deleteAddress(id)}>
+                <Text fontFamily={'Cairo'} color="white">
+                  حذف
+                </Text>
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
+    </Center>
+  );
+};
+
 type Props = {
   item: any;
   index: number;
-  deleteAddress: Function;
+  refetch: Function;
   editAddress: Function;
 };
-const Item: React.FC<Props> = ({item, index, deleteAddress, editAddress}) => {
+
+const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
   //   const navigation = useNavigation();
+  const [isOpen, setIsOpen] = React.useState(false);
+
   const {colors} = useTheme();
   return (
     <Box
@@ -105,7 +193,7 @@ const Item: React.FC<Props> = ({item, index, deleteAddress, editAddress}) => {
             );
           }}
         </Pressable>
-        <Pressable onPress={() => deleteAddress(item.id)}>
+        <Pressable onPress={() => setIsOpen(true)}>
           {({isPressed}) => {
             return (
               <Box
@@ -145,17 +233,18 @@ const Item: React.FC<Props> = ({item, index, deleteAddress, editAddress}) => {
           }}
         </Pressable>
       </Box>
+      <DeleteAlert
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        id={item.id}
+        refetch={refetch}
+      />
     </Box>
   );
 };
 const List = () => {
   const {data: address, refetch} = useQuery('address', address_request);
   const navigation = useNavigation();
-  const deleteAddress = (id: number): void => {
-    axios.delete('http://localhost:1337/api/addresses/' + id).then(_ => {
-      refetch();
-    });
-  };
 
   const editAddress = (id: number): void => {
     axios
@@ -183,7 +272,7 @@ const List = () => {
             <Item
               item={item}
               index={index}
-              deleteAddress={deleteAddress}
+              refetch={refetch}
               editAddress={editAddress}
             />
           )}

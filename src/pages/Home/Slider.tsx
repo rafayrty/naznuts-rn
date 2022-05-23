@@ -9,9 +9,13 @@ const Slider = () => {
   const {data} = useQuery('slider', slider_request);
   return (
     <Box mx="auto" px="4">
-      {data?.data.data.map((item: any): React.ReactNode => {
+      {data?.data.data.map((item: any, index: number): React.ReactNode => {
         return (
-          <Swiper activeDotColor={'#79C143'} showsButtons={false} height={300}>
+          <Swiper
+            key={`item-${index}`}
+            activeDotColor={'#79C143'}
+            showsButtons={false}
+            height={300}>
             <Box alignItems={'center'} borderColor="#FFF" borderWidth="2">
               <Image
                 accessibilityLabel={item.attributes.name}

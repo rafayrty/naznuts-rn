@@ -5,17 +5,20 @@ import Svg, {Path} from 'react-native-svg';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
+import {updateItem} from '../../plugins/cart';
+import {GetData} from '../../plugins/storage';
 
 type Props = {
   item: any;
   deleteItem: Function;
+  updateTotalPrice: Function;
 };
-const Item: React.FC<Props> = ({item, deleteItem}) => {
+const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
   const [qty, setQty] = React.useState<number>(0);
   const [price, setPrice] = React.useState<number>(6.5);
 
   React.useEffect(() => {
-    setQty(item.attributes.type === 'weight' ? 250 : 1);
+    setQty(item.quantity);
     setPrice(item.attributes.price);
   }, [item]);
 
@@ -24,6 +27,17 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
       prevState => prevState + (item?.attributes.type === 'weight' ? 250 : 1),
     );
     setPrice(prevPrice => prevPrice + item.attributes.price);
+
+    //Updating Cart
+    updateItem(
+      item.id,
+      qty + (item?.attributes.type === 'weight' ? 250 : 1),
+      price + item.attributes.price,
+    ).then(_ => {
+      GetData('cart').then((res: any) => {
+        updateTotalPrice(JSON.parse(res));
+      });
+    });
   };
   const subQty = () => {
     setQty(prevState =>
@@ -36,6 +50,19 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
         ? prevPrice - item.attributes.price
         : prevPrice,
     );
+
+    //Updating Cart
+    updateItem(
+      item.id,
+      qty > (item.attributes.type === 'weight' ? 250 : 1)
+        ? qty - (item.attributes.type === 'weight' ? 250 : 1)
+        : qty,
+      item.attributes.price < price ? price - item.attributes.price : price,
+    ).then(_ => {
+      GetData('cart').then((res: any) => {
+        updateTotalPrice(JSON.parse(res));
+      });
+    });
   };
 
   return (

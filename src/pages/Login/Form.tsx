@@ -10,11 +10,12 @@ import {useMutation} from 'react-query';
 import {StoreData} from '../../plugins/storage';
 import axios from 'axios';
 
-import {useAuthState, useAuthDispatch} from '../../AuthContext';
+import {useAuthDispatch} from '../../AuthContext';
+import {useNavigation} from '@react-navigation/native';
 // import {useNavigation} from '@react-navigation/native';
-type Props = {route: any; navigation: any};
 
-const Form: React.FC<Props> = ({route, navigation}) => {
+const Form: React.FC = () => {
+  const navigation = useNavigation();
   const {
     setError,
     reset,
@@ -29,7 +30,7 @@ const Form: React.FC<Props> = ({route, navigation}) => {
   });
 
   const dispatch = useAuthDispatch();
-  const auth = useAuthState();
+  // const auth = useAuthState();
 
   const onSubmit = (data: any) => mutation.mutate(data);
   const [show, setShow] = React.useState(false);
@@ -42,7 +43,7 @@ const Form: React.FC<Props> = ({route, navigation}) => {
       dispatch({type: 'LOGIN_SUCCESS', payload: data.data});
       StoreData('user', data.data);
       axios.defaults.headers.common.Authorization = `Bearer ${data.data.jwt}`;
-      navigation.replace('Tabs');
+      // navigation.replace('Tabs');
       reset();
     },
     onError: (error: any) => {

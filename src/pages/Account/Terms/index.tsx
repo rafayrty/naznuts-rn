@@ -6,7 +6,6 @@ import {
   Collapse,
   CollapseHeader,
   CollapseBody,
-  AccordionList,
 } from 'accordion-collapse-react-native';
 
 const Terms = () => {

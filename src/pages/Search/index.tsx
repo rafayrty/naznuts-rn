@@ -1,11 +1,5 @@
-import {
-  Animated,
-  Easing,
-  Image,
-  Touchable,
-  TouchableOpacity,
-} from 'react-native';
-import React, {useEffect} from 'react';
+import {Image, TouchableOpacity} from 'react-native';
+import React from 'react';
 import Header from '../../components/Header';
 import {
   Box,
@@ -25,11 +19,11 @@ import {useQuery} from 'react-query';
 import SvgUri from 'react-native-svg-uri-updated';
 import {tags_request} from '../../api/tags_request';
 import axios from 'axios';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import BackButton from '../../components/BackButton';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
-const Search = ({route}) => {
+const Search: React.FC<any> = ({route}) => {
   const {searchQuery} = route.params;
   const navigation = useNavigation();
   const [selectedCategories, setSelectedCategories] = React.useState<
@@ -40,33 +34,9 @@ const Search = ({route}) => {
   const [query, setQuery] = React.useState<string>(searchQuery);
   const [products, setProducts] = React.useState<any>(undefined);
   const [isLoader, setLoader] = React.useState<boolean>(false);
-  // console.log(searchQuery);
-  useEffect(() => {
+  React.useEffect(() => {
     setQuery(searchQuery);
-    // console.log(searchQuery);
   }, [searchQuery]);
-  // const slideAnim = React.useRef(new Animated.Value(0)).current;
-  // const fadeAnim = React.useRef(new Animated.Value(1)).current;
-
-  // const fadeOut = () => {
-  //   // Will change fadeAnim value to 1 in 5 seconds
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 0,
-  //     duration: 500,
-  //     useNativeDriver: false,
-  //     easing: Easing.ease,
-  //   }).start();
-  // };
-
-  // const slideOut = () => {
-  //   // Will change fadeAnim value to 0 in 3 seconds
-  //   Animated.timing(slideAnim, {
-  //     toValue: -200,
-  //     duration: 500,
-  //     useNativeDriver: false,
-  //     easing: Easing.ease,
-  //   }).start();
-  // };
 
   const {colors} = useTheme();
 
@@ -181,26 +151,12 @@ const Search = ({route}) => {
       });
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     search();
-  //     return () => search();
-  //   }, []),
-  // );
   return (
     <ScrollView>
       <Box safeArea marginBottom={24}>
         <Header />
         <Container marginTop={2} width="100%" mx="auto">
           <Box width="100%">
-            {/* <Animated.View
-              style={[
-                {
-                  // Bind opacity to animated value
-                  transform: [{translateY: slideAnim}],
-                  opacity: fadeAnim,
-                },
-              ]}> */}
             <Box>
               <Box flexDir={'row'} width="100%" alignItems={'center'}>
                 <BackButton />
@@ -261,9 +217,10 @@ const Search = ({route}) => {
                   التصنيفات الرئيسية
                 </Text>
                 <Box flexDir={'row'} flexWrap={'wrap'}>
-                  {categories?.data.data.map((item: any) => {
+                  {categories?.data.data.map((item: any, index: number) => {
                     return (
                       <TouchableOpacity
+                        key={`item-${index}`}
                         onPress={() => toggleCategory(item.id)}
                         style={{marginTop: 14, marginLeft: 6}}>
                         <Box
@@ -310,9 +267,10 @@ const Search = ({route}) => {
                 </Text>
 
                 <Box flexDir={'row'} flexWrap={'wrap'}>
-                  {tags?.data.data.map((item: any) => {
+                  {tags?.data.data.map((item: any, index: number) => {
                     return (
                       <TouchableOpacity
+                        key={`item-${index}`}
                         onPress={() => toggleTags(item.id)}
                         style={{marginTop: 14, marginLeft: 8}}>
                         <Box
@@ -358,9 +316,10 @@ const Search = ({route}) => {
           justifyContent={'space-between'}
           width="100%"
           mx="auto">
-          {products?.data.data.map(item => {
+          {products?.data.data.map((item: any, index: number) => {
             return (
               <Box
+                key={`item-${index}`}
                 width="48%"
                 borderRadius="md"
                 bg="#FFF"
@@ -379,20 +338,23 @@ const Search = ({route}) => {
                   }}
                 />
                 <Box py={2} px={3}>
-                  {item.attributes.categories.data.map((cat, index) => {
-                    return (
-                      <Text
-                        color="gray.400"
-                        fontFamily={'Cairo'}
-                        fontSize="10"
-                        fontWeight={500}>
-                        {cat.attributes.name}{' '}
-                        {index !== item.attributes.categories.data.length - 1
-                          ? ','
-                          : ''}
-                      </Text>
-                    );
-                  })}
+                  {item.attributes.categories.data.map(
+                    (cat: any, ind: number) => {
+                      return (
+                        <Text
+                          key={`cat-${ind}`}
+                          color="gray.400"
+                          fontFamily={'Cairo'}
+                          fontSize="10"
+                          fontWeight={500}>
+                          {cat.attributes.name}{' '}
+                          {ind !== item.attributes.categories.data.length - 1
+                            ? ','
+                            : ''}
+                        </Text>
+                      );
+                    },
+                  )}
                   <Text
                     color="black"
                     fontFamily={'Cairo'}

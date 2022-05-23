@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Box,
   Container,
-  Row,
   Pressable,
   Text,
   Button,
@@ -12,7 +11,10 @@ import {
 } from 'native-base';
 import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
 import {useQuery} from 'react-query';
-import {product_request} from '../../api/product_request';
+import {
+  product_request,
+  similar_product_request,
+} from '../../api/product_request';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import axios from 'axios';
@@ -21,6 +23,7 @@ import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
 import {useAuthState} from '../../AuthContext';
 import PropsNav from '../../types/Navigation';
+import Similar from '../Home/Product';
 
 const Product: React.FC<PropsNav> = ({route, navigation}) => {
   const insets = useSafeAreaInsets();
@@ -53,6 +56,14 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
       }
     },
   });
+
+  const {data: similar_products} = useQuery(
+    ['similar_products', product],
+    similar_product_request,
+    {
+      enabled: !!product,
+    },
+  );
 
   const addToCart = () => {
     addItem({...product?.data.data[0], quantity: qty}, toast);
@@ -159,18 +170,6 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
           </Box>
           <Container mx="auto" width="100%">
             <Box alignItems={'flex-end'} width={'100%'}>
-              {/* {JSON.stringify(
-                product?.data.data[0].attributes.favourite.data.attributes
-                  .product,
-              )} */}
-
-              {/* {JSON.stringify()} */}
-              {/* {JSON.stringify(
-                product?.data.data[0].attributes.favourites.data[0].attributes
-                  .users_permissions_user.data.attributes.email,
-              )}
-              {JSON.stringify(user.user.email)} */}
-
               <Button
                 onPress={() => addToFav()}
                 bg={'primary.500'}
@@ -207,6 +206,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 (tag: any, index: number) => {
                   return (
                     <TouchableOpacity
+                      key={`tag-${index}`}
                       style={{
                         backgroundColor: '#3F636E',
                         marginLeft: index !== 0 ? 5 : 0,
@@ -229,6 +229,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 (cat: any, index: number) => {
                   return (
                     <Text
+                      key={`cat-${index}`}
                       textAlign={'left'}
                       color="gray.400"
                       fontFamily={'Cairo'}
@@ -315,147 +316,39 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 {product?.data.data[0].attributes.description}
               </Text>
             </Box>
+            {/* Similar Products */}
+
             <Box>
               <Text
                 fontFamily={'Cairo'}
-                marginTop={6}
+                marginTop={10}
                 fontSize="xl"
                 fontWeight={800}>
                 منتجات ذات صلة
               </Text>
             </Box>
-
-            <Row flex="1" marginTop={4}>
-              <Box
-                width={180}
-                borderRadius="md"
-                bg="#FFF"
-                shadow={2}
-                borderTopRadius={6}>
-                <Image
-                  style={{
-                    height: 120,
-                    width: '100%',
-                    resizeMode: 'cover',
-                    borderTopRightRadius: 6,
-                    borderTopLeftRadius: 6,
-                  }}
-                  source={require('../../../assets/images/banner.jpg')}
-                />
-                <Box py={2} px={3}>
-                  <Text
-                    color="gray.400"
-                    fontFamily={'Cairo'}
-                    fontSize="10"
-                    fontWeight={500}>
-                    المكسرات والبسكويت، المكسرات المحمصة المكسرات والبسكويت
-                  </Text>
-                  <Text
-                    color="black"
-                    fontFamily={'Cairo'}
-                    fontSize="16"
-                    marginTop={2}
-                    fontWeight={700}>
-                    اسم المنتج بشكل مطول يصل لسطرين
-                  </Text>
-
-                  <Text
-                    marginTop="3"
-                    fontFamily={'Cairo'}
-                    fontSize={10}
-                    color="gray.400">
-                    كمية
-                  </Text>
-                  <Box
-                    flexDirection={'row'}
-                    justifyContent={'space-between'}
-                    alignItems="center">
-                    <Box
-                      flexDirection={'row'}
-                      marginTop={2}
-                      alignItems="center">
-                      <Button height="6" bg="primary.500" width="6" p="1">
-                        <Plus color="white" />
-                      </Button>
-                      <Text px="3" fontSize={12} fontWeight={500}>
-                        x1
-                      </Text>
-
-                      <Button height="6" variant="outline" width="6" p="1">
-                        <Minus color="black" />
-                      </Button>
-                    </Box>
-                    <Box flexDirection="row" justifyContent={'flex-end'}>
-                      <Text fontWeight={700} fontSize={17}>
-                        5.50
-                      </Text>
-                      <Text fontSize={10} fontWeight={700} marginTop={2}>
-                        ₪
-                      </Text>
-                    </Box>
-                  </Box>
-
-                  <Box marginTop="4">
-                    <Pressable>
-                      {({isPressed}) => {
-                        return (
-                          <Box
-                            py="3"
-                            borderRadius={6}
-                            flexDirection="row"
-                            justifyContent={'center'}
-                            alignItems={'center'}
-                            bg={isPressed ? 'primary.700' : 'primary.500'}
-                            p="5"
-                            rounded="8"
-                            style={{
-                              transform: [
-                                {
-                                  scale: isPressed ? 0.96 : 1,
-                                },
-                              ],
-                            }}>
-                            <Svg
-                              width="25"
-                              height="14"
-                              viewBox="0 0 25 14"
-                              fill="none">
-                              <Path
-                                d="M14.2377 11.9884C14.2377 12.8232 13.5683 13.5 12.7426 13.5C11.9169 13.5 11.2475 12.8232 11.2475 11.9884C11.2475 11.1535 11.9169 10.4767 12.7426 10.4767C13.5683 10.4767 14.2377 11.1535 14.2377 11.9884Z"
-                                fill="white"
-                              />
-                              <Path
-                                d="M19.62 11.9884C19.62 12.8232 18.9506 13.5 18.1249 13.5C17.2992 13.5 16.6298 12.8232 16.6298 11.9884C16.6298 11.1535 17.2992 10.4767 18.1249 10.4767C18.9506 10.4767 19.62 11.1535 19.62 11.9884Z"
-                                fill="white"
-                              />
-                              <Path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M9.29388 0.921265C9.4584 0.65895 9.74425 0.5 10.0515 0.5H16.6298C17.1252 0.5 17.5269 0.906067 17.5269 1.40698C17.5269 1.90789 17.1252 2.31395 16.6298 2.31395H11.4661L13.4396 6.54651H17.7056L20.2823 1.02022C20.4304 0.702643 20.7464 0.5 21.0937 0.5H23.2082C23.7036 0.5 24.1052 0.906067 24.1052 1.40698C24.1052 1.90789 23.7036 2.31395 23.2082 2.31395H21.6625L19.0858 7.84024C18.9377 8.15782 18.6217 8.36047 18.2744 8.36047H12.8708C12.5235 8.36047 12.2074 8.15782 12.0593 7.84024L9.24005 1.79373C9.10905 1.51277 9.12936 1.18358 9.29388 0.921265Z"
-                                fill="white"
-                              />
-                              <Path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M4.03965 2.53125C4.69153 2.53125 5.21998 3.0769 5.21998 3.75V5.375H6.79375C7.44563 5.375 7.97408 5.92065 7.97408 6.59375C7.97408 7.26685 7.44563 7.8125 6.79375 7.8125H5.21998V9.4375C5.21998 10.1106 4.69153 10.6562 4.03965 10.6562C3.38777 10.6562 2.85932 10.1106 2.85932 9.4375V7.8125H1.28555C0.633675 7.8125 0.105225 7.26685 0.105225 6.59375C0.105225 5.92065 0.633675 5.375 1.28555 5.375H2.85932V3.75C2.85932 3.0769 3.38777 2.53125 4.03965 2.53125Z"
-                                fill="white"
-                              />
-                            </Svg>
-                            <Text
-                              color="#FFF"
-                              marginLeft={2}
-                              fontFamily={'Cairo'}>
-                              إضافة
-                            </Text>
-                          </Box>
-                        );
-                      }}
-                    </Pressable>
-                  </Box>
-                </Box>
-              </Box>
-            </Row>
           </Container>
+          <ScrollView
+            paddingBottom={4}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            flex="1"
+            marginTop={4}>
+            {similar_products?.data.data.map((item: any, index: number) => {
+              if (item.id !== product?.data.data[0].id) {
+                return (
+                  <Box
+                    key={`similar-${index}`}
+                    marginLeft={6}
+                    marginRight={
+                      index === similar_products?.data.data.length - 1 ? 3 : 0
+                    }>
+                    <Similar info={item} />
+                  </Box>
+                );
+              }
+            })}
+          </ScrollView>
         </Box>
       </ScrollView>
       <Box

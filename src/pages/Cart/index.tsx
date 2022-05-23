@@ -5,7 +5,7 @@ import BackButton from '../../components/BackButton';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 import {GetData} from '../../plugins/storage';
-import {FlatList} from 'react-native';
+import {FlatList, TouchableOpacity} from 'react-native';
 import Item from './item';
 import {deleteItem} from '../../plugins/cart';
 
@@ -13,10 +13,21 @@ const Cart = () => {
   const toast = useToast();
   const navigation = useNavigation();
   const [cartItems, setCartItems] = useState<any>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  const updateTotalPrice = (result: any) => {
+    let total = 0;
+    result.forEach((item: any) => {
+      total += item.attributes.price;
+    });
+    setTotalPrice(total);
+  };
+
   useEffect(() => {
     GetData('cart').then(res => {
       if (res !== undefined && res !== null) {
         setCartItems(JSON.parse(res));
+        updateTotalPrice(JSON.parse(res));
       }
     });
   }, []);
@@ -57,14 +68,62 @@ const Cart = () => {
         </Box>
 
         {cartItems.length !== 0 ? (
-          <FlatList
-            style={{width: '100%', flex: 1}}
-            data={cartItems}
-            keyExtractor={(item, index) => `${item.item}-${index}`}
-            renderItem={({item}) => (
-              <Item item={item} deleteItem={deleteCart} />
-            )}
-          />
+          <>
+            <FlatList
+              style={{width: '100%', flex: 1}}
+              data={cartItems}
+              keyExtractor={(item, index) => `${item.item}-${index}`}
+              renderItem={({item}) => (
+                <Item
+                  item={item}
+                  deleteItem={deleteCart}
+                  updateTotalPrice={updateTotalPrice}
+                />
+              )}
+            />
+            <Box width="100%">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AddressCheckout')}>
+                <Box
+                  bg="secondary.500"
+                  borderRadius={8}
+                  flexDir={'row-reverse'}
+                  alignItems={'center'}
+                  px={4}
+                  py={3}
+                  justifyContent={'space-between'}>
+                  <Box flexDir={'row'} marginTop={1}>
+                    <Text
+                      color="white"
+                      fontSize={16}
+                      fontWeight={800}
+                      fontFamily={'Cairo'}>
+                      {totalPrice}
+                    </Text>
+                    <Text color="white" marginTop={1} fontSize={10}>
+                      ₪
+                    </Text>
+                  </Box>
+                  <Box flexDir={'row'} alignItems={'center'}>
+                    <Text
+                      fontWeight={600}
+                      fontFamily={'Cairo'}
+                      color="white"
+                      marginRight={2}>
+                      راجع الطلب
+                    </Text>
+
+                    <Svg width="17" height="8" viewBox="0 0 17 8" fill="none">
+                      <Path
+                        d="M16 4.5C16.2761 4.5 16.5 4.27614 16.5 4C16.5 3.72386 16.2761 3.5 16 3.5L16 4.5ZM0.646445 3.64645C0.451183 3.84171 0.451183 4.15829 0.646445 4.35356L3.82843 7.53554C4.02369 7.7308 4.34027 7.7308 4.53553 7.53554C4.7308 7.34027 4.7308 7.02369 4.53553 6.82843L1.70711 4L4.53553 1.17157C4.73079 0.976313 4.73079 0.65973 4.53553 0.464468C4.34027 0.269206 4.02369 0.269206 3.82843 0.464468L0.646445 3.64645ZM16 3.5L0.999999 3.5L0.999999 4.5L16 4.5L16 3.5Z"
+                        fill="white"
+                      />
+                    </Svg>
+                  </Box>
+                </Box>
+              </TouchableOpacity>
+            </Box>
+          </>
         ) : (
           <Box width="100%" flex="1">
             <Box mx="auto" flex="0.8" width="100%">

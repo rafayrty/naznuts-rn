@@ -29,7 +29,9 @@ const Favourites = () => {
 
   useEffect(() => {
     GetData('user').then(res => {
-      setUser(JSON.parse(res));
+      if (res !== undefined && res !== null) {
+        setUser(JSON.parse(res));
+      }
     });
   }, []);
 

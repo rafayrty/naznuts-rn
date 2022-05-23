@@ -22,7 +22,7 @@ const renderTabBar: React.FC<any> = props => {
       {...props}
       tabStyle={{justifyContent: 'center', alignItems: 'center'}}
       labelStyle={{justifyContent: 'center', alignItems: 'center'}}
-      renderLabel={({route, focused, color}) => (
+      renderLabel={({route, focused}: any) => (
         <Text
           fontFamily={'Cairo'}
           fontSize={10}

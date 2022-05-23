@@ -20,6 +20,7 @@ import TextInput from '../../../components/TextInput';
 import {useMutation, useQuery} from 'react-query';
 import {cities_request, address_add} from '../../../api/address_request';
 import {Controller, useForm} from 'react-hook-form';
+import {useAuthState} from '../../../AuthContext';
 
 const New = () => {
   const toast = useToast();
@@ -39,7 +40,7 @@ const New = () => {
       city: '',
     },
   }); // const myRef = React.useRef({});
-
+  const user = useAuthState();
   const {data: cities} = useQuery('cities', cities_request);
   const mutation = useMutation(address_add, {
     onSuccess: _ => {
@@ -55,7 +56,7 @@ const New = () => {
     },
   });
   const onSubmit = (data: any) => {
-    mutation.mutate(data);
+    mutation.mutate({user_id: user.user?.id, ...data});
     console.log({data: data});
   };
 
