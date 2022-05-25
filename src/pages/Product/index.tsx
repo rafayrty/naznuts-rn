@@ -1,4 +1,10 @@
-import {Dimensions, Image, StatusBar, TouchableOpacity} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import {
   Box,
@@ -24,6 +30,8 @@ import Minus from '../../icons/Minus';
 import {useAuthState} from '../../AuthContext';
 import PropsNav from '../../types/Navigation';
 import Similar from '../Home/Product';
+import {API_URL} from '../../../consts';
+import item from '../Categories/item';
 
 const Product: React.FC<PropsNav> = ({route, navigation}) => {
   const insets = useSafeAreaInsets();
@@ -35,6 +43,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
   const [price, setPrice] = React.useState<number>(6.5);
 
   const [isFav, setFav] = React.useState<boolean>(false);
+  const [isFavLoading, setFavLoader] = React.useState<boolean>(false);
 
   const {data: product} = useQuery(['product', slug], product_request, {
     onSuccess: data => {
@@ -44,7 +53,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
       if (user.user !== undefined) {
         axios
           .get(
-            `http://localhost:1337/api/favourites?filters[$and][0][product][slug][$in]=${slug}&filters[$and][1][users_permissions_user][id][$in]=${user.user.id}`,
+            `${API_URL}/api/favourites?filters[$and][0][product][slug][$in]=${slug}&filters[$and][1][users_permissions_user][id][$in]=${user.user.id}`,
           )
           .then(res => {
             if (res.data.data.length > 0) {
@@ -71,14 +80,15 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
 
   const addToFav = () => {
     if (user.user !== undefined) {
+      setFavLoader(true);
       axios
         .get(
-          `http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=${user.user.id}&filters[product][id][$eq]=${product?.data.data[0].id}&populate=*`,
+          `${API_URL}/api/favourites?filters[users_permissions_user][id][$eq]=${user.user.id}&filters[product][id][$eq]=${product?.data.data[0].id}&populate=*`,
         )
         .then(res => {
           if (res.data.data.length === 0 && user.user !== undefined) {
             axios
-              .post('http://localhost:1337/api/favourites', {
+              .post(`${API_URL}/api/favourites`, {
                 data: {
                   users_permissions_user: user.user.id,
                   product: product?.data.data[0].id,
@@ -86,6 +96,8 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               })
               .then(_ => {
                 setFav(true);
+                setFavLoader(false);
+
                 toast.show({
                   bg: 'primary.500',
                   title: 'Added to Favourites',
@@ -93,15 +105,19 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 });
               });
           } else {
+            setFav(false);
+            setFavLoader(false);
+            axios.delete(`${API_URL}/api/favourites/${res.data.data[0].id}`);
+
             toast.show({
               bg: 'danger.500',
-              title: 'Already Added to Favourites',
+              title: 'Removed From Favourites',
               placement: 'top',
             });
           }
         });
     }
-    //http://localhost:1337/api/favourites?filters[users_permissions_user][id][$eq]=11&populate=*
+    //https://1ce7-111-68-99-197.in.ngrok.io/api/favourites?filters[users_permissions_user][id][$eq]=11&populate=*
   };
 
   const addQty = () => {
@@ -145,7 +161,9 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 width: '100%',
                 resizeMode: 'cover',
               }}
-              source={require('../../../assets/images/product.jpg')}
+              source={{
+                uri: product?.data.data[0].attributes.image.data.attributes.url,
+              }}
             />
             <Button
               onPress={() => navigation.goBack()}
@@ -174,7 +192,10 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 onPress={() => addToFav()}
                 bg={'primary.500'}
                 p={0}
+                width="50"
+                height="50"
                 padding={3}
+                isLoading={isFavLoading}
                 colorScheme={'primary'}
                 marginTop={-6}>
                 {!isFav ? (
@@ -225,26 +246,30 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
             </Box>
 
             <Box marginTop={4}>
-              {product?.data.data[0].attributes.categories.data.map(
-                (cat: any, index: number) => {
-                  return (
-                    <Text
-                      key={`cat-${index}`}
-                      textAlign={'left'}
-                      color="gray.400"
-                      fontFamily={'Cairo'}
-                      fontSize="10"
-                      fontWeight={500}>
-                      {cat.attributes.name}{' '}
-                      {index !==
-                      product?.data.data[0].attributes.categories.data.length -
-                        1
-                        ? ','
-                        : ''}
-                    </Text>
-                  );
-                },
-              )}
+              <Box flexDir={'row'} flexWrap={'wrap'}>
+                {product?.data.data[0].attributes.categories.data.map(
+                  (cat: any, index: number) => {
+                    return (
+                      <Text
+                        key={`cat-${index}`}
+                        textAlign={'left'}
+                        color="gray.400"
+                        fontFamily={'Cairo'}
+                        fontSize="10"
+                        fontWeight={500}>
+                        {cat.attributes.name}{' '}
+                        {index !==
+                        product?.data.data[0].attributes.categories.data
+                          .length -
+                          1
+                          ? ','
+                          : ''}
+                      </Text>
+                    );
+                  },
+                )}
+              </Box>
+
               <Text
                 textAlign={'left'}
                 marginTop={1}
@@ -304,13 +329,13 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                   fontWeight={800}>
                   التفاصيل المنتج
                 </Text>
-                <Text
+                {/* <Text
                   marginLeft={5}
                   fontFamily={'Cairo'}
                   fontWeight={400}
                   color={'gray.400'}>
                   العروض على المنتج
-                </Text>
+                </Text> */}
               </Box>
               <Text fontFamily={'Cairo'} textAlign={'left'}>
                 {product?.data.data[0].attributes.description}
@@ -328,16 +353,22 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               </Text>
             </Box>
           </Container>
+          {/* Related Products */}
           <ScrollView
             paddingBottom={4}
             showsHorizontalScrollIndicator={false}
             horizontal
+            style={{transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}]}}
             flex="1"
             marginTop={4}>
             {similar_products?.data.data.map((item: any, index: number) => {
               if (item.id !== product?.data.data[0].id) {
                 return (
                   <Box
+                    style={{
+                      transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}],
+                    }}
+                    my={2}
                     key={`similar-${index}`}
                     marginLeft={6}
                     marginRight={

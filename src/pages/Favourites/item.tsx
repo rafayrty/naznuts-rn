@@ -57,7 +57,7 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
         marginTop={3}>
         <Image
           source={{
-            uri: `http://localhost:1337${item.attributes.product.data.attributes.image.data.attributes.url}`,
+            uri: `${item.attributes.product.data.attributes.image.data.attributes.url}`,
           }}
           style={{
             width: 132,

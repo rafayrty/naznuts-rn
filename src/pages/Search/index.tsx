@@ -23,6 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 import BackButton from '../../components/BackButton';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
+import {API_URL} from '../../../consts';
 const Search: React.FC<any> = ({route}) => {
   const {searchQuery} = route.params;
   const navigation = useNavigation();
@@ -98,7 +99,7 @@ const Search: React.FC<any> = ({route}) => {
     setLoader(true);
 
     const catLength = selectedCategories.length;
-    let url = 'http://localhost:1337/api/products?filters[$and]';
+    let url = `${API_URL}/api/products?filters[$and]`;
     if (selectedCategories.length > 0) {
       selectedCategories.forEach((cat: number, index: number) => {
         if (index > 0) {
@@ -237,7 +238,7 @@ const Search: React.FC<any> = ({route}) => {
                               height={16}
                               fill={checkFGCatColor(item.id)}
                               source={{
-                                uri: `http://localhost:1337${item.attributes.icon.data.attributes.url}`,
+                                uri: `${item.attributes.icon.data.attributes.url}`,
                               }}
                             />
 
@@ -334,7 +335,7 @@ const Search: React.FC<any> = ({route}) => {
                     borderTopLeftRadius: 6,
                   }}
                   source={{
-                    uri: `http://localhost:1337${item.attributes.image.data.attributes.url}`,
+                    uri: `${item.attributes.image.data.attributes.url}`,
                   }}
                 />
                 <Box py={2} px={3}>

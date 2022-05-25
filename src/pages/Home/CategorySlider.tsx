@@ -1,11 +1,10 @@
-import {ScrollView} from 'react-native';
+import {ScrollView, Platform} from 'react-native';
 import React, {ReactNode} from 'react';
 import {Box, Text, Pressable} from 'native-base';
 import {useQuery} from 'react-query';
 import {categories_request} from '../../api/categories_request';
 import SvgUri from 'react-native-svg-uri-updated';
 import {useNavigation} from '@react-navigation/native';
-
 // const data = [
 //   {
 //     icon: (
@@ -81,12 +80,21 @@ const CategorySlider: React.FC = () => {
   const {data} = useQuery('categories', categories_request);
   const navigation = useNavigation();
   return (
-    <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      style={{transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}]}}
+      horizontal>
       {data?.data.data.map((item: any, index: number): ReactNode => {
         return (
           <Box
-            style={{alignItems: 'center', width: 70}}
             marginLeft={index === 0 ? 5 : 0}
+            style={[
+              {
+                alignItems: 'center',
+                width: 70,
+                transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}],
+              },
+            ]}
             key={index}>
             <Pressable
               onPress={() =>
@@ -118,7 +126,7 @@ const CategorySlider: React.FC = () => {
                       width="25"
                       height="25"
                       source={{
-                        uri: `http://localhost:1337${item.attributes.icon.data.attributes.url}`,
+                        uri: `${item.attributes.icon.data.attributes.url}`,
                       }}
                     />
                   </Box>

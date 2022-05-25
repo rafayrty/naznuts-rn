@@ -14,10 +14,33 @@ import Svg, {Path} from 'react-native-svg';
 import {TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
+import {GetData} from '../../plugins/storage';
 
 const Receipt = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
+  const [cartItems, setCartItems] = React.useState<any>([]);
+  const [totalPrice, setTotalPrice] = React.useState<number>(0);
+
+  const updateTotalPrice = (result: any) => {
+    let total = 0;
+    result.forEach((item: any) => {
+      total += item.attributes.price;
+    });
+    setTotalPrice(total);
+  };
+
+  React.useEffect(() => {
+    GetData('cart').then(res => {
+      if (res !== undefined && res !== null) {
+        setCartItems(JSON.parse(res));
+        console.log(JSON.parse(res));
+        updateTotalPrice(JSON.parse(res));
+      }
+    });
+  }, []);
+
   return (
     <>
       <ScrollView>
@@ -96,227 +119,78 @@ const Receipt = () => {
                   تفاصيل الطلب
                 </Text>
                 {/* Order Products */}
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
-                    </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
 
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
+                {cartItems.map((item: any, index: number) => {
+                  return (
+                    <Box
+                      key={`item-${index}`}
+                      marginTop={4}
+                      flexDir={'row'}
+                      alignItems="center"
+                      justifyContent={'space-between'}>
+                      <Box flexDir={'row'} alignItems="center">
+                        <Image
+                          accessibilityLabel={item.attributes.name}
+                          alt={item.attributes.name}
+                          source={{
+                            uri: `${item.attributes.image.data.attributes.url}`,
+                          }}
+                          style={{width: 68, height: 57}}
+                        />
+                        <Box marginLeft={4}>
+                          <Text
+                            fontFamily={'Cairo'}
+                            textAlign={'left'}
+                            fontWeight={700}
+                            fontSize={14}>
+                            {item.attributes.name}
+                          </Text>
+                          <Box width="100%" flex="1" py={2} flexDir={'row'}>
+                            {item.attributes.categories.data.map(
+                              (cat: any, ind: number) => {
+                                return (
+                                  <Text
+                                    key={`item-${ind}`}
+                                    textAlign={'left'}
+                                    flexWrap={'wrap'}
+                                    color="gray.400"
+                                    fontFamily={'Cairo'}
+                                    fontSize="10"
+                                    fontWeight={500}>
+                                    {cat.attributes.name}{' '}
+                                    {ind !==
+                                    item.attributes.categories.data.length - 1
+                                      ? ','
+                                      : ''}
+                                  </Text>
+                                );
+                              },
+                            )}
+                          </Box>
+                        </Box>
+                      </Box>
+                      <Box paddingLeft={2} alignItems={'center'}>
+                        <Text
+                          fontSize={16}
+                          fontWeight={800}
+                          color="primary.500"
+                          fontFamily={'Cairo'}>
+                          ₪{item.attributes.price}
+                        </Text>
+                        <Text
+                          fontSize={12}
+                          fontWeight={500}
+                          fontFamily={'Cairo'}>
+                          {item?.attributes.type === 'weight'
+                            ? item.quantity >= 1000
+                              ? item.quantity / 1000 + ' كلغ'
+                              : item.quantity + ' غرام'
+                            : 'x' + item.quantity}
+                        </Text>
+                      </Box>
                     </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
-
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
-                    </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
-
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
-                    </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
-
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
-                    </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
-
-                <Box
-                  marginTop={4}
-                  flexDir={'row'}
-                  alignItems="center"
-                  justifyContent={'space-between'}>
-                  <Box flexDir={'row'} alignItems="center">
-                    <Image
-                      source={require('../../../assets/images/product.jpg')}
-                      style={{width: 68, height: 57}}
-                    />
-                    <Box marginLeft={4}>
-                      <Text
-                        fontFamily={'Cairo'}
-                        textAlign={'left'}
-                        fontWeight={700}
-                        fontSize={14}>
-                        لوز
-                      </Text>
-                      <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                        المكسرات والبسكويت، المحمصة
-                      </Text>
-                    </Box>
-                  </Box>
-                  <Box paddingLeft={2} alignItems={'center'}>
-                    <Text
-                      fontSize={16}
-                      fontWeight={800}
-                      color="primary.500"
-                      fontFamily={'Cairo'}>
-                      ₪60
-                    </Text>
-                    <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                      x1
-                    </Text>
-                  </Box>
-                </Box>
+                  );
+                })}
 
                 <Box
                   marginTop={6}
@@ -410,27 +284,7 @@ const Receipt = () => {
                 justifyContent={'space-between'}>
                 <Text fontFamily={'Cairo'}> المجموع الكلي </Text>
                 <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
-                  ₪ 716
-                </Text>
-              </Box>
-
-              <Box
-                marginTop={2}
-                flexDir={'row'}
-                justifyContent={'space-between'}>
-                <Text fontFamily={'Cairo'}> المجموع الكلي </Text>
-                <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
-                  ₪ 716
-                </Text>
-              </Box>
-
-              <Box
-                marginTop={2}
-                flexDir={'row'}
-                justifyContent={'space-between'}>
-                <Text fontFamily={'Cairo'}> المجموع الكلي </Text>
-                <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
-                  ₪ 716
+                  ₪ {totalPrice}
                 </Text>
               </Box>
             </Box>
@@ -446,7 +300,7 @@ const Receipt = () => {
                 fontFamily={'Cairo'}
                 fontSize={16}
                 fontWeight={800}>
-                ₪ 716
+                ₪ {totalPrice}
               </Text>
             </Box>
           </Box>

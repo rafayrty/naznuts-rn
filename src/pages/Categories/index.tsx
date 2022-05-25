@@ -61,7 +61,7 @@ const Categories: React.FC = () => {
                                 width="25"
                                 height="25"
                                 source={{
-                                  uri: `http://localhost:1337${item.attributes.icon.data.attributes.url}`,
+                                  uri: `${item.attributes.icon.data.attributes.url}`,
                                 }}
                               />
                               <Text fontFamily={'Cairo'} marginTop={2}>

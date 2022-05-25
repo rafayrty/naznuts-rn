@@ -60,7 +60,7 @@ const Item: React.FC<Props> = ({item, index}) => {
           borderTopLeftRadius: 6,
         }}
         source={{
-          uri: `http://localhost:1337${item.attributes.image.data.attributes.url}`,
+          uri: `${item.attributes.image.data.attributes.url}`,
         }}
       />
       <Box py={2} px={3}>
@@ -88,7 +88,11 @@ const Item: React.FC<Props> = ({item, index}) => {
           {item.attributes.name}
         </Text>
 
-        <Text fontFamily={'Cairo'} fontSize={10} color="gray.400">
+        <Text
+          fontFamily={'Cairo'}
+          textAlign={'left'}
+          fontSize={10}
+          color="gray.400">
           كمية
         </Text>
         <Box

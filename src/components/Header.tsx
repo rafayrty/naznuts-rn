@@ -8,7 +8,11 @@ import {useNavigation} from '@react-navigation/native';
 const Header = () => {
   const navigation = useNavigation<{openDrawer: Function}>();
   return (
-    <Box width="100%" zIndex={5} borderBottomWidth={0}>
+    <Box
+      width="100%"
+      paddingBottom={Platform.OS === 'ios' ? 0 : 6}
+      zIndex={5}
+      borderBottomWidth={0}>
       {Platform.OS === 'ios' ? (
         <Container mx="auto" width="100%" marginTop={0}>
           <HStack
@@ -39,7 +43,9 @@ const Header = () => {
               </Box>
 
               <Box>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity
+                  style={{padding: 8}}
+                  onPress={() => navigation.navigate('Home')}>
                   <Svg width="60" height="42" viewBox="0 0 60 42" fill="none">
                     <Path
                       d="M9.44088 33.7226C8.40997 34.8978 6.70897 33.1946 7.7227 32.0195C8.42715 31.219 9.2347 30.2993 10.1282 29.3966C8.59897 29.4647 7.08697 30.2822 6.36533 31.9002C5.71242 33.3309 5.64369 34.8297 5.43751 36.3114C6.93233 36.107 8.44433 36.0389 9.88761 35.3917C11.8807 34.5061 12.6711 32.4793 12.3446 30.6569C11.3137 31.6107 10.3515 32.6667 9.44088 33.7226Z"
@@ -96,7 +102,7 @@ const Header = () => {
       ) : (
         <Box bg="#FFF">
           <Shadow
-            distance={30}
+            distance={20}
             startColor={'rgba(0,0,0,0.05)'}
             viewStyle={{width: '100%'}}>
             <Container mx="auto" width="100%" marginTop={0}>
@@ -110,7 +116,9 @@ const Header = () => {
                   width="100%"
                   justifyContent={'space-between'}>
                   <Box shadow="2">
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                    <TouchableOpacity
+                      style={{padding: 8}}
+                      onPress={() => navigation.openDrawer()}>
                       <Svg
                         width="20"
                         height="18"
@@ -157,6 +165,7 @@ const Header = () => {
                   </Box>
                   <Box>
                     <TouchableOpacity
+                      style={{padding: 8}}
                       onPress={() => navigation.navigate('Cart')}>
                       <Svg
                         width="22"

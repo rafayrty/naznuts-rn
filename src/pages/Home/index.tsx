@@ -155,13 +155,13 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
           paddingBottom={4}
           showsHorizontalScrollIndicator={false}
           horizontal
-          flex="1"
           marginTop={4}>
           {products?.data.data.map((item: any, index: number) => {
             return (
               <Box
                 key={`item-${index}`}
                 marginLeft={6}
+                my={2}
                 marginRight={index === products?.data.data.length - 1 ? 3 : 0}>
                 <Product info={item} />
               </Box>

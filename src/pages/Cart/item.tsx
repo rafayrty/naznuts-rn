@@ -66,7 +66,7 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
   };
 
   return (
-    <Box width="100%" px={1}>
+    <Box width="100%" py={1} px={1}>
       <Box
         shadow={3}
         bg="#FFF"
@@ -76,7 +76,7 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
         marginTop={5}>
         <Image
           source={{
-            uri: `http://localhost:1337${item.attributes.image.data.attributes.url}`,
+            uri: `${item.attributes.image.data.attributes.url}`,
           }}
           style={{
             width: 132,
@@ -98,6 +98,7 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
                   (cat: any, index: number) => {
                     return (
                       <Text
+                        key={`cat-${index}`}
                         textAlign={'left'}
                         flexWrap={'wrap'}
                         color="gray.400"

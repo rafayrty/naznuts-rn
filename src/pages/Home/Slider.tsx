@@ -20,7 +20,7 @@ const Slider = () => {
               <Image
                 accessibilityLabel={item.attributes.name}
                 source={{
-                  uri: `http://localhost:1337${item.attributes.image.data.attributes.url}`,
+                  uri: `${item.attributes.image.data.attributes.url}`,
                 }}
                 style={{width: '100%', height: 250}}
               />

@@ -403,6 +403,7 @@ const Edit = ({route}: any) => {
                       {cities?.data.data.map((item: any) => {
                         return (
                           <Select.Item
+                            key={item.id}
                             label={item.attributes.name}
                             value={item.id}
                           />

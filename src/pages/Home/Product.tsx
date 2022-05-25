@@ -52,17 +52,13 @@ const Product: React.FC<any> = ({info}) => {
             borderTopLeftRadius: 6,
           }}
           source={{
-            uri: `http://localhost:1337${info.attributes.image.data.attributes.url}`,
+            uri: `${info.attributes.image.data.attributes.url}`,
           }}
         />
       </TouchableOpacity>
 
       <Box py={2} px={3}>
-        <Text
-          color="gray.400"
-          fontFamily={'Cairo'}
-          fontSize="10"
-          fontWeight={500}>
+        <Box flexDir={'row'} flexWrap={'wrap'}>
           {info.attributes.categories.data.map((cat: any, index: number) => {
             return (
               <Text
@@ -78,7 +74,7 @@ const Product: React.FC<any> = ({info}) => {
               </Text>
             );
           })}
-        </Text>
+        </Box>
         <Text
           color="black"
           fontFamily={'Cairo'}

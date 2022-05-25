@@ -3,10 +3,10 @@ const addItem = async (item: any, toast: any) => {
   let newObj: Array<any>[];
   try {
     await EncryptedStorage.getItem('cart')
-      .then(async res => {
-        if (res !== undefined) {
+      .then(async (res: any) => {
+        if (res !== undefined && res !== null) {
           newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
-          if (newObj.find(x => x.id === item.id) === undefined) {
+          if (newObj.find((x: any) => x.id === item.id) === undefined) {
             newObj.push(item);
             await EncryptedStorage.setItem('cart', JSON.stringify(newObj));
             toast.show({
@@ -38,7 +38,7 @@ const addItem = async (item: any, toast: any) => {
 
 const deleteItem = async (id: number) => {
   try {
-    await EncryptedStorage.getItem('cart').then(async res => {
+    await EncryptedStorage.getItem('cart').then(async (res: any) => {
       let newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
       const index = newObj.findIndex(x => x.id === id);
 
@@ -57,9 +57,9 @@ const deleteItem = async (id: number) => {
 const updateItem = async (id: number, qty: number, price: number) => {
   console.log(id, qty, price);
   try {
-    await EncryptedStorage.getItem('cart').then(async res => {
+    await EncryptedStorage.getItem('cart').then(async (res: any) => {
       let newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
-      const index = newObj.findIndex(x => x.id === id);
+      const index = newObj.findIndex((x: any) => x.id === id);
 
       if (index !== -1) {
         newObj[index].quantity = qty;

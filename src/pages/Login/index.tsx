@@ -16,13 +16,15 @@ const Login: React.FC = () => {
 
   if (!auth.loading) {
     return (
-      <ScrollView contentContainerStyle={{flex: 1}}>
-        <Box
-          style={{
-            flex: 1,
-            position: 'relative',
-            height: '100%',
-          }}>
+      <ScrollView
+        contentContainerStyle={[
+          {
+            flexGrow: 1,
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          },
+        ]}>
+        <Box flex="1" flexDir={'column'} justifyContent={'space-between'}>
           <StatusBar
             animated={true}
             barStyle={'dark-content'}
@@ -40,8 +42,8 @@ const Login: React.FC = () => {
               />
             </Svg>
           </Box>
-          <Box safeArea paddingBottom="0" flex="2">
-            <Container mx="auto" marginTop={4} width="100%">
+          <Box safeArea paddingBottom="0" flex="1">
+            <Container flex="1" mx="auto" marginTop={4} width="100%">
               <Box width="100%">
                 <Box flexDir="row" justifyContent="space-between">
                   <Box alignSelf={'flex-end'}>
@@ -106,7 +108,11 @@ const Login: React.FC = () => {
               </Box>
             </Container>
           </Box>
-          <Box width="100%" alignItems="center" bottom={insets.bottom + 5}>
+          <Box
+            width="100%"
+            alignItems="center"
+            paddingBottom={insets.bottom}
+            py={4}>
             <Svg width="88" height="27" viewBox="0 0 88 27" fill="none">
               <Path
                 fill-rule="evenodd"

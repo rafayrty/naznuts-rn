@@ -1,5 +1,5 @@
-import React, {Children} from 'react';
-import {FormControl, Text, Input, Stack} from 'native-base';
+import React from 'react';
+import {FormControl, Text, Stack, Box} from 'native-base';
 
 type Props = {
   label: string;
@@ -23,11 +23,20 @@ const TextInput: React.FC<Props> = ({
           </Text>
         </FormControl.Label>
         {children}
-        <FormControl.ErrorMessage>
-          <Text fontFamily={'Cairo'} fontWeight={800} fontSize={14}>
-            {errorMsg}
-          </Text>
-        </FormControl.ErrorMessage>
+        {/* <FormControl.ErrorMessage> */}
+        {isInvalid && (
+          <Box marginTop={2}>
+            <Text
+              textAlign={'left'}
+              color="danger.500"
+              fontSize={12}
+              fontWeight={700}
+              fontFamily={'Cairo'}>
+              {errorMsg}
+            </Text>
+          </Box>
+        )}
+        {/* </FormControl.ErrorMessage> */}
       </Stack>
     </FormControl>
   );

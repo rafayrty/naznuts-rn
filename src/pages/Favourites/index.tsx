@@ -8,23 +8,10 @@ import favourites_request from '../../api/favourites_request';
 import {GetData} from '../../plugins/storage';
 import axios from 'axios';
 import {useFocusEffect} from '@react-navigation/native';
+import FavouritesEmpty from '../../icons/FavouritesEmpty';
+import {API_URL} from '../../../consts';
 
 const Favourites = () => {
-  // const products: any = [
-  //   {
-  //     id: 1,
-  //     name: 'لوز',
-  //     categories: 'المكسرات والبسكويت، المكسرات المحمصة',
-  //     image: require('../../../assets/images/product.jpg'),
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'لوز',
-  //     categories: 'المكسرات والبسكويت، المكسرات المحمصة',
-  //     image: require('../../../assets/images/product.jpg'),
-  //   },
-  // ];
-
   const [user, setUser] = React.useState<any>(undefined);
 
   useEffect(() => {
@@ -45,7 +32,7 @@ const Favourites = () => {
 
   // For Refetching
   const mutation = useMutation(async (id: number) => {
-    axios.delete(`http://localhost:1337/api/favourites/${id}`);
+    axios.delete(`${API_URL}/api/favourites/${id}`);
     refetch();
   });
   useFocusEffect(
@@ -66,14 +53,31 @@ const Favourites = () => {
         <Text fontSize={24} fontWeight={800} fontFamily={'Cairo'}>
           المفضلة
         </Text>
-        {/* {JSON.stringify(products?.data.data[0].attributes.product.data)} */}
-        {/* {JSON.stringify(products?.data)} */}
-        <FlatList
-          style={{width: '100%', flex: 1}}
-          data={products?.data.data}
-          keyExtractor={(item, index) => `${item.item}-${index}`}
-          renderItem={({item}) => <Item item={item} deleteItem={deleteFav} />}
-        />
+
+        {products?.data.data.length === 0 ? (
+          <Box width="100%" marginTop={8} mx="auto">
+            <FavouritesEmpty />
+            <Box marginTop={6}>
+              <Text
+                textAlign={'center'}
+                fontFamily={'Cairo'}
+                fontWeight={800}
+                fontSize={28}>
+                القائمة فارغة
+              </Text>
+              <Text textAlign={'center'} fontFamily={'Cairo'} fontSize={20}>
+                لم يتم اضافة عناوين لحسابك
+              </Text>
+            </Box>
+          </Box>
+        ) : (
+          <FlatList
+            style={{width: '100%', flex: 1}}
+            data={products?.data.data}
+            keyExtractor={(item, index) => `${item.item}-${index}`}
+            renderItem={({item}) => <Item item={item} deleteItem={deleteFav} />}
+          />
+        )}
       </Container>
     </Box>
   );

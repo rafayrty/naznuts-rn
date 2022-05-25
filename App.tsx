@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import RNBootSplash from 'react-native-bootsplash';
+import {LogBox} from 'react-native';
 
 import {
   useQuery,
@@ -127,6 +128,9 @@ const theme = extendTheme({
   },
 
   fonts: {
+    heading: 'Cairo',
+    body: 'Cairo',
+    mono: 'Cairo',
     Cairo: 'Cairo',
   },
 });
@@ -138,19 +142,25 @@ const StackNavigator = () => {
   const user = useAuthState();
 
   React.useEffect(() => {
+    //For Warnings
+    LogBox.ignoreLogs(['Warning: ...']);
     setTimeout(() => {
       dispatch({type: 'REQUEST_LOGIN'});
-
-      GetData('user').then((res: any) => {
-        if (res !== undefined) {
-          axios.defaults.headers.common.Authorization = `Bearer ${
-            JSON.parse(res).jwt
-          }`;
-          dispatch({type: 'LOGIN_SUCCESS', payload: JSON.parse(res)});
-        } else {
-          dispatch({type: 'LOGIN_FAILED'});
-        }
-      });
+      // console.log('hey');
+      GetData('user')
+        .then((res: any) => {
+          if (res !== undefined && res !== null) {
+            axios.defaults.headers.common.Authorization = `Bearer ${
+              JSON.parse(res).jwt
+            }`;
+            dispatch({type: 'LOGIN_SUCCESS', payload: JSON.parse(res)});
+          } else {
+            dispatch({type: 'LOGIN_FAILED'});
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }, 100);
   }, [dispatch]);
 

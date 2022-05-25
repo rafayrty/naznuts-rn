@@ -10,7 +10,7 @@ import {
 } from 'native-base';
 import Header from '../../components/Header';
 import BackButton from '../../components/BackButton';
-import {ScrollView, TouchableOpacity} from 'react-native';
+import {Platform, ScrollView, TouchableOpacity} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {useQuery} from 'react-query';
 import {
@@ -96,7 +96,7 @@ const CategoryView = ({route}: any) => {
             flexDir={'row'}
             justifyContent={'space-between'}
             width="100%"
-            marginTop={4}
+            marginTop={5}
             alignItems={'center'}>
             <Box flexDir={'row'} alignItems={'center'}>
               <BackButton />
@@ -116,16 +116,26 @@ const CategoryView = ({route}: any) => {
         </Container>
 
         <ScrollView
-          style={{width: '100%', backgroundColor: 'rgba(63, 99, 110, 0.06);'}}
+          style={{
+            width: '100%',
+            backgroundColor: 'rgba(63, 99, 110, 0.06);',
+            transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}],
+          }}
           horizontal
           showsHorizontalScrollIndicator={false}>
-          <Box flexDir={'row'}>
+          <Box
+            px={3}
+            flexDir={Platform.OS === 'android' ? 'row' : 'row-reverse'}>
             {data?.data.data.map((item: any): ReactNode => {
               return (
                 <TouchableOpacity
                   key={item.attributes.slug}
                   onPress={() => setCatSlug(item.attributes.slug)}
-                  style={{marginLeft: 15, paddingVertical: 15}}>
+                  style={{
+                    marginLeft: 15,
+                    paddingVertical: 15,
+                    transform: [{scaleX: Platform.OS === 'android' ? -1 : 1}],
+                  }}>
                   <Box>
                     <Text
                       color={
@@ -324,6 +334,7 @@ const CategoryView = ({route}: any) => {
         <Box
           marginTop={6}
           px="4"
+          my={2}
           flexDir={'row'}
           justifyContent={'space-between'}
           width="100%"

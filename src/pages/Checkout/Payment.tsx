@@ -127,11 +127,13 @@ const Payment = () => {
           )}
         </Container>
       </Box>
+
       <ScrollView
         style={{
           borderRadius: 24,
           backgroundColor: 'white',
           paddingTop: 32,
+          borderWidth: 1,
         }}>
         <Container width="100%" mx="auto" paddingBottom={20}>
           <Box>
@@ -338,7 +340,6 @@ const Payment = () => {
                       errorMsg={errors.cardHolderName?.message}>
                       <Input
                         p={2}
-                        keyboardType={'number-pad'}
                         fontFamily={'Cairo'}
                         autoCorrect={false}
                         value={value}

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {API_URL} from '../../consts';
+
 // axios.defaults.headers.common.Authorization = `Bearer ${
 //   JSON.parse(res).jwt
 // }`;
@@ -6,18 +8,18 @@ import axios from 'axios';
 //Running Tests On Filters
 
 export async function categories_request() {
-  return await axios.get('http://localhost:1337/api/categories?populate=icon');
+  return await axios.get(`${API_URL}/api/categories?populate=icon`);
 }
 
 export async function categories_product_home_request({queryKey}: any) {
   return await axios.get(
-    `http://localhost:1337/api/products?filters[categories][slug][$eq]=${queryKey[1]}&populate=*`,
+    `${API_URL}/api/products?filters[categories][slug][$eq]=${queryKey[1]}&populate=*`,
   );
 }
 
 export async function categories_product_request({queryKey}: any) {
   if (queryKey[1][1].length > 1) {
-    let url = `http://localhost:1337/api/products?filters[$and][0][categories][slug][$eq]=${queryKey[1][0]}&filters[$and][1][price][$between][0]=${queryKey[1][1][0].from}&filters[$and][1][price][$between][1]=${queryKey[1][1][0].to}`;
+    let url = `${API_URL}/api/products?filters[$and][0][categories][slug][$eq]=${queryKey[1][0]}&filters[$and][1][price][$between][0]=${queryKey[1][1][0].from}&filters[$and][1][price][$between][1]=${queryKey[1][1][0].to}`;
 
     if (queryKey[1][1][1].length > 0) {
       let tags = queryKey[1][1][1];
@@ -32,12 +34,12 @@ export async function categories_product_request({queryKey}: any) {
     return await axios.get(url);
   }
   return await axios.get(
-    `http://localhost:1337/api/products?filters[categories][slug][$eq]=${queryKey[1][0]}&populate=*`,
+    `${API_URL}/api/products?filters[categories][slug][$eq]=${queryKey[1][0]}&populate=*`,
   );
 }
 
 // ?filters[price][$between][0]=0&filters[price][$between][1]=10
 
-//http://localhost:1337/api/products?filters[$and][0][categories][id][$eq]=1&filters[$and][1][price][$between][0]=0&filters[$and][1][price][$between][1]=10
+//https://1ce7-111-68-99-197.in.ngrok.io/api/products?filters[$and][0][categories][id][$eq]=1&filters[$and][1][price][$between][0]=0&filters[$and][1][price][$between][1]=10
 
-//http://localhost:1337/api/products?filters[$and][0][categories][id][$eq]=1&filters[$and][1][price][$between][0]=0&filters[$and][1][price][$between][1]=10&filters[$and][2][tags][id][$eq]=1
+//https://1ce7-111-68-99-197.in.ngrok.io/api/products?filters[$and][0][categories][id][$eq]=1&filters[$and][1][price][$between][0]=0&filters[$and][1][price][$between][1]=10&filters[$and][2][tags][id][$eq]=1
