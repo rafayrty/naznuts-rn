@@ -1,4 +1,4 @@
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, useColorScheme} from 'react-native';
 import React from 'react';
 import {Box, Button, Checkbox, Input, Text} from 'native-base';
 import MainInput from '../../components/TextInput';
@@ -15,6 +15,8 @@ import {useNavigation} from '@react-navigation/native';
 // import {useNavigation} from '@react-navigation/native';
 
 const Form: React.FC = () => {
+  const isDarkMode = useColorScheme() === 'dark';
+
   const navigation = useNavigation();
   const {
     setError,
@@ -82,6 +84,9 @@ const Form: React.FC = () => {
                   fontSize={12}
                   fontFamily={'Cairo'}
                   fontWeight="600"
+                  bg={isDarkMode ? '#333' : '#FFF'}
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  borderColor={isDarkMode ? '#333' : 'gray.400'}
                   textAlign="right"
                   placeholder={'الرجاء كتابة الايميل'}
                 />
@@ -112,6 +117,9 @@ const Form: React.FC = () => {
                   fontFamily={'Cairo'}
                   fontSize={12}
                   onBlur={onBlur}
+                  bg={isDarkMode ? '#333' : '#FFF'}
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  borderColor={isDarkMode ? '#333' : 'gray.400'}
                   onChangeText={onChange}
                   value={value}
                   type={show ? 'text' : 'password'}
@@ -149,10 +157,14 @@ const Form: React.FC = () => {
             fontFamily={'Cairo'}
             borderWidth="0"
             bg="primary.100">
-            <Text fontFamily={'Cairo'}>تذكر حسابي</Text>
+            <Text fontFamily={'Cairo'} color={isDarkMode ? '#FFF' : '#000'}>
+              تذكر حسابي
+            </Text>
           </Checkbox>
           <TouchableOpacity>
-            <Text fontFamily={'Cairo'}>إعادة تعيين كلمة السر</Text>
+            <Text fontFamily={'Cairo'} color={isDarkMode ? '#FFF' : '#000'}>
+              إعادة تعيين كلمة السر
+            </Text>
           </TouchableOpacity>
         </Box>
 
@@ -171,7 +183,10 @@ const Form: React.FC = () => {
           </Button>
         </Box>
         <Box flexDir={'row'} justifyContent="center" marginTop={8}>
-          <Text fontFamily={'Cairo'}> ليس لديك حساب مسبقاً؟ </Text>
+          <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+            {' '}
+            ليس لديك حساب مسبقاً؟{' '}
+          </Text>
           <TouchableOpacity>
             <Text
               fontFamily={'Cairo'}

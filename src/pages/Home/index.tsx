@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Container, Input, Text, ScrollView, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
-import {TouchableOpacity, StatusBar, Image} from 'react-native';
+import {TouchableOpacity, StatusBar, Image, useColorScheme} from 'react-native';
 import Slider from './Slider';
 import PropsNav from '../../types/Navigation';
 import Header from '../../components/Header';
@@ -10,6 +10,8 @@ import Product from './Product';
 import {useQuery} from 'react-query';
 import {categories_product_home_request} from '../../api/categories_request';
 const Home: React.FC<PropsNav> = ({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark' ? true : false;
+
   const [query, setQuery] = React.useState<any>();
   const {data: products} = useQuery(
     ['home_products', 'hidaya'],
@@ -20,8 +22,8 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
       <Box safeArea flex="1" paddingBottom={32}>
         <StatusBar
           animated={true}
-          barStyle={'dark-content'}
-          backgroundColor="#FFF"
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={isDarkMode ? '#333' : '#FFF'}
         />
         {/* Header Component Starts */}
         <Header />
@@ -31,7 +33,9 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
             <Input
               p={2}
               width="100%"
-              bg="white"
+              bg={isDarkMode ? '#333' : '#FFF'}
+              color={isDarkMode ? '#FFF' : '#000'}
+              borderColor={isDarkMode ? '#333' : 'gray.400'}
               fontFamily={'Cairo'}
               fontSize={12}
               paddingRight="6"
@@ -66,11 +70,17 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
             justifyContent="space-between"
             width="100%"
             marginTop="8">
-            <Text fontFamily={'Cairo'} fontSize="xl" fontWeight={800}>
+            <Text
+              fontFamily={'Cairo'}
+              color={isDarkMode ? 'white' : 'black'}
+              fontSize="xl"
+              fontWeight={800}>
               التصنيفات
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Categories')}>
-              <Text fontFamily={'Cairo'}>عرض الكل {'>'} </Text>
+              <Text fontFamily={'Cairo'} color={isDarkMode ? 'white' : 'black'}>
+                عرض الكل {'>'}{' '}
+              </Text>
             </TouchableOpacity>
           </Box>
         </Container>
@@ -140,14 +150,22 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
             justifyContent="space-between"
             width="100%"
             marginTop="10">
-            <Text fontFamily={'Cairo'} fontSize="xl" fontWeight={800}>
+            <Text
+              fontFamily={'Cairo'}
+              color={isDarkMode ? 'white' : 'black'}
+              fontSize="xl"
+              fontWeight={800}>
               الهدايا
             </Text>
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('CategoryView', {slug: 'hidaya'})
               }>
-              <Text fontFamily={'Cairo'}>عرض الكل {'>'} </Text>
+              <Text
+                fontFamily={'Cairo'}
+                color={isDarkMode ? '#D8D8D8' : 'black'}>
+                عرض الكل {'>'}{' '}
+              </Text>
             </TouchableOpacity>
           </Box>
         </Container>

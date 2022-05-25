@@ -1,4 +1,5 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
+
 const addItem = async (item: any, toast: any) => {
   let newObj: Array<any>[];
   try {
@@ -23,6 +24,11 @@ const addItem = async (item: any, toast: any) => {
           }
         } else {
           await EncryptedStorage.setItem('cart', JSON.stringify([item]));
+          toast.show({
+            bg: 'primary.500',
+            title: 'Added To Cart',
+            placement: 'top',
+          });
         }
       })
       .catch(err => {
@@ -74,4 +80,21 @@ const updateItem = async (id: number, qty: number, price: number) => {
   }
 };
 
-export {addItem, deleteItem, updateItem};
+// Orders
+
+const addAddress = async (id: string) => {
+  try {
+    await EncryptedStorage.setItem('address', JSON.stringify(id));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// const createOrder = async (data:any) => {
+//   try{
+//     await EncryptedStorage.setItem('cart', JSON.stringify([item]));
+
+//   }
+// }
+
+export {addItem, deleteItem, updateItem, addAddress};

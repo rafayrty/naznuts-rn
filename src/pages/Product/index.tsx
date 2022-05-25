@@ -4,6 +4,7 @@ import {
   Platform,
   StatusBar,
   TouchableOpacity,
+  useColorScheme,
 } from 'react-native';
 import React from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   Button,
   ScrollView,
   useToast,
+  Spinner,
 } from 'native-base';
 import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
 import {useQuery} from 'react-query';
@@ -31,12 +33,12 @@ import {useAuthState} from '../../AuthContext';
 import PropsNav from '../../types/Navigation';
 import Similar from '../Home/Product';
 import {API_URL} from '../../../consts';
-import item from '../Categories/item';
 
 const Product: React.FC<PropsNav> = ({route, navigation}) => {
   const insets = useSafeAreaInsets();
   const toast = useToast();
   const user = useAuthState();
+  const isDarkMode = useColorScheme() === 'dark';
 
   const {slug}: any = route.params;
   const [qty, setQty] = React.useState<number>(0);
@@ -44,6 +46,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
 
   const [isFav, setFav] = React.useState<boolean>(false);
   const [isFavLoading, setFavLoader] = React.useState<boolean>(false);
+  const [isCartLoader, setCartLoader] = React.useState<boolean>(false);
 
   const {data: product} = useQuery(['product', slug], product_request, {
     onSuccess: data => {
@@ -66,16 +69,18 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
     },
   });
 
-  const {data: similar_products} = useQuery(
-    ['similar_products', product],
-    similar_product_request,
-    {
-      enabled: !!product,
-    },
-  );
+  const {
+    data: similar_products,
+    isLoading: {similarLoading},
+  } = useQuery(['similar_products', product], similar_product_request, {
+    enabled: !!product,
+  });
 
   const addToCart = () => {
-    addItem({...product?.data.data[0], quantity: qty}, toast);
+    setCartLoader(true);
+    addItem({...product?.data.data[0], quantity: qty}, toast).then(_ =>
+      setCartLoader(false),
+    );
   };
 
   const addToFav = () => {
@@ -145,11 +150,11 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
   return (
     <>
       <ScrollView marginBottom={36}>
-        <Box safeArea backgroundColor={'#FAFAFA'} flex="1" paddingBottom={12}>
+        <Box safeArea flex="1" paddingBottom={12}>
           <StatusBar
             animated={true}
-            barStyle={'dark-content'}
-            backgroundColor="#FAFAFA"
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={isDarkMode ? '#333' : '#FAFAFA'}
           />
 
           <Header />
@@ -170,9 +175,9 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               position={'absolute'}
               left={5}
               top={5}
-              bg="#FFF"
+              bg={isDarkMode ? '#333' : '#FFF'}
               shadow={1}
-              colorScheme={'dark'}
+              colorScheme={isDarkMode ? 'light' : 'dark'}
               textAlign={'center'}
               alignContent={'center'}
               alignItems={'center'}
@@ -181,7 +186,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               <Svg width="6" height="10" viewBox="0 0 6 10" fill="none">
                 <Path
                   d="M1.53033 0.46967C1.23744 0.176777 0.762563 0.176777 0.46967 0.46967C0.176777 0.762563 0.176777 1.23744 0.46967 1.53033L1.53033 0.46967ZM5 5L5.53033 5.53033C5.82322 5.23744 5.82322 4.76256 5.53033 4.46967L5 5ZM0.46967 8.46967C0.176777 8.76256 0.176777 9.23744 0.46967 9.53033C0.762563 9.82322 1.23744 9.82322 1.53033 9.53033L0.46967 8.46967ZM0.46967 1.53033L4.46967 5.53033L5.53033 4.46967L1.53033 0.46967L0.46967 1.53033ZM4.46967 4.46967L0.46967 8.46967L1.53033 9.53033L5.53033 5.53033L4.46967 4.46967Z"
-                  fill="#272727"
+                  fill={isDarkMode ? '#FFF' : '#272727'}
                 />
               </Svg>
             </Button>
@@ -275,6 +280,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 marginTop={1}
                 fontFamily={'Cairo'}
                 fontWeight={800}
+                color={isDarkMode ? '#FFF' : '#000'}
                 fontSize={20}>
                 {product?.data.data[0].attributes.name}
               </Text>
@@ -290,7 +296,11 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
               justifyContent={'space-between'}
               py={5}
               width="100%">
-              <Text fontSize={16} fontFamily={'Cairo'} fontWeight="700">
+              <Text
+                fontSize={16}
+                color={isDarkMode ? '#BDBDBD' : '#000'}
+                fontFamily={'Cairo'}
+                fontWeight="700">
                 الكمية المطلوبة
               </Text>
               <Box flexDirection={'row'} alignItems={'center'}>
@@ -303,7 +313,11 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                   bg={'primary.500'}>
                   <Plus color="white" />
                 </Button>
-                <Text px={3} fontWeight={600} fontFamily={'Cairo'}>
+                <Text
+                  color={isDarkMode ? '#BDBDBD' : '#000'}
+                  px={3}
+                  fontWeight={600}
+                  fontFamily={'Cairo'}>
                   {product?.data.data[0].attributes.type === 'weight'
                     ? qty >= 1000
                       ? qty / 1000 + ' كلغ'
@@ -316,7 +330,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                   width={36}
                   variant={'outline'}
                   p={0}>
-                  <Minus color="black" />
+                  <Minus color={isDarkMode ? '#BDBDBD' : '#000'} />
                 </Button>
               </Box>
             </Box>
@@ -337,21 +351,26 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                   العروض على المنتج
                 </Text> */}
               </Box>
-              <Text fontFamily={'Cairo'} textAlign={'left'}>
+              <Text
+                color={isDarkMode ? '#BDBDBD' : '#000'}
+                fontFamily={'Cairo'}
+                textAlign={'left'}>
                 {product?.data.data[0].attributes.description}
               </Text>
             </Box>
             {/* Similar Products */}
-
-            <Box>
-              <Text
-                fontFamily={'Cairo'}
-                marginTop={10}
-                fontSize="xl"
-                fontWeight={800}>
-                منتجات ذات صلة
-              </Text>
-            </Box>
+            {similar_products?.data.data.length !== 0 && (
+              <Box>
+                <Text
+                  fontFamily={'Cairo'}
+                  marginTop={10}
+                  fontSize="xl"
+                  color={isDarkMode ? '#BDBDBD' : '#000'}
+                  fontWeight={800}>
+                  منتجات ذات صلة
+                </Text>
+              </Box>
+            )}
           </Container>
           {/* Related Products */}
           <ScrollView
@@ -389,7 +408,7 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
           right: 0,
           bottom: insets.bottom,
         }}
-        bg="#FFF"
+        bg={isDarkMode ? '#333' : '#FFF'}
         shadow={2}
         py={3}
         borderRadius={12}
@@ -403,10 +422,17 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
             justifyContent={'space-between'}>
             <Box>
               <Box flexDirection="row" justifyContent={'flex-end'}>
-                <Text fontWeight={700} fontSize={24}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  fontWeight={700}
+                  fontSize={24}>
                   {price}
                 </Text>
-                <Text fontSize={16} fontWeight={700} marginTop={2}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  fontSize={16}
+                  fontWeight={700}
+                  marginTop={2}>
                   ₪
                 </Text>
               </Box>
@@ -417,9 +443,6 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                 return (
                   <Box
                     py="3"
-                    flexDirection="row"
-                    justifyContent={'center'}
-                    alignItems={'center'}
                     bg={isPressed ? 'primary.700' : 'primary.500'}
                     p="5"
                     rounded="4"
@@ -430,31 +453,47 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
                         },
                       ],
                     }}>
-                    <Svg width="25" height="14" viewBox="0 0 25 14" fill="none">
-                      <Path
-                        d="M14.2377 11.9884C14.2377 12.8232 13.5683 13.5 12.7426 13.5C11.9169 13.5 11.2475 12.8232 11.2475 11.9884C11.2475 11.1535 11.9169 10.4767 12.7426 10.4767C13.5683 10.4767 14.2377 11.1535 14.2377 11.9884Z"
-                        fill="white"
-                      />
-                      <Path
-                        d="M19.62 11.9884C19.62 12.8232 18.9506 13.5 18.1249 13.5C17.2992 13.5 16.6298 12.8232 16.6298 11.9884C16.6298 11.1535 17.2992 10.4767 18.1249 10.4767C18.9506 10.4767 19.62 11.1535 19.62 11.9884Z"
-                        fill="white"
-                      />
-                      <Path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M9.29388 0.921265C9.4584 0.65895 9.74425 0.5 10.0515 0.5H16.6298C17.1252 0.5 17.5269 0.906067 17.5269 1.40698C17.5269 1.90789 17.1252 2.31395 16.6298 2.31395H11.4661L13.4396 6.54651H17.7056L20.2823 1.02022C20.4304 0.702643 20.7464 0.5 21.0937 0.5H23.2082C23.7036 0.5 24.1052 0.906067 24.1052 1.40698C24.1052 1.90789 23.7036 2.31395 23.2082 2.31395H21.6625L19.0858 7.84024C18.9377 8.15782 18.6217 8.36047 18.2744 8.36047H12.8708C12.5235 8.36047 12.2074 8.15782 12.0593 7.84024L9.24005 1.79373C9.10905 1.51277 9.12936 1.18358 9.29388 0.921265Z"
-                        fill="white"
-                      />
-                      <Path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M4.03965 2.53125C4.69153 2.53125 5.21998 3.0769 5.21998 3.75V5.375H6.79375C7.44563 5.375 7.97408 5.92065 7.97408 6.59375C7.97408 7.26685 7.44563 7.8125 6.79375 7.8125H5.21998V9.4375C5.21998 10.1106 4.69153 10.6562 4.03965 10.6562C3.38777 10.6562 2.85932 10.1106 2.85932 9.4375V7.8125H1.28555C0.633675 7.8125 0.105225 7.26685 0.105225 6.59375C0.105225 5.92065 0.633675 5.375 1.28555 5.375H2.85932V3.75C2.85932 3.0769 3.38777 2.53125 4.03965 2.53125Z"
-                        fill="white"
-                      />
-                    </Svg>
-                    <Text color="#FFF" marginLeft={2} fontFamily={'Cairo'}>
-                      إضافة الى السلة
-                    </Text>
+                    {isCartLoader ? (
+                      <Spinner color={isDarkMode ? '#FFF' : 'gray.400'} />
+                    ) : (
+                      <Box
+                        flexDirection="row"
+                        justifyContent={'center'}
+                        alignItems={'center'}>
+                        <Svg
+                          width="25"
+                          height="14"
+                          viewBox="0 0 25 14"
+                          fill="none">
+                          <Path
+                            d="M14.2377 11.9884C14.2377 12.8232 13.5683 13.5 12.7426 13.5C11.9169 13.5 11.2475 12.8232 11.2475 11.9884C11.2475 11.1535 11.9169 10.4767 12.7426 10.4767C13.5683 10.4767 14.2377 11.1535 14.2377 11.9884Z"
+                            fill={isDarkMode ? '#000' : '#FFF'}
+                          />
+                          <Path
+                            d="M19.62 11.9884C19.62 12.8232 18.9506 13.5 18.1249 13.5C17.2992 13.5 16.6298 12.8232 16.6298 11.9884C16.6298 11.1535 17.2992 10.4767 18.1249 10.4767C18.9506 10.4767 19.62 11.1535 19.62 11.9884Z"
+                            fill={isDarkMode ? '#000' : '#FFF'}
+                          />
+                          <Path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M9.29388 0.921265C9.4584 0.65895 9.74425 0.5 10.0515 0.5H16.6298C17.1252 0.5 17.5269 0.906067 17.5269 1.40698C17.5269 1.90789 17.1252 2.31395 16.6298 2.31395H11.4661L13.4396 6.54651H17.7056L20.2823 1.02022C20.4304 0.702643 20.7464 0.5 21.0937 0.5H23.2082C23.7036 0.5 24.1052 0.906067 24.1052 1.40698C24.1052 1.90789 23.7036 2.31395 23.2082 2.31395H21.6625L19.0858 7.84024C18.9377 8.15782 18.6217 8.36047 18.2744 8.36047H12.8708C12.5235 8.36047 12.2074 8.15782 12.0593 7.84024L9.24005 1.79373C9.10905 1.51277 9.12936 1.18358 9.29388 0.921265Z"
+                            fill={isDarkMode ? '#000' : '#FFF'}
+                          />
+                          <Path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M4.03965 2.53125C4.69153 2.53125 5.21998 3.0769 5.21998 3.75V5.375H6.79375C7.44563 5.375 7.97408 5.92065 7.97408 6.59375C7.97408 7.26685 7.44563 7.8125 6.79375 7.8125H5.21998V9.4375C5.21998 10.1106 4.69153 10.6562 4.03965 10.6562C3.38777 10.6562 2.85932 10.1106 2.85932 9.4375V7.8125H1.28555C0.633675 7.8125 0.105225 7.26685 0.105225 6.59375C0.105225 5.92065 0.633675 5.375 1.28555 5.375H2.85932V3.75C2.85932 3.0769 3.38777 2.53125 4.03965 2.53125Z"
+                            fill={isDarkMode ? '#000' : '#FFF'}
+                          />
+                        </Svg>
+                        <Text
+                          color={isDarkMode ? '#000' : '#FFF'}
+                          marginLeft={2}
+                          fontFamily={'Cairo'}>
+                          إضافة الى السلة
+                        </Text>
+                      </Box>
+                    )}
                   </Box>
                 );
               }}

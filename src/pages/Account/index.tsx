@@ -1,20 +1,25 @@
 import {useNavigation} from '@react-navigation/core';
 import {Box, Container, Pressable, Text} from 'native-base';
 import React from 'react';
-import {ScrollView} from 'react-native';
+import {ScrollView, useColorScheme} from 'react-native';
 import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
 import {useAuthState} from '../../AuthContext';
 import Header from '../../components/Header';
 
 const Account = () => {
   const navigation = useNavigation();
+  const isDarkMode = useColorScheme() === 'dark';
   const user = useAuthState();
   return (
     <ScrollView>
       <Box safeArea>
         <Header />
         <Container mx="auto" width={'100%'} marginTop={4}>
-          <Text fontFamily={'Cairo'} fontSize={16} fontWeight={600}>
+          <Text
+            color={isDarkMode ? '#fff' : '#000'}
+            fontFamily={'Cairo'}
+            fontSize={16}
+            fontWeight={600}>
             أهلاً بك
           </Text>
 
@@ -38,7 +43,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -76,7 +81,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}
+                      marginTop={2}>
                       طلباتي
                     </Text>
                   </Box>
@@ -90,7 +99,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -121,7 +130,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}
+                      marginTop={2}>
                       سجل العناوين
                     </Text>
                   </Box>
@@ -136,7 +149,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -179,7 +192,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}
+                      marginTop={2}>
                       المفضلة
                     </Text>
                   </Box>
@@ -194,7 +211,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -225,7 +242,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}
+                      marginTop={2}>
                       البيانات الشخصية
                     </Text>
                   </Box>
@@ -239,7 +260,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -282,7 +303,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text marginTop={1} fontFamily={'Cairo'} fontWeight={600}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      marginTop={1}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}>
                       الشروط و الأحكام
                     </Text>
                   </Box>
@@ -296,7 +321,7 @@ const Account = () => {
               {({isPressed}) => {
                 return (
                   <Box
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
                     shadow={1}
                     py={6}
                     justifyContent={'center'}
@@ -339,7 +364,11 @@ const Account = () => {
                       </Svg>
                     </Box>
 
-                    <Text fontFamily={'Cairo'} fontWeight={600} marginTop={2}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontWeight={600}
+                      marginTop={2}>
                       تواصل معنا{' '}
                     </Text>
                   </Box>

@@ -21,8 +21,13 @@ import {useMutation, useQuery} from 'react-query';
 import {cities_request, address_add} from '../../../api/address_request';
 import {Controller, useForm} from 'react-hook-form';
 import {useAuthState} from '../../../AuthContext';
+import {useColorScheme} from 'react-native';
+import Home from '../../../icons/Home';
+import Office from '../../../icons/Office';
+import Marker from '../../../icons/Marker';
 
 const New = () => {
+  const isDarkMode = useColorScheme() === 'dark';
   const toast = useToast();
 
   const {
@@ -68,7 +73,7 @@ const New = () => {
           <Box marginTop={4} flexDir={'row'} alignItems={'center'}>
             <BackButton />
             <Text
-              marginLeft={3}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontFamily={'Cairo'}
               fontSize={22}
               fontWeight={800}>
@@ -209,7 +214,11 @@ const New = () => {
             </Svg>
           </Box>
           <Box marginTop={4}>
-            <Text fontFamily={'Cairo'} textAlign={'left'} marginTop={3}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              textAlign={'left'}
+              marginTop={3}>
               تفاصيل المستلم
             </Text>
             <Box
@@ -232,6 +241,9 @@ const New = () => {
                       <Input
                         value={value}
                         p={2}
+                        bg={isDarkMode ? '#333' : '#FFF'}
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        borderColor={isDarkMode ? '#333' : 'gray.400'}
                         onBlur={onBlur}
                         onChangeText={onChange}
                         width="100%"
@@ -239,7 +251,6 @@ const New = () => {
                         fontSize={12}
                         paddingRight="6"
                         type={'text'}
-                        bg="#FFF"
                         textAlign="right"
                         placeholder="الرجاء كتابة الاسم"
                       />
@@ -272,7 +283,9 @@ const New = () => {
                         fontSize={12}
                         paddingRight="6"
                         type={'text'}
-                        bg="#FFF"
+                        bg={isDarkMode ? '#333' : '#FFF'}
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        borderColor={isDarkMode ? '#333' : 'gray.400'}
                         textAlign="right"
                         placeholder="الرجاء كتابة رقم الهاتف"
                       />
@@ -291,7 +304,11 @@ const New = () => {
             borderBottomColor={'gray.300'}
             borderBottomWidth={1}
             borderTopWidth={1}>
-            <Text fontFamily={'Cairo'} textAlign={'left'} marginTop={3}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              textAlign={'left'}
+              marginTop={3}>
               تفاصيل العنوان
             </Text>
             <Text
@@ -316,49 +333,31 @@ const New = () => {
                     value={value}
                     accessibilityLabel="pick an option">
                     <Radio colorScheme="success" value="Home" my={1}>
-                      <Svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none">
-                        <Path
-                          d="M14.2174 8.92578L14.2368 13.6162C14.2368 13.6982 14.2313 13.7744 14.223 13.8535V14.3281C14.223 14.9756 13.7257 15.5 13.1118 15.5H12.6674C12.6368 15.5 12.6063 15.4736 12.5757 15.4971C12.5368 15.4736 12.498 15.5 12.4591 15.5H10.8896C10.2757 15.5 9.77851 14.9756 9.77851 14.3281V11.75C9.77851 11.2314 9.38129 10.8125 8.88962 10.8125H7.11184C6.62018 10.8125 6.22295 11.2314 6.22295 11.75V14.3281C6.22295 14.9756 5.72573 15.5 5.11184 15.5H3.55907C3.5174 15.5 3.47573 15.4971 3.43407 15.4941C3.40073 15.4971 3.3674 15.5 3.33407 15.5H2.88962C2.27601 15.5 1.77851 14.9756 1.77851 14.3281V11.0469C1.77851 11.0205 1.77934 10.9912 1.78101 10.9648V8.92578H0.89101C0.390177 8.92578 0.000732422 8.5127 0.000732422 7.98535C0.000732422 7.72168 0.0841769 7.4873 0.278788 7.28223L7.40073 0.734844C7.59518 0.529355 7.8174 0.5 8.01184 0.5C8.20629 0.5 8.42851 0.558711 8.59795 0.705488L11.5563 3.4502V2.375C11.5563 1.85732 11.9535 1.4375 12.4452 1.4375H13.3341C13.8257 1.4375 14.223 1.85732 14.223 2.375V5.91992L15.6896 7.28223C15.9118 7.4873 16.0257 7.72168 15.9952 7.98535C15.9952 8.5127 15.5785 8.92578 15.1063 8.92578H14.2174V8.92578Z"
-                          fill="#000"
-                        />
-                      </Svg>
-                      <Text fontFamily={'Cairo'}>البيت</Text>
+                      <Home color={isDarkMode ? '#FFF' : '#000'} />
+                      <Text
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        fontFamily={'Cairo'}>
+                        البيت
+                      </Text>
                     </Radio>
 
                     <Radio colorScheme="success" value="Office" my={1}>
-                      <Svg
-                        width="14"
-                        height="16"
-                        viewBox="0 0 14 16"
-                        fill="none">
-                        <Path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M1.00073 2C1.00073 1.46957 1.21145 0.960859 1.58652 0.585786C1.96159 0.210714 2.4703 0 3.00073 0H11.0007C11.5312 0 12.0399 0.210714 12.4149 0.585786C12.79 0.960859 13.0007 1.46957 13.0007 2V14C13.2659 14 13.5203 14.1054 13.7078 14.2929C13.8954 14.4804 14.0007 14.7348 14.0007 15C14.0007 15.2652 13.8954 15.5196 13.7078 15.7071C13.5203 15.8946 13.2659 16 13.0007 16H10.0007C9.73552 16 9.48116 15.8946 9.29363 15.7071C9.10609 15.5196 9.00073 15.2652 9.00073 15V13C9.00073 12.7348 8.89538 12.4804 8.70784 12.2929C8.5203 12.1054 8.26595 12 8.00073 12H6.00073C5.73552 12 5.48116 12.1054 5.29363 12.2929C5.10609 12.4804 5.00073 12.7348 5.00073 13V15C5.00073 15.2652 4.89538 15.5196 4.70784 15.7071C4.5203 15.8946 4.26595 16 4.00073 16H1.00073C0.735516 16 0.481162 15.8946 0.293626 15.7071C0.106089 15.5196 0.000732422 15.2652 0.000732422 15C0.000732422 14.7348 0.106089 14.4804 0.293626 14.2929C0.481162 14.1054 0.735516 14 1.00073 14V2ZM4.00073 3H6.00073V5H4.00073V3ZM6.00073 7H4.00073V9H6.00073V7ZM8.00073 3H10.0007V5H8.00073V3ZM10.0007 7H8.00073V9H10.0007V7Z"
-                          fill="#272727"
-                        />
-                      </Svg>
+                      <Office color={isDarkMode ? '#FFF' : '#000'} />
 
-                      <Text fontFamily={'Cairo'}>المكتب</Text>
+                      <Text
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        fontFamily={'Cairo'}>
+                        المكتب
+                      </Text>
                     </Radio>
 
-                    <Radio colorScheme="success" value="Other" my={1}>
-                      <Svg
-                        width="13"
-                        height="16"
-                        viewBox="0 0 13 16"
-                        fill="none">
-                        <Path
-                          d="M6.13528 15.6405C4.47384 13.629 0.778564 8.7539 0.778564 6.01557C0.778564 2.69322 3.51453 0 6.88962 0C10.2634 0 13.0007 2.69322 13.0007 6.01557C13.0007 8.7539 9.27675 13.629 7.64395 15.6405C7.25246 16.1198 6.52677 16.1198 6.13528 15.6405ZM6.88962 8.02076C8.01316 8.02076 8.92663 7.12155 8.92663 6.01557C8.92663 4.90958 8.01316 4.01038 6.88962 4.01038C5.76607 4.01038 4.8526 4.90958 4.8526 6.01557C4.8526 7.12155 5.76607 8.02076 6.88962 8.02076Z"
-                          fill="#272727"
-                        />
-                      </Svg>
-
-                      <Text fontFamily={'Cairo'}>موقع آخر</Text>
+                    <Radio colorScheme="primary" value="Other" my={1}>
+                      <Marker color={isDarkMode ? '#FFF' : '#000'} />
+                      <Text
+                        fontFamily={'Cairo'}
+                        color={isDarkMode ? '#FFF' : '#000'}>
+                        موقع آخر
+                      </Text>
                     </Radio>
                   </Radio.Group>
                 )}
@@ -385,7 +384,7 @@ const New = () => {
                   control={control}
                   render={({field: {onChange, value}}) => (
                     <Select
-                      bg="white"
+                      bg={isDarkMode ? '#333' : '#FFF'}
                       minWidth="200"
                       accessibilityLabel="الناصرة"
                       placeholder="الناصرة"
@@ -393,7 +392,11 @@ const New = () => {
                       textAlign={'right'}
                       selectedValue={value}
                       onValueChange={onChange}
-                      placeholderTextColor={'gray.600'}
+                      color={isDarkMode ? '#FFF' : '#333'}
+                      borderColor={isDarkMode ? '#333' : 'gray.400'}
+                      placeholderTextColor={
+                        isDarkMode ? 'gray.300' : 'gray.600'
+                      }
                       _selectedItem={{
                         bg: 'teal.600',
                         endIcon: <CheckIcon size={5} />,
@@ -432,7 +435,9 @@ const New = () => {
                 }}
                 render={({field: {onChange, onBlur, value}}) => (
                   <TextArea
-                    bg="white"
+                    bg={isDarkMode ? '#333' : '#FFF'}
+                    borderColor={isDarkMode ? '#333' : 'gray.400'}
+                    color={isDarkMode ? '#fff' : '#000'}
                     marginTop={1}
                     aria-label="t1"
                     value={value}
@@ -472,7 +477,9 @@ const New = () => {
                 control={control}
                 render={({field: {onChange, onBlur, value}}) => (
                   <TextArea
-                    bg="white"
+                    bg={isDarkMode ? '#333' : '#FFF'}
+                    color={isDarkMode ? '#fff' : '#000'}
+                    borderColor={isDarkMode ? '#333' : 'gray.400'}
                     marginTop={1}
                     aria-label="t2"
                     numberOfLines={2}

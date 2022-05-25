@@ -1,27 +1,25 @@
 import React from 'react';
-import {
-  Box,
-  Text,
-  Container,
-  ScrollView,
-  Button,
-  Input,
-  Image,
-} from 'native-base';
+import {Box, Text, Container, ScrollView, Image} from 'native-base';
 import Header from '../../components/Header';
 import BackButton from '../../components/BackButton';
 import Svg, {Path} from 'react-native-svg';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, useColorScheme} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {GetData} from '../../plugins/storage';
+import Home from '../../icons/Home';
+import Office from '../../icons/Office';
+import Marker from '../../icons/Marker';
 
 const Receipt = () => {
+  const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const [cartItems, setCartItems] = React.useState<any>([]);
   const [totalPrice, setTotalPrice] = React.useState<number>(0);
+  const [address, setSelectedAdddress] = React.useState<any>(undefined);
+  const [deliveryFee, setDeliveryFee] = React.useState<number>(0);
 
   const updateTotalPrice = (result: any) => {
     let total = 0;
@@ -35,8 +33,16 @@ const Receipt = () => {
     GetData('cart').then(res => {
       if (res !== undefined && res !== null) {
         setCartItems(JSON.parse(res));
-        console.log(JSON.parse(res));
+        // console.log(JSON.parse(res));
         updateTotalPrice(JSON.parse(res));
+        GetData('address').then((result: any) => {
+          if (result !== undefined && result !== null) {
+            setSelectedAdddress(JSON.parse(result));
+            setDeliveryFee(
+              JSON.parse(result).attributes.city.data.attributes.delivery_fee,
+            );
+          }
+        });
       }
     });
   }, []);
@@ -57,6 +63,7 @@ const Receipt = () => {
                 <Box flexDir={'row'} alignItems={'center'}>
                   <BackButton />
                   <Text
+                    color={isDarkMode ? '#FFF' : '#000'}
                     marginLeft={0}
                     fontFamily={'Cairo'}
                     fontSize={22}
@@ -65,11 +72,12 @@ const Receipt = () => {
                   </Text>
                 </Box>
                 <Text color="gray.400" fontFamily={'Cairo'}>
-                  (3) عناصر
+                  ({cartItems.length}) عناصر
                 </Text>
               </Box>
+              {/* Selected Address */}
               <Box
-                bg="white"
+                bg={isDarkMode ? '#333' : '#FFF'}
                 shadow={3}
                 flexDir={'row'}
                 justifyContent={'space-between'}
@@ -87,12 +95,21 @@ const Receipt = () => {
                     justifyContent={'center'}
                     alignItems={'center'}
                     borderRadius={100}>
-                    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    {address?.attributes.type === 'Home' && (
+                      <Home color={isDarkMode ? '#333' : '#FFF'} />
+                    )}
+                    {address?.attributes.type === 'Office' && (
+                      <Office color={isDarkMode ? '#333' : '#FFF'} />
+                    )}
+                    {address?.attributes.type === 'Other' && (
+                      <Marker color={isDarkMode ? '#333' : '#FFF'} />
+                    )}
+                    {/* <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <Path
                         d="M14.2169 8.92578L14.2364 13.6162C14.2364 13.6982 14.2308 13.7744 14.2225 13.8535V14.3281C14.2225 14.9756 13.7252 15.5 13.1114 15.5H12.6669C12.6364 15.5 12.6058 15.4736 12.5752 15.4971C12.5364 15.4736 12.4975 15.5 12.4586 15.5H10.8891C10.2752 15.5 9.77802 14.9756 9.77802 14.3281V11.75C9.77802 11.2314 9.3808 10.8125 8.88913 10.8125H7.11136C6.61969 10.8125 6.22247 11.2314 6.22247 11.75V14.3281C6.22247 14.9756 5.72524 15.5 5.11136 15.5H3.55858C3.51691 15.5 3.47524 15.4971 3.43358 15.4941C3.40024 15.4971 3.36691 15.5 3.33358 15.5H2.88913C2.27552 15.5 1.77802 14.9756 1.77802 14.3281V11.0469C1.77802 11.0205 1.77886 10.9912 1.78052 10.9648V8.92578H0.890522C0.389689 8.92578 0.000244141 8.5127 0.000244141 7.98535C0.000244141 7.72168 0.0836886 7.4873 0.2783 7.28223L7.40024 0.734844C7.59469 0.529355 7.81691 0.5 8.01136 0.5C8.2058 0.5 8.42802 0.558711 8.59747 0.705488L11.5558 3.4502V2.375C11.5558 1.85732 11.953 1.4375 12.4447 1.4375H13.3336C13.8252 1.4375 14.2225 1.85732 14.2225 2.375V5.91992L15.6891 7.28223C15.9114 7.4873 16.0252 7.72168 15.9947 7.98535C15.9947 8.5127 15.578 8.92578 15.1058 8.92578H14.2169Z"
                         fill="white"
                       />
-                    </Svg>
+                    </Svg> */}
                   </Box>
                   <Text
                     marginLeft={2}
@@ -100,13 +117,20 @@ const Receipt = () => {
                     fontWeight={800}
                     color="primary.500"
                     fontFamily={'Cairo'}>
-                    عنوان 1
+                    {address?.attributes.name}
                   </Text>
                 </Box>
                 <Box>
-                  <Text my={1} textAlign={'left'} fontFamily={'Cairo'}>
-                    تعديل{' '}
-                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('AddressCheckout')}>
+                    <Text
+                      my={1}
+                      textAlign={'left'}
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}>
+                      تعديل{' '}
+                    </Text>
+                  </TouchableOpacity>
                 </Box>
               </Box>
 
@@ -115,6 +139,7 @@ const Receipt = () => {
                   fontFamily={'Cairo'}
                   fontWeight={700}
                   fontSize={16}
+                  color={isDarkMode ? '#FFF' : '#000'}
                   textAlign={'left'}>
                   تفاصيل الطلب
                 </Text>
@@ -139,6 +164,7 @@ const Receipt = () => {
                         />
                         <Box marginLeft={4}>
                           <Text
+                            color={isDarkMode ? '#FFF' : '#000'}
                             fontFamily={'Cairo'}
                             textAlign={'left'}
                             fontWeight={700}
@@ -178,6 +204,7 @@ const Receipt = () => {
                           ₪{item.attributes.price}
                         </Text>
                         <Text
+                          color={isDarkMode ? '#FFF' : '#000'}
                           fontSize={12}
                           fontWeight={500}
                           fontFamily={'Cairo'}>
@@ -191,8 +218,8 @@ const Receipt = () => {
                     </Box>
                   );
                 })}
-
-                <Box
+                {/* Coupon System */}
+                {/* <Box
                   marginTop={6}
                   width="100%"
                   bg="white"
@@ -217,8 +244,8 @@ const Receipt = () => {
                       تطبيق الخصم
                     </Text>
                   </Button>
-                </Box>
-                <Box
+                </Box> */}
+                {/* <Box
                   bg="primary.500"
                   py={3}
                   px={4}
@@ -253,14 +280,14 @@ const Receipt = () => {
                       </Text>
                     </TouchableOpacity>
                   </Box>
-                </Box>
+                </Box> */}
               </Box>
             </Box>
           </Container>
         </Box>
       </ScrollView>
       <Box
-        bg="white"
+        bg={isDarkMode ? '#333' : '#FFF'}
         paddingBottom={insets.bottom}
         paddingTop={8}
         borderTopRadius={24}
@@ -282,9 +309,33 @@ const Receipt = () => {
                 marginTop={2}
                 flexDir={'row'}
                 justifyContent={'space-between'}>
-                <Text fontFamily={'Cairo'}> المجموع الكلي </Text>
-                <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
+                <Text fontFamily={'Cairo'} color={isDarkMode ? '#FFF' : '#333'}>
+                  {' '}
+                  المجموع الكلي{' '}
+                </Text>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#333'}
+                  fontFamily={'Cairo'}
+                  fontSize={16}
+                  fontWeight={800}>
                   ₪ {totalPrice}
+                </Text>
+              </Box>
+
+              <Box
+                marginTop={2}
+                flexDir={'row'}
+                justifyContent={'space-between'}>
+                <Text color={isDarkMode ? '#FFF' : '#333'} fontFamily={'Cairo'}>
+                  {' '}
+                  تكلفة التوصيل{' '}
+                </Text>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#333'}
+                  fontFamily={'Cairo'}
+                  fontSize={16}
+                  fontWeight={800}>
+                  ₪ {deliveryFee}
                 </Text>
               </Box>
             </Box>
@@ -294,13 +345,15 @@ const Receipt = () => {
               py={3}
               flexDir={'row'}
               justifyContent={'space-between'}>
-              <Text fontFamily={'Cairo'}>المبلغ النهائي</Text>
+              <Text color={isDarkMode ? '#FFF' : '#333'} fontFamily={'Cairo'}>
+                المبلغ النهائي
+              </Text>
               <Text
                 color="primary.500"
                 fontFamily={'Cairo'}
                 fontSize={16}
                 fontWeight={800}>
-                ₪ {totalPrice}
+                ₪ {totalPrice + deliveryFee}
               </Text>
             </Box>
           </Box>

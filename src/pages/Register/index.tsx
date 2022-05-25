@@ -1,4 +1,4 @@
-import {StatusBar, TouchableOpacity} from 'react-native';
+import {StatusBar, TouchableOpacity, useColorScheme} from 'react-native';
 import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 import {
@@ -19,6 +19,8 @@ import {useForm, Controller} from 'react-hook-form';
 import Eye from '../../icons/Eye';
 import {useMutation} from 'react-query';
 const Login: React.FC = () => {
+  const isDarkMode = useColorScheme() === 'dark';
+
   const {
     control,
     setError,
@@ -71,19 +73,24 @@ const Login: React.FC = () => {
     <ScrollView flex="1">
       <StatusBar
         animated={true}
-        barStyle={'dark-content'}
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor="#E4F3D9"
       />
 
-      <Box position="absolute" width="85%" right="0" top={-40} height={200}>
+      <Box
+        position="absolute"
+        width="85%"
+        right="0"
+        top={isDarkMode ? -30 : -40}
+        height={200}>
         <Svg
           style={{width: '100%', height: '100%'}}
           viewBox="0 0 428 159"
           fill="none">
           <Path
-            opacity="0.8"
+            opacity={isDarkMode ? 0.35 : 1}
             d="M114.71 94.867C-43.9252 73.858 -63.4398 159 -91 159C-91 124.353 -91 -85 -91 -85H461C461 -85 424.888 32.9456 286.888 15.2991C148.888 -2.34731 273.346 115.876 114.71 94.867Z"
-            fill="#E4F3D9"
+            fill={isDarkMode ? '#79C143' : '#E4F3D9'}
           />
         </Svg>
       </Box>
@@ -95,6 +102,7 @@ const Login: React.FC = () => {
                 <Text
                   fontFamily={'Cairo'}
                   fontSize="xl"
+                  color={isDarkMode ? '#FFF' : '#000'}
                   fontWeight={600}
                   textAlign="left">
                   مرحبا بك في
@@ -158,6 +166,9 @@ const Login: React.FC = () => {
                     <Input
                       value={value}
                       p={2}
+                      bg={isDarkMode ? '#333' : '#FFF'}
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      borderColor={isDarkMode ? '#333' : 'gray.400'}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       fontSize={12}
@@ -187,6 +198,9 @@ const Login: React.FC = () => {
                     <Input
                       value={value}
                       p={2}
+                      bg={isDarkMode ? '#333' : '#FFF'}
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      borderColor={isDarkMode ? '#333' : 'gray.400'}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       fontSize={12}
@@ -216,6 +230,9 @@ const Login: React.FC = () => {
                     <Input
                       value={value}
                       p={2}
+                      bg={isDarkMode ? '#333' : '#FFF'}
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      borderColor={isDarkMode ? '#333' : 'gray.400'}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       fontSize={12}
@@ -250,6 +267,9 @@ const Login: React.FC = () => {
                       fontFamily={'Cairo'}
                       fontSize={12}
                       onBlur={onBlur}
+                      bg={isDarkMode ? '#333' : '#FFF'}
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      borderColor={isDarkMode ? '#333' : 'gray.400'}
                       onChangeText={onChange}
                       value={value}
                       type={show ? 'text' : 'password'}
@@ -280,10 +300,14 @@ const Login: React.FC = () => {
                 fontFamily={'Cairo'}
                 borderWidth="0"
                 bg="primary.100">
-                <Text fontFamily={'Cairo'}>تذكر حسابي</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+                  تذكر حسابي
+                </Text>
               </Checkbox>
               <TouchableOpacity>
-                <Text fontFamily={'Cairo'}>إعادة تعيين كلمة السر</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+                  إعادة تعيين كلمة السر
+                </Text>
               </TouchableOpacity>
             </Box>
 
@@ -314,7 +338,10 @@ const Login: React.FC = () => {
             justifyContent="center"
             width="100%"
             marginTop={8}>
-            <Text fontFamily={'Cairo'}> لديك حساب مسبقاً؟ </Text>
+            <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+              {' '}
+              لديك حساب مسبقاً؟{' '}
+            </Text>
             <TouchableOpacity>
               <Text
                 fontFamily={'Cairo'}

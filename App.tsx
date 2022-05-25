@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useContext, useEffect, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import RNBootSplash from 'react-native-bootsplash';
 import {LogBox} from 'react-native';
@@ -29,6 +33,9 @@ import {
   extendTheme,
   NativeBaseProvider,
   Spinner,
+  themeTools,
+  useColorMode,
+  useColorModeValue,
 } from 'native-base';
 import {I18nManager} from 'react-native';
 import RNRestart from 'react-native-restart';
@@ -101,6 +108,15 @@ const newColorTheme = {
 };
 const theme = extendTheme({
   colors: newColorTheme,
+  components: {
+    Input: {
+      baseStyle: (props: any) => {
+        return {
+          color: themeTools.mode('red.300', 'blue.300')(props),
+        };
+      },
+    },
+  },
   fontConfig: {
     Cairo: {
       300: {
@@ -167,6 +183,7 @@ const StackNavigator = () => {
   if (user.loading === false) {
     RNBootSplash.hide();
   }
+  const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <>
@@ -175,9 +192,10 @@ const StackNavigator = () => {
         initialRouteName="Home"
         screenOptions={{
           headerShown: false,
-          // contentStyle: {
-          //   backgroundColor: isDarkMode ? '#1C1C1E' : '#FFF',
-          // },
+
+          contentStyle: {
+            backgroundColor: isDarkMode ? '#0D0D0D' : '#FAFAFA',
+          },
         }}>
         {user.user === undefined && (
           <>
@@ -215,6 +233,9 @@ const StackNavigator = () => {
 };
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const mode = useColorMode();
+  // console.log(mode);
+
   // Create a client
   const queryClient = new QueryClient();
   // const backgroundStyle = {
@@ -232,11 +253,25 @@ const App = () => {
       'linear-gradient': require('react-native-linear-gradient').default,
     },
   };
+
+  const NavigationDarkTheme = {
+    dark: true,
+    colors: {
+      primary: '#FFF',
+      background: '#0D0D0D',
+      card: 'rgb(18, 18, 18)',
+      text: 'rgb(229, 229, 231)',
+      border: 'rgb(39, 39, 41)',
+      notification: 'rgb(255, 69, 58)',
+    },
+  };
+
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <NativeBaseProvider theme={theme} config={config}>
-          <NavigationContainer>
+          <NavigationContainer
+            theme={isDarkMode ? NavigationDarkTheme : DefaultTheme}>
             <Drawer.Navigator
               useLegacyImplementation={true}
               screenOptions={{

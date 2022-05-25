@@ -10,7 +10,12 @@ import {
 } from 'native-base';
 import Header from '../../components/Header';
 import BackButton from '../../components/BackButton';
-import {Platform, ScrollView, TouchableOpacity} from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  useColorScheme,
+} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {useQuery} from 'react-query';
 import {
@@ -27,8 +32,10 @@ import Item from './item';
 import {tags_request} from '../../api/tags_request';
 
 const CategoryView = ({route}: any) => {
+  const isDarkMode = useColorScheme() === 'dark';
+
   const [fromValue, setFromValue] = useState(0);
-  const [toValue, setToValue] = useState(5000);
+  const [toValue, setToValue] = useState(1000);
   const {colors} = useTheme();
   const {slug} = route.params;
   const [catSlug, setCatSlug] = useState<string>('');
@@ -69,12 +76,12 @@ const CategoryView = ({route}: any) => {
     if (selectedTags.find((cat: number) => cat === id)) {
       return 'primary.500';
     } else {
-      return 'white';
+      return isDarkMode ? '#333' : 'white';
     }
   };
   const checkFGTagColor = (id: number) => {
     if (selectedTags.find((cat: number) => cat === id)) {
-      return 'white';
+      return isDarkMode ? '#333' : 'white';
     } else {
       return colors.primary['500'];
     }
@@ -82,6 +89,14 @@ const CategoryView = ({route}: any) => {
 
   const applyFilters = () => {
     setFilters([{from: fromValue, to: toValue}, [...selectedTags], order]);
+    refetch();
+  };
+  const removeFilters = () => {
+    // setToValue(1000);
+    setFilters([]);
+    setToValue(1000);
+    setFromValue(0);
+    // setFilters([{from: 0, to: 1000}, [...selectedTags], order]);
     refetch();
   };
 
@@ -100,7 +115,11 @@ const CategoryView = ({route}: any) => {
             alignItems={'center'}>
             <Box flexDir={'row'} alignItems={'center'}>
               <BackButton />
-              <Text fontFamily={'Cairo'} fontSize={22} fontWeight={800}>
+              <Text
+                fontFamily={'Cairo'}
+                color={isDarkMode ? '#FFF' : '#000'}
+                fontSize={22}
+                fontWeight={800}>
                 تفاصيل الطلب
               </Text>
             </Box>
@@ -108,7 +127,7 @@ const CategoryView = ({route}: any) => {
               <Svg width="18" height="19" viewBox="0 0 18 19" fill="none">
                 <Path
                   d="M17 0H1C0.734784 0 0.48043 0.105357 0.292893 0.292893C0.105357 0.48043 0 0.734784 0 1V3.59C0 4.113 0.213 4.627 0.583 4.997L6 10.414V18C6.0002 18.1704 6.04387 18.3379 6.1269 18.4867C6.20992 18.6354 6.32955 18.7605 6.47444 18.8502C6.61934 18.9398 6.78471 18.9909 6.9549 18.9988C7.1251 19.0066 7.29447 18.9709 7.447 18.895L11.447 16.895C11.786 16.725 12 16.379 12 16V10.414L17.417 4.997C17.787 4.627 18 4.113 18 3.59V1C18 0.734784 17.8946 0.48043 17.7071 0.292893C17.5196 0.105357 17.2652 0 17 0ZM10.293 9.293C10.2 9.38571 10.1262 9.4959 10.0759 9.61724C10.0256 9.73857 9.99981 9.86866 10 10V15.382L8 16.382V10C8.00019 9.86866 7.9744 9.73857 7.92412 9.61724C7.87383 9.4959 7.80004 9.38571 7.707 9.293L2 3.59V2H16.001L16.003 3.583L10.293 9.293Z"
-                  fill="#272727"
+                  fill={isDarkMode ? '#FFF' : '#000'}
                 />
               </Svg>
             </TouchableOpacity>
@@ -155,11 +174,12 @@ const CategoryView = ({route}: any) => {
           </Box>
         </ScrollView>
         <Actionsheet isOpen={isOpen} onClose={onClose}>
-          <Actionsheet.Content>
+          <Actionsheet.Content bg={isDarkMode ? '#333' : '#FFF'}>
             <Text
               fontFamily={'Cairo'}
               fontWeight={800}
               paddingTop={2}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontSize={20}>
               تصنيف
             </Text>
@@ -168,6 +188,7 @@ const CategoryView = ({route}: any) => {
                 textAlign={'left'}
                 fontFamily={'Cairo'}
                 fontSize={16}
+                color={isDarkMode ? '#FFF' : '#000'}
                 fontWeight={600}>
                 حسب السعر
               </Text>
@@ -183,7 +204,11 @@ const CategoryView = ({route}: any) => {
                     </Text>
                   </Box>
                   <Box width="85%">
-                    <Input placeholder="00.00" value={toValue.toString()} />
+                    <Input
+                      placeholder="00.00"
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      value={toValue.toString()}
+                    />
                   </Box>
                 </Box>
                 <Box width="48%" flexDir={'row'} alignItems={'center'}>
@@ -193,7 +218,11 @@ const CategoryView = ({route}: any) => {
                     </Text>
                   </Box>
                   <Box width="85%">
-                    <Input placeholder="00.00" value={fromValue.toString()} />
+                    <Input
+                      placeholder="00.00"
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      value={fromValue.toString()}
+                    />
                   </Box>
                 </Box>
               </Box>
@@ -202,7 +231,8 @@ const CategoryView = ({route}: any) => {
                   styleSize={16}
                   containerStyle={{paddingVertical: 0}}
                   min={0}
-                  max={5000}
+                  max={1000}
+                  rangeLabelsTextColor={colors.primary['500']}
                   toKnobColor={colors.primary['500']}
                   fromKnobColor={colors.primary['500']}
                   fromValueOnChange={val => setFromValue(val)}
@@ -216,6 +246,7 @@ const CategoryView = ({route}: any) => {
                   textAlign={'left'}
                   fontFamily={'Cairo'}
                   fontSize={16}
+                  color={isDarkMode ? '#FFF' : '#000'}
                   fontWeight={600}>
                   حسب الوسوم
                 </Text>
@@ -257,6 +288,7 @@ const CategoryView = ({route}: any) => {
                   textAlign={'left'}
                   fontFamily={'Cairo'}
                   fontSize={16}
+                  color={isDarkMode ? '#FFF' : '#000'}
                   fontWeight={600}>
                   الترتيب حسب
                 </Text>
@@ -269,7 +301,13 @@ const CategoryView = ({route}: any) => {
                       borderColor="primary.500"
                       borderWidth={1}
                       borderRadius={8}
-                      bg={order === 'asc' ? 'primary.500' : 'white'}>
+                      bg={
+                        order === 'asc'
+                          ? 'primary.500'
+                          : isDarkMode
+                          ? '#333'
+                          : 'white'
+                      }>
                       <Box py={2} px={3} flexDir={'row'} alignItems={'center'}>
                         <Text
                           fontFamily={'Cairo'}
@@ -289,7 +327,13 @@ const CategoryView = ({route}: any) => {
                       borderColor="primary.500"
                       borderWidth={1}
                       borderRadius={8}
-                      bg={order === 'desc' ? 'primary.500' : 'white'}>
+                      bg={
+                        order === 'desc'
+                          ? 'primary.500'
+                          : isDarkMode
+                          ? '#333'
+                          : 'white'
+                      }>
                       <Box py={2} px={3} flexDir={'row'} alignItems={'center'}>
                         <Text
                           fontFamily={'Cairo'}
@@ -321,6 +365,7 @@ const CategoryView = ({route}: any) => {
                 marginTop={6}
                 marginLeft={2}
                 bg="secondary.500"
+                onPress={() => removeFilters()}
                 colorScheme={'secondary'}>
                 <Text color="#FFF" fontFamily={'Cairo'}>
                   إعادة ضبط

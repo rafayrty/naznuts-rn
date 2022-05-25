@@ -4,8 +4,9 @@ import BackButton from '../../components/BackButton';
 import Header from '../../components/Header';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, useColorScheme} from 'react-native';
 const Success = () => {
+  const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation<any>();
   return (
     <Box safeArea flex="1" paddingBottom={0}>
@@ -18,6 +19,7 @@ const Success = () => {
               marginLeft={0}
               fontFamily={'Cairo'}
               fontSize={22}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontWeight={800}>
               الدفع{' '}
             </Text>
@@ -25,7 +27,7 @@ const Success = () => {
         </Box>{' '}
         <Box flex="1" width="100%">
           <Box
-            bg="white"
+            bg={isDarkMode ? '#333' : '#FFF'}
             shadow={2}
             borderRadius={12}
             width="88%"
@@ -63,6 +65,7 @@ const Success = () => {
               <Text
                 textAlign={'center'}
                 fontWeight={600}
+                color={isDarkMode ? '#FFF' : '#000'}
                 fontFamily={'Cairo'}
                 fontSize={20}>
                 تم الدفع بنجاح
@@ -72,6 +75,7 @@ const Success = () => {
                 fontFamily={'Cairo'}
                 fontWeight={600}
                 fontSize={12}
+                color={isDarkMode ? '#FFF' : '#000'}
                 marginTop={2}>
                 {' '}
                 رقم الفاتورة. 576345375
@@ -79,25 +83,42 @@ const Success = () => {
             </Box>
             <Box flexDir={'row'} width="100%" justifyContent={'space-between'}>
               <Box marginTop={4}>
-                <Text textAlign={'left'} fontFamily={'Cairo'}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  textAlign={'left'}
+                  fontFamily={'Cairo'}>
                   التاريخ
                 </Text>
-                <Text textAlign={'left'} fontFamily={'Cairo'} fontWeight={700}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  textAlign={'left'}
+                  fontFamily={'Cairo'}
+                  fontWeight={700}>
                   17/4/2022
                 </Text>
               </Box>
 
               <Box marginTop={4}>
-                <Text textAlign={'left'} fontFamily={'Cairo'}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  textAlign={'left'}
+                  fontFamily={'Cairo'}>
                   الوقت
                 </Text>
-                <Text textAlign={'left'} fontFamily={'Cairo'} fontWeight={700}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#000'}
+                  textAlign={'left'}
+                  fontFamily={'Cairo'}
+                  fontWeight={700}>
                   11:11:11 Am{' '}
                 </Text>
               </Box>
             </Box>
             <Box marginTop={4}>
-              <Text textAlign={'left'} fontFamily={'Cairo'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#000'}
+                textAlign={'left'}
+                fontFamily={'Cairo'}>
                 المبلغ الكلي
               </Text>
               <Text

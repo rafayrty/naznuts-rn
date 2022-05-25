@@ -6,17 +6,23 @@ import {categories_request} from '../../api/categories_request';
 import {useQuery} from 'react-query';
 import SvgUri from 'react-native-svg-uri-updated';
 import {useNavigation} from '@react-navigation/native';
+import {useColorScheme} from 'react-native';
 
 const Categories: React.FC = () => {
   const {data} = useQuery('categories', categories_request);
   const navigation = useNavigation();
+  const isDarkMode = useColorScheme() === 'dark';
   return (
     <ScrollView>
       <Box safeArea paddingBottom={32}>
         <Header />
 
         <Container marginTop={6} width="100%" mx="auto">
-          <Text fontFamily={'Cairo'} fontSize={'xl'} fontWeight={800}>
+          <Text
+            fontFamily={'Cairo'}
+            color={isDarkMode ? '#FFF' : '#000'}
+            fontSize={'xl'}
+            fontWeight={800}>
             التصنيفات
           </Text>
 
@@ -47,7 +53,7 @@ const Categories: React.FC = () => {
                               width="100%"
                               borderRadius={12}
                               height="100%"
-                              background={'#FFF'}
+                              background={isDarkMode ? '#333' : '#FFF'}
                               justifyContent={'center'}
                               alignItems={'center'}
                               style={{
@@ -64,7 +70,10 @@ const Categories: React.FC = () => {
                                   uri: `${item.attributes.icon.data.attributes.url}`,
                                 }}
                               />
-                              <Text fontFamily={'Cairo'} marginTop={2}>
+                              <Text
+                                fontFamily={'Cairo'}
+                                color={isDarkMode ? '#FFF' : '#000'}
+                                marginTop={2}>
                                 {' '}
                                 {item.attributes.name}
                               </Text>

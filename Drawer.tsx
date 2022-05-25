@@ -3,7 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Box, Text} from 'native-base';
 
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, useColorScheme} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {DeleteData} from './src/plugins/storage';
 import {DrawerActions} from '@react-navigation/native';
@@ -16,11 +16,12 @@ const Drawer: React.FC<any> = props => {
 
   const user = useAuthState();
   const dispatch = useAuthDispatch();
+  const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <DrawerContentScrollView
       safeArea
-      style={{backgroundColor: '#79C143'}}
+      style={{backgroundColor: isDarkMode ? '#333' : '#79c143'}}
       {...props}>
       <Box width="88%" mx="auto" px={1} py={6}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -256,6 +257,9 @@ const Drawer: React.FC<any> = props => {
                 // navigation.dispatch(StackActions.replace('Login'));
                 axios.defaults.headers.common.Authorization = false;
                 DeleteData('user');
+                DeleteData('cart');
+                DeleteData('address');
+
                 dispatch({type: 'LOGOUT'});
               }}
               style={{

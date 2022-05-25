@@ -24,6 +24,7 @@ import {
   user_update,
 } from '../../../api/user_request';
 import {DeleteData} from '../../../plugins/storage';
+import {useColorScheme} from 'react-native';
 
 type PassProps = {
   showModal: boolean;
@@ -36,6 +37,7 @@ type AlertProps = {
 };
 const DeleteAlert: React.FC<AlertProps> = ({setIsOpen, isOpen}) => {
   const cancelRef = React.useRef(null);
+  const isDarkMode = useColorScheme() === 'dark';
   const toast = useToast();
   const dispatch = useAuthDispatch();
   const user = useAuthState();
@@ -66,29 +68,35 @@ const DeleteAlert: React.FC<AlertProps> = ({setIsOpen, isOpen}) => {
         <AlertDialog.Content>
           <AlertDialog.CloseButton />
 
-          <AlertDialog.Header>
+          <AlertDialog.Header bg={isDarkMode ? '#333' : '#FFF'}>
             <Text
               fontFamily={'Cairo'}
               fontWeight={800}
               fontSize={16}
+              color={isDarkMode ? '#FFF' : '#333'}
               textAlign={'left'}>
               حذف حسابك
             </Text>
           </AlertDialog.Header>
-          <AlertDialog.Body>
-            <Text fontFamily={'Cairo'} textAlign={'left'}>
+          <AlertDialog.Body bg={isDarkMode ? '#333' : '#FFF'}>
+            <Text
+              fontFamily={'Cairo'}
+              color={isDarkMode ? '#FFF' : '#333'}
+              textAlign={'left'}>
               سيؤدي هذا إلى إزالة جميع البيانات. هذا العمل لا يمكن أن يكون عكس.
               لا يمكن استعادة البيانات المحذوفة.
             </Text>
           </AlertDialog.Body>
-          <AlertDialog.Footer>
+          <AlertDialog.Footer bg={isDarkMode ? '#333' : '#FFF'}>
             <Button.Group space={2}>
               <Button
                 variant="unstyled"
                 colorScheme="coolGray"
                 onPress={() => setIsOpen(!isOpen)}
                 ref={cancelRef}>
-                <Text fontFamily={'Cairo'}>يلغي</Text>
+                <Text color={isDarkMode ? '#FFF' : '#333'} fontFamily={'Cairo'}>
+                  يلغي
+                </Text>
               </Button>
               <Button colorScheme="danger" onPress={() => deleteAcc()}>
                 <Text fontFamily={'Cairo'} color="white">
@@ -106,6 +114,7 @@ const DeleteAlert: React.FC<AlertProps> = ({setIsOpen, isOpen}) => {
 const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
   const user = useAuthState();
   const toast = useToast();
+  const isDarkMode = useColorScheme() === 'dark';
   const {
     control,
     setError,
@@ -149,12 +158,15 @@ const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
-          <Modal.Header>
-            <Text textAlign={'left'} fontFamily={'Cairo'}>
+          <Modal.Header bg={isDarkMode ? '#333' : '#FFF'}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#333'}
+              textAlign={'left'}
+              fontFamily={'Cairo'}>
               تطوير كلمة السر
             </Text>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body bg={isDarkMode ? '#333' : '#FFF'}>
             <Controller
               control={control}
               rules={{
@@ -176,7 +188,8 @@ const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
                     fontSize={12}
                     paddingRight="6"
                     type={'password'}
-                    bg="#FFF"
+                    bg={isDarkMode ? '#333' : '#FFF'}
+                    color={isDarkMode ? '#FFF' : '#333'}
                     textAlign="right"
                   />
                 </TextInput>
@@ -204,7 +217,8 @@ const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
                       fontSize={12}
                       paddingRight="6"
                       type={'password'}
-                      bg="#FFF"
+                      bg={isDarkMode ? '#333' : '#FFF'}
+                      color={isDarkMode ? '#FFF' : '#333'}
                       textAlign="right"
                     />
                   </TextInput>
@@ -213,7 +227,7 @@ const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
               />
             </Box>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer bg={isDarkMode ? '#333' : '#FFF'}>
             <Button.Group space={2}>
               <Button
                 variant="ghost"
@@ -222,7 +236,9 @@ const ChangePass: React.FC<PassProps> = ({showModal, setShowModal}) => {
                 onPress={() => {
                   setShowModal(false);
                 }}>
-                <Text fontFamily={'Cairo'}>يلغي</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+                  يلغي
+                </Text>
               </Button>
               <Button onPress={handleSubmit(onSubmit)}>
                 <Text fontFamily={'Cairo'} color="#FFF">
@@ -278,7 +294,7 @@ const Management = () => {
   };
 
   const [isOpen, setIsOpen] = React.useState(false);
-
+  const isDarkMode = useColorScheme() === 'dark';
   return (
     <ScrollView>
       <Box safeArea flex="1" paddingBottom={5}>
@@ -290,6 +306,7 @@ const Management = () => {
               marginLeft={1}
               fontFamily={'Cairo'}
               fontSize={22}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontWeight={800}>
               الملف الشخصي
             </Text>
@@ -322,7 +339,9 @@ const Management = () => {
                         fontSize={12}
                         paddingRight="6"
                         type={'text'}
-                        bg="#FFF"
+                        bg={isDarkMode ? '#333' : '#FFF'}
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        borderColor={isDarkMode ? '#333' : 'gray.400'}
                         textAlign="right"
                       />
                     </TextInput>
@@ -353,7 +372,9 @@ const Management = () => {
                         fontSize={12}
                         paddingRight="6"
                         type={'text'}
-                        bg="#FFF"
+                        bg={isDarkMode ? '#333' : '#FFF'}
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        borderColor={isDarkMode ? '#333' : 'gray.400'}
                         textAlign="right"
                       />
                     </TextInput>
@@ -383,7 +404,9 @@ const Management = () => {
                         fontSize={12}
                         paddingRight="6"
                         type={'text'}
-                        bg="#FFF"
+                        bg={isDarkMode ? '#333' : '#FFF'}
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        borderColor={isDarkMode ? '#333' : 'gray.400'}
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         autoCompleteType="email"
@@ -400,7 +423,10 @@ const Management = () => {
                 bg="primary.500"
                 px={6}
                 marginTop={4}>
-                <Text fontFamily={'Cairo'} fontWeight={600} color="#FFF">
+                <Text
+                  fontFamily={'Cairo'}
+                  fontWeight={600}
+                  color={isDarkMode ? '#333' : '#FFF'}>
                   حفظ
                 </Text>
               </Button>
@@ -410,6 +436,7 @@ const Management = () => {
         <Box marginTop={6} paddingTop={1} width="100%">
           <Container width="100%" mx="auto">
             <Text
+              color={isDarkMode ? '#FFF' : '#000'}
               fontFamily={'Cairo'}
               fontSize={22}
               textAlign={'left'}
@@ -417,9 +444,16 @@ const Management = () => {
               ادارة الحساب والأمان
             </Text>
           </Container>
-          <Box width="100%" marginTop={4} py={4} bg="white">
+          <Box
+            width="100%"
+            marginTop={4}
+            py={4}
+            bg={isDarkMode ? '#333' : '#FFF'}>
             <Container width="100%" mx="auto">
-              <Text fontFamily={'Cairo'} textAlign={'left'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                fontFamily={'Cairo'}
+                textAlign={'left'}>
                 كلمة المرور
               </Text>
 
@@ -436,9 +470,16 @@ const Management = () => {
             </Container>
           </Box>
 
-          <Box width="100%" marginTop={4} py={4} bg="white">
+          <Box
+            width="100%"
+            marginTop={4}
+            py={4}
+            bg={isDarkMode ? '#333' : '#FFF'}>
             <Container width="100%" mx="auto">
-              <Text fontFamily={'Cairo'} textAlign={'left'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#FFF'}
+                fontFamily={'Cairo'}
+                textAlign={'left'}>
                 تعطيل الحساب{' '}
               </Text>
 
@@ -448,9 +489,7 @@ const Management = () => {
                 width="2/5"
                 onPress={() => setIsOpen(true)}
                 bg="danger.500">
-                <Text fontFamily={'Cairo'} color="white">
-                  تعطيل حسابك
-                </Text>
+                <Text fontFamily={'Cairo'}>تعطيل حسابك</Text>
               </Button>
             </Container>
           </Box>

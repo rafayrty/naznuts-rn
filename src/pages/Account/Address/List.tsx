@@ -1,4 +1,4 @@
-import {FlatList} from 'react-native';
+import {FlatList, useColorScheme} from 'react-native';
 import React from 'react';
 
 import {
@@ -11,6 +11,7 @@ import {
   AlertDialog,
   Button,
   Center,
+  Spinner,
 } from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import {address_request} from '../../../api/address_request';
@@ -38,6 +39,7 @@ const DeleteAlert: React.FC<AlertProps> = ({
 }) => {
   const cancelRef = React.useRef(null);
   const toast = useToast();
+  const isDarkMode = useColorScheme();
 
   const deleteAddress = (address_id: number): void => {
     axios.delete(`${API_URL}/api/addresses/${address_id}`).then(_ => {
@@ -59,31 +61,37 @@ const DeleteAlert: React.FC<AlertProps> = ({
         <AlertDialog.Content>
           <AlertDialog.CloseButton />
 
-          <AlertDialog.Header>
+          <AlertDialog.Header bg={isDarkMode ? '#333' : '#FFF'}>
             <Text
               fontFamily={'Cairo'}
               fontWeight={800}
+              color={isDarkMode ? '#FFF' : '#333'}
               fontSize={16}
               textAlign={'left'}>
               حذف العنوان{' '}
             </Text>
           </AlertDialog.Header>
-          <AlertDialog.Body>
-            <Text fontFamily={'Cairo'} textAlign={'left'}>
+          <AlertDialog.Body bg={isDarkMode ? '#333' : '#FFF'}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#333'}
+              fontFamily={'Cairo'}
+              textAlign={'left'}>
               هل تريد حذف العنوان
             </Text>
           </AlertDialog.Body>
-          <AlertDialog.Footer>
+          <AlertDialog.Footer bg={isDarkMode ? '#333' : '#FFF'}>
             <Button.Group space={2}>
               <Button
                 variant="unstyled"
                 colorScheme="coolGray"
                 onPress={() => setIsOpen(!isOpen)}
                 ref={cancelRef}>
-                <Text fontFamily={'Cairo'}>يلغي</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
+                  يلغي
+                </Text>
               </Button>
               <Button colorScheme="danger" onPress={() => deleteAddress(id)}>
-                <Text fontFamily={'Cairo'} color="white">
+                <Text color="#FFF" fontFamily={'Cairo'}>
                   حذف
                 </Text>
               </Button>
@@ -100,16 +108,23 @@ type Props = {
   index: number;
   refetch: Function;
   editAddress: Function;
+  iseditLoader: boolean;
 };
 
-const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
+const Item: React.FC<Props> = ({
+  item,
+  index,
+  refetch,
+  iseditLoader,
+  editAddress,
+}) => {
   //   const navigation = useNavigation();
   const [isOpen, setIsOpen] = React.useState(false);
-
+  const isDarkMode = useColorScheme() === 'dark';
   const {colors} = useTheme();
   return (
     <Box
-      bg="white"
+      bg={isDarkMode ? '#333' : '#FFF'}
       shadow={3}
       borderRadius={10}
       my={3}
@@ -126,9 +141,15 @@ const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
           justifyContent={'center'}
           alignItems={'center'}
           borderRadius={100}>
-          {item.attributes.type === 'Home' && <Home />}
-          {item.attributes.type === 'Office' && <Office />}
-          {item.attributes.type === 'Other' && <Marker />}
+          {item.attributes.type === 'Home' && (
+            <Home color={isDarkMode ? '#333' : '#FFF'} />
+          )}
+          {item.attributes.type === 'Office' && (
+            <Office color={isDarkMode ? '#333' : '#FFF'} />
+          )}
+          {item.attributes.type === 'Other' && (
+            <Marker color={isDarkMode ? '#333' : '#FFF'} />
+          )}
         </Box>
         <Text
           marginLeft={2}
@@ -140,11 +161,15 @@ const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
         </Text>
       </Box>
       <Box>
-        <Text my={1} textAlign={'left'} fontFamily={'Cairo'}>
+        <Text
+          my={1}
+          color={isDarkMode ? 'gray.100' : '#000'}
+          textAlign={'left'}
+          fontFamily={'Cairo'}>
           {item.attributes.name} - {item.attributes.phone}
         </Text>
         <Text
-          color="gray.700"
+          color={isDarkMode ? 'gray.300' : 'gray.700'}
           fontSize={13}
           opacity={0.7}
           fontWeight={500}
@@ -175,16 +200,20 @@ const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
                     },
                   ],
                 }}>
-                <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <Path
-                    d="M12.4445 13.3332H2.66672V3.55539H8.54228L9.43117 2.6665H2.66672C2.43097 2.6665 2.20488 2.76015 2.03818 2.92685C1.87148 3.09355 1.77783 3.31964 1.77783 3.55539V13.3332C1.77783 13.5689 1.87148 13.795 2.03818 13.9617C2.20488 14.1284 2.43097 14.2221 2.66672 14.2221H12.4445C12.6802 14.2221 12.9063 14.1284 13.073 13.9617C13.2397 13.795 13.3334 13.5689 13.3334 13.3332V6.6665L12.4445 7.55539V13.3332Z"
-                    fill="white"
-                  />
-                  <Path
-                    d="M14.9023 2.59575L13.4046 1.09797C13.3381 1.03132 13.2591 0.978434 13.1722 0.942351C13.0852 0.906269 12.992 0.887695 12.8979 0.887695C12.8038 0.887695 12.7106 0.906269 12.6236 0.942351C12.5367 0.978434 12.4577 1.03132 12.3912 1.09797L6.29789 7.22686L5.80456 9.36464C5.78354 9.46826 5.78575 9.57526 5.81103 9.67793C5.83631 9.7806 5.88403 9.87639 5.95075 9.95842C6.01747 10.0404 6.10155 10.1067 6.19692 10.1523C6.2923 10.198 6.3966 10.2219 6.50234 10.2224C6.55699 10.2284 6.61213 10.2284 6.66678 10.2224L8.82234 9.74686L14.9023 3.60908C14.969 3.54261 15.0219 3.46364 15.058 3.3767C15.094 3.28976 15.1126 3.19655 15.1126 3.10241C15.1126 3.00828 15.094 2.91507 15.058 2.82813C15.0219 2.74119 14.969 2.66222 14.9023 2.59575ZM8.36012 8.92464L6.73345 9.28464L7.11123 7.6713L11.6979 3.05353L12.9512 4.30686L8.36012 8.92464ZM13.4535 3.80464L12.2001 2.5513L12.889 1.84908L14.1512 3.1113L13.4535 3.80464Z"
-                    fill="white"
-                  />
-                </Svg>
+                {iseditLoader ? (
+                  <Spinner />
+                ) : (
+                  <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <Path
+                      d="M12.4445 13.3332H2.66672V3.55539H8.54228L9.43117 2.6665H2.66672C2.43097 2.6665 2.20488 2.76015 2.03818 2.92685C1.87148 3.09355 1.77783 3.31964 1.77783 3.55539V13.3332C1.77783 13.5689 1.87148 13.795 2.03818 13.9617C2.20488 14.1284 2.43097 14.2221 2.66672 14.2221H12.4445C12.6802 14.2221 12.9063 14.1284 13.073 13.9617C13.2397 13.795 13.3334 13.5689 13.3334 13.3332V6.6665L12.4445 7.55539V13.3332Z"
+                      fill="white"
+                    />
+                    <Path
+                      d="M14.9023 2.59575L13.4046 1.09797C13.3381 1.03132 13.2591 0.978434 13.1722 0.942351C13.0852 0.906269 12.992 0.887695 12.8979 0.887695C12.8038 0.887695 12.7106 0.906269 12.6236 0.942351C12.5367 0.978434 12.4577 1.03132 12.3912 1.09797L6.29789 7.22686L5.80456 9.36464C5.78354 9.46826 5.78575 9.57526 5.81103 9.67793C5.83631 9.7806 5.88403 9.87639 5.95075 9.95842C6.01747 10.0404 6.10155 10.1067 6.19692 10.1523C6.2923 10.198 6.3966 10.2219 6.50234 10.2224C6.55699 10.2284 6.61213 10.2284 6.66678 10.2224L8.82234 9.74686L14.9023 3.60908C14.969 3.54261 15.0219 3.46364 15.058 3.3767C15.094 3.28976 15.1126 3.19655 15.1126 3.10241C15.1126 3.00828 15.094 2.91507 15.058 2.82813C15.0219 2.74119 14.969 2.66222 14.9023 2.59575ZM8.36012 8.92464L6.73345 9.28464L7.11123 7.6713L11.6979 3.05353L12.9512 4.30686L8.36012 8.92464ZM13.4535 3.80464L12.2001 2.5513L12.889 1.84908L14.1512 3.1113L13.4535 3.80464Z"
+                      fill="white"
+                    />
+                  </Svg>
+                )}
 
                 <Text color="#FFF" marginLeft={2} fontFamily={'Cairo'}>
                   تعديل
@@ -244,11 +273,14 @@ const Item: React.FC<Props> = ({item, index, refetch, editAddress}) => {
 };
 const List = () => {
   const {data: address, refetch} = useQuery('address', address_request);
+  const [editLoader, setEditLoader] = React.useState<boolean>(false);
   const navigation = useNavigation();
 
   const editAddress = (id: number): void => {
+    setEditLoader(true);
     axios.get(`${API_URL}/api/addresses/` + id + '?populate=*').then(res => {
       navigation.navigate('EditAddress', res.data);
+      setEditLoader(false);
     });
   };
 
@@ -288,6 +320,7 @@ const List = () => {
                 item={item}
                 index={index}
                 refetch={refetch}
+                iseditLoader={editLoader}
                 editAddress={editAddress}
               />
             )}

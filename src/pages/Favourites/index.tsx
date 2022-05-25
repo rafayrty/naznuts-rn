@@ -1,4 +1,4 @@
-import {FlatList} from 'react-native';
+import {FlatList, useColorScheme} from 'react-native';
 import React, {useEffect} from 'react';
 import {Box, Text, Container} from 'native-base';
 import Header from '../../components/Header';
@@ -13,7 +13,8 @@ import {API_URL} from '../../../consts';
 
 const Favourites = () => {
   const [user, setUser] = React.useState<any>(undefined);
-
+  const [isLoading, setisLoading] = React.useState<boolean>(false);
+  const isDarkMode = useColorScheme() === 'dark';
   useEffect(() => {
     GetData('user').then(res => {
       if (res !== undefined && res !== null) {
@@ -32,7 +33,9 @@ const Favourites = () => {
 
   // For Refetching
   const mutation = useMutation(async (id: number) => {
-    axios.delete(`${API_URL}/api/favourites/${id}`);
+    axios
+      .delete(`${API_URL}/api/favourites/${id}`)
+      .then(_ => setisLoading(false));
     refetch();
   });
   useFocusEffect(
@@ -44,13 +47,18 @@ const Favourites = () => {
 
   const deleteFav = (id: number) => {
     mutation.mutate(id);
+    setisLoading(true);
   };
 
   return (
     <Box safeArea flex="1">
       <Header />
       <Container flex="1" marginTop={3} mx="auto" width="100%">
-        <Text fontSize={24} fontWeight={800} fontFamily={'Cairo'}>
+        <Text
+          color={isDarkMode ? '#FFF' : '#000'}
+          fontSize={24}
+          fontWeight={800}
+          fontFamily={'Cairo'}>
           المفضلة
         </Text>
 
@@ -59,13 +67,18 @@ const Favourites = () => {
             <FavouritesEmpty />
             <Box marginTop={6}>
               <Text
+                color={isDarkMode ? '#FFF' : '#000'}
                 textAlign={'center'}
                 fontFamily={'Cairo'}
                 fontWeight={800}
                 fontSize={28}>
                 القائمة فارغة
               </Text>
-              <Text textAlign={'center'} fontFamily={'Cairo'} fontSize={20}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#000'}
+                textAlign={'center'}
+                fontFamily={'Cairo'}
+                fontSize={20}>
                 لم يتم اضافة عناوين لحسابك
               </Text>
             </Box>
@@ -75,7 +88,9 @@ const Favourites = () => {
             style={{width: '100%', flex: 1}}
             data={products?.data.data}
             keyExtractor={(item, index) => `${item.item}-${index}`}
-            renderItem={({item}) => <Item item={item} deleteItem={deleteFav} />}
+            renderItem={({item}) => (
+              <Item item={item} isLoading={isLoading} deleteItem={deleteFav} />
+            )}
           />
         )}
       </Container>

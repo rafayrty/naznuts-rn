@@ -1,4 +1,4 @@
-import {ScrollView, Platform} from 'react-native';
+import {ScrollView, Platform, useColorScheme} from 'react-native';
 import React, {ReactNode} from 'react';
 import {Box, Text, Pressable} from 'native-base';
 import {useQuery} from 'react-query';
@@ -78,6 +78,8 @@ import {useNavigation} from '@react-navigation/native';
 
 const CategorySlider: React.FC = () => {
   const {data} = useQuery('categories', categories_request);
+  const isDarkMode = useColorScheme() === 'dark' ? true : false;
+
   const navigation = useNavigation();
   return (
     <ScrollView
@@ -106,7 +108,7 @@ const CategorySlider: React.FC = () => {
                 return (
                   <Box
                     shadow={2}
-                    background="#FFF"
+                    background={isDarkMode ? '#333' : '#FFF'}
                     borderRadius="100"
                     p="3"
                     style={{
@@ -133,7 +135,11 @@ const CategorySlider: React.FC = () => {
                 );
               }}
             </Pressable>
-            <Text textAlign={'center'} marginTop={2} fontFamily={'Cairo'}>
+            <Text
+              color={isDarkMode ? 'white' : 'black'}
+              textAlign={'center'}
+              marginTop={2}
+              fontFamily={'Cairo'}>
               {item.attributes.name}
             </Text>
           </Box>

@@ -1,4 +1,4 @@
-import {StatusBar, ScrollView} from 'react-native';
+import {StatusBar, ScrollView, useColorScheme} from 'react-native';
 import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 // import {SafeAreaView} from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import {useAuthState} from '../../AuthContext';
 
 const Login: React.FC = () => {
   // const user = React.useContext(UserContext);
+  const isDarkMode = useColorScheme() === 'dark';
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
   const auth = useAuthState();
@@ -27,18 +28,23 @@ const Login: React.FC = () => {
         <Box flex="1" flexDir={'column'} justifyContent={'space-between'}>
           <StatusBar
             animated={true}
-            barStyle={'dark-content'}
-            backgroundColor="#E4F3D9"
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={isDarkMode ? 'rgba(121,193,63,0.3)' : '#E4F3D9'}
           />
-          <Box position="absolute" width="85%" right="0" top={-40} height={200}>
+          <Box
+            position="absolute"
+            width="85%"
+            right="0"
+            top={isDarkMode ? -30 : -40}
+            height={200}>
             <Svg
               style={{width: '100%', height: '100%'}}
               viewBox="0 0 428 159"
               fill="none">
               <Path
-                opacity="0.8"
+                opacity={isDarkMode ? 0.35 : 1}
                 d="M114.71 94.867C-43.9252 73.858 -63.4398 159 -91 159C-91 124.353 -91 -85 -91 -85H461C461 -85 424.888 32.9456 286.888 15.2991C148.888 -2.34731 273.346 115.876 114.71 94.867Z"
-                fill="#E4F3D9"
+                fill={isDarkMode ? '#79C143' : '#E4F3D9'}
               />
             </Svg>
           </Box>
@@ -51,6 +57,7 @@ const Login: React.FC = () => {
                       fontFamily={'Cairo'}
                       fontSize="xl"
                       fontWeight={600}
+                      color={isDarkMode ? '#FFF' : '#000'}
                       textAlign="left">
                       مرحبا بك في
                       {/* {JSON.stringify(user)} */}

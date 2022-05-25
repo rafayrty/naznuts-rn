@@ -1,17 +1,21 @@
-import {Image} from 'react-native';
+import {Image, useColorScheme} from 'react-native';
 import React from 'react';
 import {Box, Pressable, Text, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
 import Plus from '../../icons/Plus';
 import Minus from '../../icons/Minus';
+import {useNavigation} from '@react-navigation/native';
 
 type Props = {
   item: any;
   deleteItem: any;
+  isLoading: boolean;
 };
-const Item: React.FC<Props> = ({item, deleteItem}) => {
+const Item: React.FC<Props> = ({item, deleteItem, isLoading}) => {
+  const navigation = useNavigation();
   const [qty, setQty] = React.useState<number>(0);
   const [price, setPrice] = React.useState<number>(6.5);
+  const isDarkMode = useColorScheme() === 'dark';
 
   React.useEffect(() => {
     setQty(item.attributes.product.data.attributes.type === 'weight' ? 250 : 1);
@@ -50,7 +54,7 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
   return (
     <Box width="100%">
       <Box
-        bg="#FFF"
+        bg={isDarkMode ? '#333' : '#FFF'}
         width="100%"
         borderRadius={12}
         flexDir={'row'}
@@ -68,7 +72,11 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
         />
         <Box p={2} py={3} flex="1">
           <Box>
-            <Text textAlign={'left'} fontWeight={800} fontFamily={'Cairo'}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#333'}
+              textAlign={'left'}
+              fontWeight={800}
+              fontFamily={'Cairo'}>
               {item.attributes.product.data.attributes.name}
             </Text>
           </Box>
@@ -110,7 +118,12 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
                 p="0">
                 <Plus color="white" />
               </Button>
-              <Text px="2" fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                px="2"
+                fontSize={12}
+                fontWeight={500}
+                fontFamily={'Cairo'}>
                 {item.attributes.product.data.attributes.type === 'weight'
                   ? qty >= 1000
                     ? qty / 1000 + ' كلغ'
@@ -124,21 +137,34 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
                 variant="outline"
                 p="0"
                 width="6">
-                <Minus color="black" />
+                <Minus color={isDarkMode ? '#FFF' : '#333'} />
               </Button>
             </Box>
             <Box flexDirection="row" justifyContent={'flex-end'}>
-              <Text fontWeight={700} fontSize={17}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                fontWeight={700}
+                fontSize={17}>
                 {price}
               </Text>
-              <Text fontSize={10} fontWeight={700} marginTop={2}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                fontSize={10}
+                fontWeight={700}
+                marginTop={2}>
                 ₪
               </Text>
             </Box>
           </Box>
 
           <Box flexDir={'row'} marginTop={2} justifyContent={'space-between'}>
-            <Pressable width="70%">
+            <Pressable
+              width="70%"
+              onPress={() =>
+                navigation.navigate('Product', {
+                  slug: item.attributes.product.data.attributes.slug,
+                })
+              }>
               {({isPressed}) => {
                 return (
                   <Box
@@ -188,6 +214,7 @@ const Item: React.FC<Props> = ({item, deleteItem}) => {
             </Pressable>
 
             <Button
+              isLoading={isLoading}
               onPress={() => deleteItem(item.id)}
               variant={'outline'}
               colorScheme={'danger'}>

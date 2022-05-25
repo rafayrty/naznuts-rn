@@ -10,7 +10,7 @@ export async function address_add(data: any) {
 }
 
 export async function address_request() {
-  return await axios.get(`${API_URL}/api/addresses`);
+  return await axios.get(`${API_URL}/api/addresses?populate=*`);
 }
 
 export async function address_update(data: any) {

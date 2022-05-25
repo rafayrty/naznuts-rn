@@ -1,6 +1,6 @@
-import {ScrollView, TouchableOpacity} from 'react-native';
+import {ScrollView, TouchableOpacity, useColorScheme} from 'react-native';
 import React from 'react';
-import {Box, Container, Radio, Text, useToast} from 'native-base';
+import {Box, Container, Radio, Skeleton, Text, useToast} from 'native-base';
 import BackButton from '../../components/BackButton';
 import Header from '../../components/Header';
 import Svg, {Rect, Path} from 'react-native-svg';
@@ -10,10 +10,17 @@ import {address_request} from '../../api/address_request';
 import Office from '../../icons/Office';
 import Marker from '../../icons/Marker';
 import Home from '../../icons/Home';
+import {addAddress} from '../../plugins/cart';
+import {GetData} from '../../plugins/storage';
 
 const AddressCheckout = () => {
   const navigation = useNavigation();
-  const {data: address, refetch} = useQuery('address', address_request);
+  const isDarkMode = useColorScheme() === 'dark';
+  const {
+    data: address,
+    isLoading,
+    refetch,
+  } = useQuery('address', address_request);
   const [selectedAddress, setSelectedAddress] = React.useState<string>('');
   const toast = useToast();
   const nextPage = () => {
@@ -30,13 +37,24 @@ const AddressCheckout = () => {
   useFocusEffect(
     React.useCallback(() => {
       refetch();
+      GetData('address').then((res: any) => {
+        if (res !== undefined && res !== null) {
+          setSelectedAddress(JSON.parse(res).id);
+        }
+      });
       return () => refetch();
     }, [refetch]),
   );
 
+  const updateAddress = (value: string) => {
+    setSelectedAddress(value);
+
+    addAddress(address?.data.data.find((x: any) => x.id == value));
+  };
+
   return (
     //   Disable flex 1 on landscape mode
-    <ScrollView contentContainerStyle={{flex: 1}}>
+    <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <Box safeArea flex="1" paddingBottom={5}>
         <Header />
         <Container flex="1" mx="auto" width="100%">
@@ -44,6 +62,7 @@ const AddressCheckout = () => {
             <Box marginTop={4} flexDir={'row'} alignItems={'center'}>
               <BackButton />
               <Text
+                color={isDarkMode ? '#FFF' : '#333'}
                 marginLeft={0}
                 fontFamily={'Cairo'}
                 fontSize={22}
@@ -159,7 +178,11 @@ const AddressCheckout = () => {
             </Box>
             {/* Top Titles */}
             <Box marginTop={6}>
-              <Text fontSize={20} fontWeight={600} fontFamily={'Cairo'}>
+              <Text
+                textAlign={'left'}
+                fontSize={20}
+                fontWeight={600}
+                fontFamily={'Cairo'}>
                 إلى أين تريد ان يتم
               </Text>
               <Text
@@ -216,79 +239,109 @@ const AddressCheckout = () => {
               </TouchableOpacity>
             </Box>
             <Box width={'100%'}>
-              <Text textAlign={'left'} marginTop={6} fontFamily={'Cairo'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#000'}
+                textAlign={'left'}
+                marginTop={6}
+                fontFamily={'Cairo'}>
                 عناوين مضافة سابقاً
               </Text>
 
               <Box width="100%">
                 <Radio.Group
                   width="100%"
-                  onChange={value => setSelectedAddress(value)}
+                  value={selectedAddress}
+                  onChange={value => updateAddress(value)}
                   name="exampleGroup"
                   colorScheme="primary"
                   accessibilityLabel="pick an option">
                   {address?.data.data.map((item: any, index: number) => {
                     return (
-                      <Radio
-                        key={`item-${index}`}
-                        width="100%"
-                        colorScheme="primary"
-                        value={item.id}
-                        my={1}>
-                        <Box
-                          bg="white"
-                          width="88%"
-                          shadow={3}
-                          borderRadius={10}
-                          my={3}
-                          mx={1}
-                          py={3}
-                          px={5}>
+                      <Skeleton
+                        key={item.id}
+                        h="20"
+                        rounded="sm"
+                        isLoaded={!isLoading}>
+                        <Radio
+                          width="100%"
+                          colorScheme="primary"
+                          value={item.id}
+                          my={1}>
                           <Box
-                            flexDir={'row'}
-                            width="100%"
-                            alignItems={'center'}>
+                            bg={isDarkMode ? '#333' : '#FFF'}
+                            width="88%"
+                            shadow={3}
+                            borderRadius={10}
+                            my={3}
+                            mx={1}
+                            py={3}
+                            px={5}>
                             <Box
-                              bg="primary.500"
-                              height={26}
-                              width={26}
-                              justifyContent={'center'}
-                              alignItems={'center'}
-                              borderRadius={100}>
-                              {item.attributes.type === 'Home' && <Home />}
-                              {item.attributes.type === 'Office' && <Office />}
-                              {item.attributes.type === 'Other' && <Marker />}
+                              flexDir={'row'}
+                              width="100%"
+                              alignItems={'center'}>
+                              <Box
+                                bg="primary.500"
+                                height={26}
+                                width={26}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                                borderRadius={100}>
+                                {item.attributes.type === 'Home' && (
+                                  <Home color={isDarkMode ? '#333' : '#FFF'} />
+                                )}
+                                {item.attributes.type === 'Office' && (
+                                  <Office
+                                    color={isDarkMode ? '#333' : '#FFF'}
+                                  />
+                                )}
+                                {item.attributes.type === 'Other' && (
+                                  <Marker
+                                    color={isDarkMode ? '#333' : '#FFF'}
+                                  />
+                                )}
+                              </Box>
+                              <Text
+                                marginLeft={2}
+                                fontSize={14}
+                                fontWeight={800}
+                                color="primary.500"
+                                fontFamily={'Cairo'}>
+                                عنوان {index + 1}
+                              </Text>
                             </Box>
-                            <Text
-                              marginLeft={2}
-                              fontSize={14}
-                              fontWeight={800}
-                              color="primary.500"
-                              fontFamily={'Cairo'}>
-                              عنوان {index + 1}
-                            </Text>
+                            <Box>
+                              <Text
+                                my={1}
+                                color={isDarkMode ? 'gray.100' : '#000'}
+                                textAlign={'left'}
+                                fontFamily={'Cairo'}>
+                                {item.attributes.name} - {item.attributes.phone}
+                              </Text>
+                              <Text
+                                color={isDarkMode ? 'gray.300' : 'gray.700'}
+                                fontSize={13}
+                                opacity={0.7}
+                                fontWeight={500}
+                                textAlign={'left'}
+                                fontFamily={'Cairo'}>
+                                {item.attributes.address_text}
+                              </Text>
+                            </Box>
                           </Box>
-                          <Box>
-                            <Text
-                              my={1}
-                              textAlign={'left'}
-                              fontFamily={'Cairo'}>
-                              {item.attributes.name} - {item.attributes.phone}
-                            </Text>
-                            <Text
-                              color="gray.700"
-                              fontSize={13}
-                              opacity={0.7}
-                              fontWeight={500}
-                              textAlign={'left'}
-                              fontFamily={'Cairo'}>
-                              {item.attributes.address_text}
-                            </Text>
-                          </Box>
-                        </Box>
-                      </Radio>
+                        </Radio>
+                      </Skeleton>
                     );
                   })}
+                  {isLoading && (
+                    <Skeleton
+                      size="5"
+                      marginTop={3}
+                      width="100%"
+                      h="20"
+                      rounded="sm"
+                    />
+                  )}
                 </Radio.Group>
               </Box>
             </Box>

@@ -1,4 +1,4 @@
-import {Image} from 'react-native';
+import {Image, useColorScheme} from 'react-native';
 import React from 'react';
 import {Box, Text, Button} from 'native-base';
 import Svg, {Path} from 'react-native-svg';
@@ -14,12 +14,14 @@ type Props = {
   updateTotalPrice: Function;
 };
 const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
+  const isDarkMode = useColorScheme() === 'dark';
   const [qty, setQty] = React.useState<number>(0);
   const [price, setPrice] = React.useState<number>(6.5);
 
   React.useEffect(() => {
-    setQty(item.quantity);
-    setPrice(item.attributes.price);
+    // console.log('hey', item.attributes.name);
+    setQty(item?.quantity);
+    setPrice(item?.attributes.price);
   }, [item]);
 
   const addQty = () => {
@@ -64,12 +66,11 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
       });
     });
   };
-
   return (
     <Box width="100%" py={1} px={1}>
       <Box
         shadow={3}
-        bg="#FFF"
+        bg={isDarkMode ? '#333' : '#FFF'}
         width="100%"
         borderRadius={12}
         flexDir={'row'}
@@ -89,7 +90,11 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
           <Box flexDir={'row'} width="100%" justifyContent={'space-between'}>
             <Box width="80%">
               <Box>
-                <Text textAlign={'left'} fontWeight={800} fontFamily={'Cairo'}>
+                <Text
+                  color={isDarkMode ? '#FFF' : '#333'}
+                  textAlign={'left'}
+                  fontWeight={800}
+                  fontFamily={'Cairo'}>
                   {item.attributes.name}
                 </Text>
               </Box>
@@ -140,7 +145,12 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
                 p="0">
                 <Plus color="white" />
               </Button>
-              <Text px="2" fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                px="2"
+                fontSize={12}
+                fontWeight={500}
+                fontFamily={'Cairo'}>
                 {item?.attributes.type === 'weight'
                   ? qty >= 1000
                     ? qty / 1000 + ' كلغ'
@@ -154,14 +164,21 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
                 variant="outline"
                 width="6"
                 p="0">
-                <Minus color="black" />
+                <Minus color={isDarkMode ? '#FFF' : '#333'} />
               </Button>
             </Box>
             <Box flexDirection="row" justifyContent={'flex-end'}>
-              <Text fontWeight={700} fontSize={17}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                fontWeight={700}
+                fontSize={17}>
                 {price}
               </Text>
-              <Text fontSize={10} fontWeight={700} marginTop={2}>
+              <Text
+                color={isDarkMode ? '#FFF' : '#333'}
+                fontSize={10}
+                fontWeight={700}
+                marginTop={2}>
                 ₪
               </Text>
             </Box>
