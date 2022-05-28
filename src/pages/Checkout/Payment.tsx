@@ -1,32 +1,28 @@
-import {
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-  useColorScheme,
-} from 'react-native';
+import {ScrollView, TouchableOpacity, useColorScheme} from 'react-native';
 import React from 'react';
 import {Box, Container, Image, Input, Text} from 'native-base';
 import BackButton from '../../components/BackButton';
 import Header from '../../components/Header';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Svg, {Path} from 'react-native-svg';
 import TextInput from '../../components/TextInput';
 import Card from '../../icons/Card';
 import {useNavigation} from '@react-navigation/native';
 import {Controller, useForm} from 'react-hook-form';
 import cardValidator from 'card-validator';
-import {
-  cardNumberFormatter,
-  cvvFormatter,
-  expirationDateFormatter,
-} from './formatters';
+import {cardNumberFormatter, expirationDateFormatter} from './formatters';
 import Calendar from '../../icons/Calendar';
-import {cardholderName} from 'card-validator/dist/cardholder-name';
 import {useOrientation} from '../../hooks';
+import {DeleteData, GetData} from '../../plugins/storage';
+import {useMutation} from 'react-query';
+import payment_request from '../../api/payment_request';
+import {CartCountContext, useAuthState} from '../../AuthContext';
+import ModalLoader from '../../components/ModalLoader';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Payment = () => {
   const orientation = useOrientation();
   const isDarkMode = useColorScheme() === 'dark';
+  const insets = useSafeAreaInsets();
   const {
     setError,
     getValues,
@@ -52,16 +48,64 @@ const Payment = () => {
   const cvv = watch('cvv');
   const expiry = watch('expiration');
   const cardHolderName = watch('cardHolderName');
-
   const navigation = useNavigation();
+  const {countDispatch} = React.useContext(CartCountContext);
+
+  const mutation = useMutation(payment_request, {
+    onSuccess: (data: any) => {
+      console.log(data);
+      setIsProcessing(false);
+      DeleteData('address');
+
+      DeleteData('cart').then(_ => {
+        setIsProcessing(false);
+        countDispatch(0);
+        reset();
+        navigation.navigate('Success', data);
+      });
+    },
+    onError: (data: any) => {
+      setIsProcessing(false);
+
+      console.error(data.response.data);
+    },
+  });
+  const user = useAuthState();
+
+  const [isProcessing, setIsProcessing] = React.useState<boolean>(false);
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    Alert.alert('success');
-    navigation.navigate('Success');
+    let total = 0;
+    let address: any = null;
+    let shipping_fee = 0;
+    setIsProcessing(true);
+    GetData('address').then((res: any) => {
+      address = JSON.parse(res);
+      shipping_fee = address.attributes.city.data.attributes.delivery_fee;
+      total += shipping_fee;
+
+      GetData('cart').then((result: any) => {
+        let cartItems = JSON.parse(result);
+        console.log('cartItems', cartItems);
+        cartItems.forEach((item: any) => {
+          total += item.attributes.price;
+        });
+        mutation.mutate({
+          data: data,
+          total,
+          // user_id: user.user?.id,
+          shipping_fee,
+          address,
+          products: cartItems,
+        });
+      });
+    });
+
+    // Alert.alert('success');
   };
   return (
     <>
+      <ModalLoader loading={isProcessing} />
       <ScrollView>
         <Box safeArea paddingBottom={0}>
           <Header />
@@ -138,15 +182,16 @@ const Payment = () => {
             )}
           </Container>
         </Box>
-
+        {/* Form Starts */}
         <Box
           style={{
             borderRadius: 24,
             backgroundColor: isDarkMode ? '#333' : '#fff',
             paddingTop: 32,
             borderWidth: 1,
+            marginTop: 16,
           }}>
-          <Container width="100%" mx="auto" paddingBottom={20}>
+          <Container width="100%" mx="auto" paddingBottom={8 + insets.bottom}>
             <Box>
               <Text
                 textAlign={'left'}
@@ -175,7 +220,7 @@ const Payment = () => {
                     }}
                     render={({field: {onChange, onBlur, value}}) => (
                       <TextInput
-                        label="الايميل"
+                        label="البطاقة الائتمانية "
                         isInvalid={errors.cardNumber ? true : false}
                         errorMsg={errors.cardNumber?.message}>
                         <Input
@@ -194,7 +239,7 @@ const Payment = () => {
                           }}
                           fontWeight="600"
                           textAlign="right"
-                          placeholder={'الرجاء كتابة الايميل'}
+                          placeholder={'رقم البطاقة الائتمانية'}
                           InputRightElement={
                             <Box marginRight={3}>
                               <Card />
@@ -377,6 +422,10 @@ const Payment = () => {
                     control={control}
                     rules={{
                       required: {value: true, message: 'الحقل مطلوب'},
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'invalid email address',
+                      },
                     }}
                     render={({field: {onChange, onBlur, value}}) => (
                       <TextInput
@@ -387,6 +436,7 @@ const Payment = () => {
                           p={2}
                           fontFamily={'Cairo'}
                           autoCorrect={false}
+                          autoCapitalize={'none'}
                           color={isDarkMode ? '#FFF' : '#000'}
                           value={value}
                           onBlur={onBlur}
@@ -431,38 +481,40 @@ const Payment = () => {
                 </Box>
               </Box>
 
-              {/* <TouchableOpacity onPress={handleSubmit(onSubmit)}> */}
-              <TouchableOpacity onPress={() => navigation.navigate('Success')}>
-                <Box
-                  bg="secondary.500"
-                  borderRadius={8}
-                  flexDir={'row-reverse'}
-                  alignItems={'center'}
-                  px={4}
-                  py={3}
-                  justifyContent={'space-between'}>
+              <Box width={'100%'} pb={2}>
+                <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+                  {/* <TouchableOpacity onPress={() => setIsProcessing(true)}> */}
                   <Box
-                    flexDir={'row'}
-                    width="100%"
-                    justifyContent={'center'}
-                    alignItems={'center'}>
-                    <Text
-                      fontWeight={600}
-                      fontFamily={'Cairo'}
-                      color="white"
-                      marginRight={2}>
-                      ادفع الآن{' '}
-                    </Text>
+                    bg="secondary.500"
+                    borderRadius={8}
+                    flexDir={'row-reverse'}
+                    alignItems={'center'}
+                    px={4}
+                    py={3}
+                    justifyContent={'space-between'}>
+                    <Box
+                      flexDir={'row'}
+                      width="100%"
+                      justifyContent={'center'}
+                      alignItems={'center'}>
+                      <Text
+                        fontWeight={600}
+                        fontFamily={'Cairo'}
+                        color="white"
+                        marginRight={2}>
+                        ادفع الآن{' '}
+                      </Text>
 
-                    <Svg width="17" height="8" viewBox="0 0 17 8" fill="none">
-                      <Path
-                        d="M16 4.5C16.2761 4.5 16.5 4.27614 16.5 4C16.5 3.72386 16.2761 3.5 16 3.5L16 4.5ZM0.646445 3.64645C0.451183 3.84171 0.451183 4.15829 0.646445 4.35356L3.82843 7.53554C4.02369 7.7308 4.34027 7.7308 4.53553 7.53554C4.7308 7.34027 4.7308 7.02369 4.53553 6.82843L1.70711 4L4.53553 1.17157C4.73079 0.976313 4.73079 0.65973 4.53553 0.464468C4.34027 0.269206 4.02369 0.269206 3.82843 0.464468L0.646445 3.64645ZM16 3.5L0.999999 3.5L0.999999 4.5L16 4.5L16 3.5Z"
-                        fill="white"
-                      />
-                    </Svg>
+                      <Svg width="17" height="8" viewBox="0 0 17 8" fill="none">
+                        <Path
+                          d="M16 4.5C16.2761 4.5 16.5 4.27614 16.5 4C16.5 3.72386 16.2761 3.5 16 3.5L16 4.5ZM0.646445 3.64645C0.451183 3.84171 0.451183 4.15829 0.646445 4.35356L3.82843 7.53554C4.02369 7.7308 4.34027 7.7308 4.53553 7.53554C4.7308 7.34027 4.7308 7.02369 4.53553 6.82843L1.70711 4L4.53553 1.17157C4.73079 0.976313 4.73079 0.65973 4.53553 0.464468C4.34027 0.269206 4.02369 0.269206 3.82843 0.464468L0.646445 3.64645ZM16 3.5L0.999999 3.5L0.999999 4.5L16 4.5L16 3.5Z"
+                          fill="white"
+                        />
+                      </Svg>
+                    </Box>
                   </Box>
-                </Box>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </Box>
             </Box>
           </Container>
         </Box>

@@ -1,13 +1,15 @@
 import React from 'react';
 import Header from '../../../components/Header';
-import {ArrowBackIcon, Box, Container, Text, View} from 'native-base';
-import BackButton from '../../../components/BackButton';
+import {Box, Container, Text} from 'native-base';
+// import BackButton from '../../../components/BackButton';
 import OrderTabs from './OrderTabs';
-import {TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useColorScheme} from 'react-native';
+import BackButton from '../../../components/BackButton';
 
 const Orders = () => {
-  const navigation = useNavigation();
+  const isDarkMode = useColorScheme() === 'dark';
+
+  // const navigation = useNavigation();
   return (
     <Box safeArea flex="1">
       <Header />
@@ -18,18 +20,12 @@ const Orders = () => {
           marginBottom={4}
           flexDir={'row'}
           alignItems={'center'}>
-          <TouchableOpacity
-            style={{padding: 10}}
-            onPress={() => navigation.navigate('Account')}>
-            <View style={{transform: [{rotate: '180deg'}]}}>
-              <ArrowBackIcon style={{color: 'black'}} />
-            </View>
-          </TouchableOpacity>
-
+          <BackButton />
           <Text
             marginLeft={0}
             fontFamily={'Cairo'}
             fontSize={22}
+            color={isDarkMode ? '#FFF' : '#000'}
             fontWeight={800}>
             طلباتي
           </Text>

@@ -358,7 +358,9 @@ const Receipt = () => {
             </Box>
           </Box>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Payment')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Payment')}
+            style={{marginBottom: 12}}>
             <Box
               bg="secondary.500"
               borderRadius={8}

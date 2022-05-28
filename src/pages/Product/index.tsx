@@ -78,9 +78,14 @@ const Product: React.FC<PropsNav> = ({route, navigation}) => {
 
   const addToCart = () => {
     setCartLoader(true);
-    addItem({...product?.data.data[0], quantity: qty}, toast).then(_ =>
-      setCartLoader(false),
-    );
+    addItem(
+      {
+        ...product?.data.data[0],
+        quantity: qty,
+        original_price: product?.data.data[0].attributes.price,
+      },
+      toast,
+    ).then(_ => setCartLoader(false));
   };
 
   const addToFav = () => {

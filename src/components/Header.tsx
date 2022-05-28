@@ -10,19 +10,11 @@ import Svg, {Path} from 'react-native-svg';
 import {Shadow} from 'react-native-shadow-2';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {GetData} from '../plugins/storage';
+import {CartCountContext} from '../AuthContext';
 const Header = () => {
   const navigation = useNavigation();
-  const [total, setTotal] = React.useState<number>(0);
   const isDarkMode = useColorScheme() === 'dark';
-  useFocusEffect(
-    React.useCallback(() => {
-      GetData('cart').then((res: any) => {
-        if (res !== undefined && res !== null) {
-          setTotal(JSON.parse(res).length);
-        }
-      });
-    }, []),
-  );
+  const {count} = React.useContext(CartCountContext);
 
   return (
     <Box
@@ -92,7 +84,7 @@ const Header = () => {
                 </TouchableOpacity>
               </Box>
               <Box position={'relative'}>
-                {total !== 0 && (
+                {count !== 0 && (
                   <Box
                     width={4}
                     height={4}
@@ -109,7 +101,7 @@ const Header = () => {
                       flex="1"
                       fontSize={10}
                       fontWeight={600}>
-                      {total}
+                      {count}
                     </Text>
                   </Box>
                 )}

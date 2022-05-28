@@ -69,6 +69,10 @@ const Form: React.FC = () => {
             control={control}
             rules={{
               required: {value: true, message: 'الحقل مطلوب'},
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'invalid email address',
+              },
             }}
             render={({field: {onChange, onBlur, value}}) => (
               <MainInput
@@ -109,7 +113,7 @@ const Form: React.FC = () => {
             }}
             render={({field: {onChange, onBlur, value}}) => (
               <MainInput
-                label="الايميل"
+                label="كلمة السر"
                 isInvalid={errors.password ? true : false}
                 errorMsg={errors.password?.message}>
                 <Input
@@ -125,7 +129,7 @@ const Form: React.FC = () => {
                   type={show ? 'text' : 'password'}
                   textAlign="right"
                   autoCapitalize={'none'}
-                  placeholder="الرجاء كتابة الايميل"
+                  placeholder="الرجاء كتابة كلمة السر"
                   InputRightElement={
                     <TouchableOpacity
                       onPress={handleClick}
@@ -161,7 +165,10 @@ const Form: React.FC = () => {
               تذكر حسابي
             </Text>
           </Checkbox>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Forgot');
+            }}>
             <Text fontFamily={'Cairo'} color={isDarkMode ? '#FFF' : '#000'}>
               إعادة تعيين كلمة السر
             </Text>

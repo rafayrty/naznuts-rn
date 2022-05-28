@@ -1,27 +1,32 @@
 import React from 'react';
 import {Box, Container, Text} from 'native-base';
-import BackButton from '../../components/BackButton';
 import Header from '../../components/Header';
 import Svg, {Path} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 import {TouchableOpacity, useColorScheme} from 'react-native';
-const Success = () => {
+import LottieView from 'lottie-react-native';
+
+const Success: React.FC<any> = ({route}) => {
+  const {data} = route.params;
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation<any>();
+  React.useEffect(() => {
+    console.log(route.params);
+  });
   return (
     <Box safeArea flex="1" paddingBottom={0}>
       <Header />
       <Container flex="1" mx="auto" width="100%">
         <Box width="100%">
           <Box marginTop={4} flexDir={'row'} alignItems={'center'}>
-            <BackButton />
+            {/* <BackButton /> */}
             <Text
               marginLeft={0}
               fontFamily={'Cairo'}
               fontSize={22}
               color={isDarkMode ? '#FFF' : '#000'}
               fontWeight={800}>
-              الدفع{' '}
+              الدفع
             </Text>
           </Box>
         </Box>{' '}
@@ -32,9 +37,22 @@ const Success = () => {
             borderRadius={12}
             width="88%"
             mx="auto"
+            position={'relative'}
             marginTop={10}
             p="4">
-            <Box
+            <LottieView
+              style={{
+                alignSelf: 'center',
+                position: 'absolute',
+                width: 200,
+                top: '-20%',
+              }}
+              source={require('../../../assets/lottie.json')}
+              autoPlay
+              loop
+            />
+
+            {/* <Box
               bg="primary.500"
               mx="auto"
               marginTop={-10}
@@ -54,9 +72,9 @@ const Success = () => {
                   stroke-linejoin="round"
                 />
               </Svg>
-            </Box>
+            </Box> */}
             <Box
-              paddingTop={4}
+              paddingTop={6}
               paddingBottom={3}
               borderRadius={2}
               borderBottomColor={'gray.400'}
@@ -78,7 +96,7 @@ const Success = () => {
                 color={isDarkMode ? '#FFF' : '#000'}
                 marginTop={2}>
                 {' '}
-                رقم الفاتورة. 576345375
+                رقم الفاتورة. {data.data.id}
               </Text>
             </Box>
             <Box flexDir={'row'} width="100%" justifyContent={'space-between'}>
@@ -94,7 +112,7 @@ const Success = () => {
                   textAlign={'left'}
                   fontFamily={'Cairo'}
                   fontWeight={700}>
-                  17/4/2022
+                  {new Date().toLocaleDateString()}
                 </Text>
               </Box>
 
@@ -110,7 +128,8 @@ const Success = () => {
                   textAlign={'left'}
                   fontFamily={'Cairo'}
                   fontWeight={700}>
-                  11:11:11 Am{' '}
+                  {new Date().toLocaleTimeString()}
+                  {/* 11:11:11 Am{' '} */}
                 </Text>
               </Box>
             </Box>
@@ -127,7 +146,7 @@ const Success = () => {
                 fontSize={16}
                 fontFamily={'Cairo'}
                 fontWeight={700}>
-                ₪661
+                ₪{JSON.stringify(data.data.attributes.total)}
               </Text>
             </Box>
           </Box>
@@ -165,7 +184,7 @@ const Success = () => {
             </Box>
           </TouchableOpacity>
         </Box>
-        <Box width="94%" marginTop={6} mx="auto">
+        <Box width="94%" marginTop={6} pb={3} mx="auto">
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Box
               bg="primary.500"

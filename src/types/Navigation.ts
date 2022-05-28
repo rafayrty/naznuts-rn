@@ -12,7 +12,7 @@ type RootStackParamList = {
 
   //Account
   Account: undefined;
-  Order: undefined;
+  Order: {orderid: number};
   Orders: undefined;
   Address: undefined;
   NewAddress: undefined;
@@ -28,6 +28,9 @@ type RootStackParamList = {
   Receipt: undefined;
   Payment: undefined;
   Success: undefined;
+
+  Forgot: undefined;
+  Reset: undefined;
 };
 type PropsNav = NativeStackScreenProps<RootStackParamList, 'Login'>;
 

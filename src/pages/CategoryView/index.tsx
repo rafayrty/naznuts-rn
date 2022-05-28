@@ -30,6 +30,7 @@ import {useFocusEffect} from '@react-navigation/native';
 
 import Item from './item';
 import {tags_request} from '../../api/tags_request';
+import {CartCountContext} from '../../AuthContext';
 
 const CategoryView = ({route}: any) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -39,16 +40,18 @@ const CategoryView = ({route}: any) => {
   const {colors} = useTheme();
   const {slug} = route.params;
   const [catSlug, setCatSlug] = useState<string>('');
+
   const [filters, setFilters] = useState<any>([]);
   const [order, setOrder] = useState<string>('asc');
 
   const {data} = useQuery('categories', categories_request);
   const [selectedTags, setSelectedTags] = React.useState<Array<any>>([]);
 
-  const {data: products, refetch} = useQuery(
-    ['products', [catSlug, filters]],
-    categories_product_request,
-  );
+  const {
+    data: products,
+    refetch,
+    isLoading,
+  } = useQuery(['products', [catSlug, filters]], categories_product_request);
 
   const {data: tags} = useQuery('tags', tags_request);
 
@@ -120,7 +123,7 @@ const CategoryView = ({route}: any) => {
                 color={isDarkMode ? '#FFF' : '#000'}
                 fontSize={22}
                 fontWeight={800}>
-                تفاصيل الطلب
+                فئات
               </Text>
             </Box>
             <TouchableOpacity onPress={onOpen}>
@@ -376,6 +379,13 @@ const CategoryView = ({route}: any) => {
         </Actionsheet>
 
         {/* Products */}
+        {!isLoading && products?.data.data.length === 0 ? (
+          <Text color="#FFF" p={4} textAlign={'left'}>
+            لم يتم العثور على نتائج
+          </Text>
+        ) : (
+          ''
+        )}
         <Box
           marginTop={6}
           px="4"

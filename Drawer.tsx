@@ -8,12 +8,17 @@ import Svg, {Path} from 'react-native-svg';
 import {DeleteData} from './src/plugins/storage';
 import {DrawerActions} from '@react-navigation/native';
 import axios from 'axios';
-import {useAuthDispatch, useAuthState} from './src/AuthContext';
+import {
+  CartCountContext,
+  useAuthDispatch,
+  useAuthState,
+} from './src/AuthContext';
 // import {LoggedUser} from './src/types/User';
 
 const Drawer: React.FC<any> = props => {
   const navigation = useNavigation<any>();
 
+  const {countDispatch} = React.useContext(CartCountContext);
   const user = useAuthState();
   const dispatch = useAuthDispatch();
   const isDarkMode = useColorScheme() === 'dark';
@@ -259,7 +264,7 @@ const Drawer: React.FC<any> = props => {
                 DeleteData('user');
                 DeleteData('cart');
                 DeleteData('address');
-
+                countDispatch(0);
                 dispatch({type: 'LOGOUT'});
               }}
               style={{

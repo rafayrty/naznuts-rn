@@ -7,8 +7,10 @@ import {
   CollapseHeader,
   CollapseBody,
 } from 'accordion-collapse-react-native';
+import {useColorScheme} from 'react-native';
 
 const Terms = () => {
+  const isDarkMode = useColorScheme() === 'dark';
   return (
     <Box safeArea>
       <Header />
@@ -19,6 +21,7 @@ const Terms = () => {
             marginLeft={3}
             fontFamily={'Cairo'}
             fontSize={22}
+            color={isDarkMode ? '#FFF' : '#000'}
             fontWeight={800}>
             الشروط و الأحكام
           </Text>
@@ -36,13 +39,16 @@ const Terms = () => {
             <Collapse>
               <CollapseHeader>
                 <Box>
-                  <Text textAlign={'left'} fontFamily={'Cairo'}>
+                  <Text
+                    color={isDarkMode ? '#FFF' : '#000'}
+                    textAlign={'left'}
+                    fontFamily={'Cairo'}>
                     الشروط والأحكام
                   </Text>
                 </Box>
               </CollapseHeader>
               <CollapseBody>
-                <Text>Ta daa!</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'}>Ta daa!</Text>
               </CollapseBody>
             </Collapse>
           </Box>
@@ -55,13 +61,16 @@ const Terms = () => {
             <Collapse>
               <CollapseHeader>
                 <Box>
-                  <Text textAlign={'left'} fontFamily={'Cairo'}>
+                  <Text
+                    color={isDarkMode ? '#FFF' : '#000'}
+                    textAlign={'left'}
+                    fontFamily={'Cairo'}>
                     الشروط والأحكام
                   </Text>
                 </Box>
               </CollapseHeader>
               <CollapseBody>
-                <Text>Ta daa!</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'}>Ta daa!</Text>
               </CollapseBody>
             </Collapse>
           </Box>
@@ -74,13 +83,16 @@ const Terms = () => {
             <Collapse>
               <CollapseHeader>
                 <Box>
-                  <Text textAlign={'left'} fontFamily={'Cairo'}>
+                  <Text
+                    color={isDarkMode ? '#FFF' : '#000'}
+                    textAlign={'left'}
+                    fontFamily={'Cairo'}>
                     حول NazNuts
                   </Text>
                 </Box>
               </CollapseHeader>
               <CollapseBody>
-                <Text>Ta daa!</Text>
+                <Text color={isDarkMode ? '#FFF' : '#000'}>Ta daa!</Text>
               </CollapseBody>
             </Collapse>
           </Box>

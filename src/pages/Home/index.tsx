@@ -11,7 +11,6 @@ import {useQuery} from 'react-query';
 import {categories_product_home_request} from '../../api/categories_request';
 const Home: React.FC<PropsNav> = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark' ? true : false;
-
   const [query, setQuery] = React.useState<any>();
   const {data: products} = useQuery(
     ['home_products', 'hidaya'],
@@ -136,7 +135,14 @@ const Home: React.FC<PropsNav> = ({navigation}) => {
                 fontFamily={'Cairo'}>
                 الاقاسم خصومات تصل الى 50%
               </Text>
-              <Button width="140" marginTop="5" bg="white" colorScheme={'dark'}>
+              <Button
+                onPress={() =>
+                  navigation.navigate('CategoryView', {slug: 'hidaya'})
+                }
+                width="140"
+                marginTop="5"
+                bg="white"
+                colorScheme={'dark'}>
                 <Text color="black" fontFamily={'Cairo'} fontWeight="700">
                   استعراض
                 </Text>

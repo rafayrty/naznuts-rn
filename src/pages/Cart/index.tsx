@@ -8,6 +8,7 @@ import {GetData} from '../../plugins/storage';
 import {FlatList, TouchableOpacity, useColorScheme} from 'react-native';
 import Item from './item';
 import {deleteItem} from '../../plugins/cart';
+import {CartCountContext} from '../../AuthContext';
 
 const Cart = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -15,6 +16,7 @@ const Cart = () => {
   const navigation = useNavigation();
   const [cartItems, setCartItems] = useState<any>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const {countDispatch} = React.useContext(CartCountContext);
 
   const updateTotalPrice = (result: any) => {
     let total = 0;
@@ -29,12 +31,13 @@ const Cart = () => {
       if (res !== undefined && res !== null) {
         setCartItems(JSON.parse(res));
         updateTotalPrice(JSON.parse(res));
+        console.log(res);
       }
     });
   }, []);
 
   const deleteCart = (id: number) => {
-    console.log(id);
+    // console.log(id);
 
     deleteItem(id).then(_ => {
       toast.show({
@@ -46,6 +49,7 @@ const Cart = () => {
       GetData('cart').then(res => {
         if (res !== undefined && res !== null) {
           setCartItems(JSON.parse(res));
+          countDispatch(JSON.parse(res).length);
         }
       });
     });
@@ -82,7 +86,7 @@ const Cart = () => {
                 />
               )}
             />
-            <Box width="100%">
+            <Box width="100%" mb={4}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('AddressCheckout')}>
                 <Box

@@ -18,7 +18,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 import Eye from '../../icons/Eye';
 import {useMutation} from 'react-query';
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const {
@@ -221,6 +221,10 @@ const Login: React.FC = () => {
                 control={control}
                 rules={{
                   required: {value: true, message: 'الحقل مطلوب'},
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'invalid email address',
+                  },
                 }}
                 render={({field: {onChange, onBlur, value}}) => (
                   <MainInput
@@ -259,7 +263,7 @@ const Login: React.FC = () => {
                 }}
                 render={({field: {onChange, onBlur, value}}) => (
                   <MainInput
-                    label="الايميل"
+                    label="كلمة السر"
                     isInvalid={errors.password ? true : false}
                     errorMsg={errors.password?.message}>
                     <Input
@@ -274,7 +278,7 @@ const Login: React.FC = () => {
                       value={value}
                       type={show ? 'text' : 'password'}
                       textAlign="right"
-                      placeholder="الرجاء كتابة الايميل"
+                      placeholder="الرجاء كتابة كلمة السر"
                       InputRightElement={
                         <TouchableOpacity
                           onPress={handleClick}
@@ -304,11 +308,6 @@ const Login: React.FC = () => {
                   تذكر حسابي
                 </Text>
               </Checkbox>
-              <TouchableOpacity>
-                <Text color={isDarkMode ? '#FFF' : '#000'} fontFamily={'Cairo'}>
-                  إعادة تعيين كلمة السر
-                </Text>
-              </TouchableOpacity>
             </Box>
 
             <Box marginTop={12}>
@@ -361,4 +360,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

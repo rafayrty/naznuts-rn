@@ -9,6 +9,7 @@ const addItem = async (item: any, toast: any) => {
           newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
           if (newObj.find((x: any) => x.id === item.id) === undefined) {
             newObj.push(item);
+            // console.log({...item, original_price: item.attributes.price});
             await EncryptedStorage.setItem('cart', JSON.stringify(newObj));
             toast.show({
               bg: 'primary.500',
@@ -46,7 +47,7 @@ const deleteItem = async (id: number) => {
   try {
     await EncryptedStorage.getItem('cart').then(async (res: any) => {
       let newObj = JSON.parse(JSON.stringify(JSON.parse(res)));
-      const index = newObj.findIndex(x => x.id === id);
+      const index = newObj.findIndex((x: any) => x.id === id);
 
       if (index !== -1) {
         newObj.splice(index, 1);
@@ -70,6 +71,7 @@ const updateItem = async (id: number, qty: number, price: number) => {
       if (index !== -1) {
         newObj[index].quantity = qty;
         newObj[index].attributes.price = price;
+
         await EncryptedStorage.setItem('cart', JSON.stringify(newObj));
       } else {
         Promise.reject('Not Found');
@@ -89,12 +91,5 @@ const addAddress = async (id: string) => {
     console.log(err);
   }
 };
-
-// const createOrder = async (data:any) => {
-//   try{
-//     await EncryptedStorage.setItem('cart', JSON.stringify([item]));
-
-//   }
-// }
 
 export {addItem, deleteItem, updateItem, addAddress};

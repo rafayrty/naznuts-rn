@@ -69,6 +69,8 @@ import AddressCheckout from './src/pages/Checkout/Address';
 import Receipt from './src/pages/Checkout/Receipt';
 import Payment from './src/pages/Checkout/Payment';
 import Success from './src/pages/Checkout/Success';
+import Forgot from './src/pages/Forgot';
+import Reset from './src/pages/Reset';
 
 focusManager.setEventListener(handleFocus => {
   const subscription = AppState.addEventListener('change', state => {
@@ -201,6 +203,9 @@ const StackNavigator = () => {
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Forgot" component={Forgot} />
+            <Stack.Screen name="Reset" component={Reset} />
+
           </>
         )}
         {user.user !== undefined && (

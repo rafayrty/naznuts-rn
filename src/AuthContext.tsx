@@ -1,4 +1,5 @@
 import React, {Dispatch, createContext} from 'react';
+import {GetData} from './plugins/storage';
 import {
   AuthReducer,
   initialState,
@@ -9,6 +10,7 @@ type DispatchType = Dispatch<actionType> | undefined;
 
 export const AuthStateContext = createContext<initialStateType>(initialState);
 export const AuthDispatchContext = createContext<DispatchType>(undefined);
+export const CartCountContext = createContext<any>(undefined);
 
 // Context/context.js
 
@@ -18,12 +20,24 @@ type Props = {
 
 export const AuthProvider: React.FC<Props> = ({children}) => {
   const [user, dispatch] = React.useReducer(AuthReducer, initialState);
+  const [count, countDispatch] = React.useState(0);
+
+  React.useEffect(() => {
+    GetData('cart').then(res => {
+      if (res !== undefined && res !== null) {
+        countDispatch(JSON.parse(res).length);
+      }
+    });
+  });
+
   return (
-    <AuthStateContext.Provider value={user}>
-      <AuthDispatchContext.Provider value={dispatch}>
-        {children}
-      </AuthDispatchContext.Provider>
-    </AuthStateContext.Provider>
+    <CartCountContext.Provider value={{count, countDispatch}}>
+      <AuthStateContext.Provider value={user}>
+        <AuthDispatchContext.Provider value={dispatch}>
+          {children}
+        </AuthDispatchContext.Provider>
+      </AuthStateContext.Provider>
+    </CartCountContext.Provider>
   );
 };
 

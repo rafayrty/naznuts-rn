@@ -3,9 +3,14 @@ import Header from '../../../components/Header';
 import {Box, Container, Text} from 'native-base';
 import BackButton from '../../../components/BackButton';
 import Svg, {Path} from 'react-native-svg';
-import {Image, ScrollView} from 'react-native';
+import {Image, ScrollView, useColorScheme} from 'react-native';
+import {useQuery} from 'react-query';
+import {order_request} from '../../../api/orders_request';
 
-const Order = () => {
+const Order: React.FC = ({route}: any) => {
+  const {orderid} = route.params;
+  const isDarkMode = useColorScheme() === 'dark';
+  const {data: order} = useQuery(['order', orderid], order_request);
   return (
     <ScrollView>
       <Box safeArea>
@@ -18,6 +23,7 @@ const Order = () => {
               marginLeft={3}
               fontFamily={'Cairo'}
               fontSize={22}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontWeight={800}>
               تفاصيل الطلب
             </Text>
@@ -27,12 +33,14 @@ const Order = () => {
             marginTop={4}
             borderRadius={10}
             flexDir={'row'}
-            bg="#FFF"
+            bg={isDarkMode ? '#333' : '#FFF'}
             shadow={2}
             width="100%"
             py={3}
             px={4}
             alignItems={'center'}>
+            {/* {orderid} */}
+            {/* {JSON.stringify()} */}
             <Box
               bg="primary.500"
               borderRadius={100}
@@ -53,13 +61,18 @@ const Order = () => {
               fontWeight={800}
               color="primary.500"
               fontFamily={'Cairo'}>
-              عنوان 1
+              {/* عنوان 1 */}
+              {order?.data.data.attributes.address.data.attributes.name}
             </Text>
           </Box>
 
           <Box marginTop={6}>
-            <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
-              رقم الطلب #234567435
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              fontSize={16}
+              fontWeight={800}>
+              رقم الطلب #{order?.data.data.id}
             </Text>
           </Box>
 
@@ -72,7 +85,10 @@ const Order = () => {
                   alignItems="center"
                   justifyContent="space-between">
                   <Box marginTop={1}>
-                    <Text fontFamily={'Cairo'} fontSize={16}>
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontFamily={'Cairo'}
+                      fontSize={16}>
                       تسجيل الطلب
                     </Text>
                     <Text
@@ -81,10 +97,13 @@ const Order = () => {
                       color="gray.400"
                       marginTop={1}
                       textAlign="left">
-                      20/04/2016
+                      {/* 20/04/2016 */}
+                      {order?.data.data.attributes.createdAt.substr(0, 10)}
                     </Text>
                   </Box>
-                  <Text color="gray.400">12:30 PM</Text>
+                  <Text color="gray.400">
+                    {order?.data.data.attributes.createdAt.substr(11, 5)}
+                  </Text>
                   <Box
                     position={'absolute'}
                     top={0}
@@ -97,73 +116,98 @@ const Order = () => {
                 </Box>
               </Box>
             </Box>
-
-            <Box flexDir={'row'} width="100%">
-              <Box width={1} bg="primary.400" />
-              <Box width="100%" paddingLeft={4}>
-                <Box
-                  flexDirection={'row'}
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Box paddingTop={3}>
-                    <Text fontFamily={'Cairo'} fontSize={16}>
-                      تسجيل الطلب
-                    </Text>
-                    <Text
-                      fontFamily={'Cairo'}
-                      fontSize={12}
-                      color="gray.400"
-                      marginTop={1}
-                      textAlign="left">
-                      20/04/2016
-                    </Text>
+            {order?.data.data.attributes.status === 'Processing' ||
+              order?.data.data.attributes.status === 'Delivery' ||
+              (order?.data.data.attributes.status === 'Delivered' && (
+                <Box flexDir={'row'} width="100%">
+                  <Box width={1} bg="primary.400" />
+                  <Box width="100%" paddingLeft={4}>
+                    <Box
+                      flexDirection={'row'}
+                      alignItems="center"
+                      justifyContent="space-between">
+                      <Box paddingTop={3}>
+                        <Text
+                          color={isDarkMode ? '#FFF' : '#000'}
+                          fontFamily={'Cairo'}
+                          fontSize={16}>
+                          تسجيل الطلب
+                        </Text>
+                        <Text
+                          fontFamily={'Cairo'}
+                          fontSize={12}
+                          color="gray.400"
+                          marginTop={1}
+                          textAlign="left">
+                          {order?.data.data.attributes.processing_date.substr(
+                            0,
+                            10,
+                          )}
+                        </Text>
+                      </Box>
+                      <Text color="gray.400">
+                        {' '}
+                        {order?.data.data.attributes.processing_date.substr(
+                          11,
+                          5,
+                        )}
+                      </Text>
+                      <Box
+                        position={'absolute'}
+                        top={3}
+                        left={-26}
+                        bg="primary.500"
+                        width={4}
+                        borderRadius={100}
+                        height={4}
+                      />
+                    </Box>
                   </Box>
-                  <Text color="gray.400">12:30 PM</Text>
+                </Box>
+              ))}
+            {order?.data.data.attributes.status === 'Delivered' && (
+              <Box flexDir={'row'} width="100%">
+                <Box width={1} bg="primary.400" />
+                <Box width="100%" paddingLeft={4}>
                   <Box
-                    position={'absolute'}
-                    top={3}
-                    left={-26}
-                    bg="primary.500"
-                    width={4}
-                    borderRadius={100}
-                    height={4}
-                  />
+                    flexDirection={'row'}
+                    alignItems="center"
+                    justifyContent="space-between">
+                    <Box paddingTop={3}>
+                      <Text
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        fontFamily={'Cairo'}
+                        fontSize={16}>
+                        تسجيل الطلب
+                      </Text>
+                      <Text
+                        fontFamily={'Cairo'}
+                        fontSize={12}
+                        color="gray.400"
+                        marginTop={1}
+                        textAlign="left">
+                        {order?.data.data.attributes.delivery_date.substr(
+                          0,
+                          10,
+                        )}
+                      </Text>
+                    </Box>
+                    <Text color="gray.400">
+                      {order?.data.data.attributes.delivery_date.substr(11, 5)}
+                    </Text>
+                    <Box
+                      position={'absolute'}
+                      top={3}
+                      left={-26}
+                      bg="primary.500"
+                      width={4}
+                      borderRadius={100}
+                      height={4}
+                    />
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-            <Box flexDir={'row'} width="100%">
-              <Box width={1} bg="primary.400" />
-              <Box width="100%" paddingLeft={4}>
-                <Box
-                  flexDirection={'row'}
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Box paddingTop={3}>
-                    <Text fontFamily={'Cairo'} fontSize={16}>
-                      تسجيل الطلب
-                    </Text>
-                    <Text
-                      fontFamily={'Cairo'}
-                      fontSize={12}
-                      color="gray.400"
-                      marginTop={1}
-                      textAlign="left">
-                      20/04/2016
-                    </Text>
-                  </Box>
-                  <Text color="gray.400">12:30 PM</Text>
-                  <Box
-                    position={'absolute'}
-                    top={3}
-                    left={-26}
-                    bg="primary.500"
-                    width={4}
-                    borderRadius={100}
-                    height={4}
-                  />
-                </Box>
-              </Box>
-            </Box>
+            )}
           </Box>
           <Box
             width={'100%'}
@@ -178,124 +222,88 @@ const Order = () => {
               textAlign={'left'}
               fontFamily={'Cairo'}
               fontSize={22}
+              color={isDarkMode ? '#FFF' : '#000'}
               fontWeight={800}>
               تفاصيل الطلب
             </Text>
+            {/* {JSON.stringify(order?.data.data.attributes.products)} */}
 
-            <Box>
-              <Box
-                marginTop={4}
-                flexDir={'row'}
-                alignItems="center"
-                justifyContent={'space-between'}>
-                <Box flexDir={'row'} alignItems="center">
-                  <Image
-                    source={require('../../../../assets/images/product.jpg')}
-                    style={{width: 68, height: 57}}
-                  />
-                  <Box marginLeft={4}>
+            {order?.data.data.attributes.order_items.data.map((item: any) => (
+              <Box>
+                <Box
+                  marginTop={4}
+                  flexDir={'row'}
+                  alignItems="center"
+                  justifyContent={'space-between'}>
+                  <Box flexDir={'row'} alignItems="center">
+                    {/* {JSON.stringify(item.attributes)} */}
+
+                    <Image
+                      source={{
+                        uri: item.attributes.product.data.attributes.image.data
+                          .attributes.url,
+                      }}
+                      style={{width: 68, height: 57}}
+                    />
+                    <Box marginLeft={4}>
+                      <Text
+                        color={isDarkMode ? '#FFF' : '#000'}
+                        fontFamily={'Cairo'}
+                        textAlign={'left'}
+                        fontWeight={700}
+                        fontSize={14}>
+                        {item.attributes.product.data.attributes.name}
+                        {/* {item.attributes.product.data[0].attributes.name} */}
+                      </Text>
+                      {/* <Box width="100%" flex="1" py={2} flexDir={'row'}>
+                            {item.attributes.categories.data.map(
+                              (cat: any, ind: number) => {
+                                return (
+                                  <Text
+                                    key={`item-${ind}`}
+                                    textAlign={'left'}
+                                    flexWrap={'wrap'}
+                                    color="gray.400"
+                                    fontFamily={'Cairo'}
+                                    fontSize="10"
+                                    fontWeight={500}>
+                                    {cat.attributes.name}{' '}
+                                    {ind !==
+                                    item.attributes.categories.data.length - 1
+                                      ? ','
+                                      : ''}
+                                  </Text>
+                                );
+                              },
+                            )}
+                          </Box> */}
+                      {/* <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
+                        المكسرات والبسكويت، المحمصة
+                        {JSON.stringify(item.attributes)}
+                      </Text> */}
+                    </Box>
+                  </Box>
+                  <Box paddingLeft={2} alignItems={'center'}>
                     <Text
-                      fontFamily={'Cairo'}
-                      textAlign={'left'}
-                      fontWeight={700}
-                      fontSize={14}>
-                      لوز
+                      fontSize={16}
+                      fontWeight={800}
+                      color="primary.500"
+                      fontFamily={'Cairo'}>
+                      ₪{item.attributes.price}
                     </Text>
-                    <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                      المكسرات والبسكويت، المحمصة
+                    <Text
+                      color={isDarkMode ? '#FFF' : '#000'}
+                      fontSize={12}
+                      fontWeight={500}
+                      fontFamily={'Cairo'}>
+                      {item.attributes.quantity} {item.attributes.unit}
+                      {/* {item.attributes.type} */}
+                      {/* {item.attributes.quantity} */}
                     </Text>
                   </Box>
                 </Box>
-                <Box paddingLeft={2} alignItems={'center'}>
-                  <Text
-                    fontSize={16}
-                    fontWeight={800}
-                    color="primary.500"
-                    fontFamily={'Cairo'}>
-                    ₪60
-                  </Text>
-                  <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                    250 غرام
-                  </Text>
-                </Box>
               </Box>
-            </Box>
-            <Box>
-              <Box
-                marginTop={4}
-                flexDir={'row'}
-                alignItems="center"
-                justifyContent={'space-between'}>
-                <Box flexDir={'row'} alignItems="center">
-                  <Image
-                    source={require('../../../../assets/images/product.jpg')}
-                    style={{width: 68, height: 57}}
-                  />
-                  <Box marginLeft={4}>
-                    <Text
-                      fontFamily={'Cairo'}
-                      textAlign={'left'}
-                      fontWeight={700}
-                      fontSize={14}>
-                      لوز
-                    </Text>
-                    <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                      المكسرات والبسكويت، المحمصة
-                    </Text>
-                  </Box>
-                </Box>
-                <Box paddingLeft={2} alignItems={'center'}>
-                  <Text
-                    fontSize={16}
-                    fontWeight={800}
-                    color="primary.500"
-                    fontFamily={'Cairo'}>
-                    ₪60
-                  </Text>
-                  <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                    250 غرام
-                  </Text>
-                </Box>
-              </Box>
-            </Box>
-            <Box>
-              <Box
-                marginTop={4}
-                flexDir={'row'}
-                alignItems="center"
-                justifyContent={'space-between'}>
-                <Box flexDir={'row'} alignItems="center">
-                  <Image
-                    source={require('../../../../assets/images/product.jpg')}
-                    style={{width: 68, height: 57}}
-                  />
-                  <Box marginLeft={4}>
-                    <Text
-                      fontFamily={'Cairo'}
-                      textAlign={'left'}
-                      fontWeight={700}
-                      fontSize={14}>
-                      لوز
-                    </Text>
-                    <Text fontSize={12} fontFamily={'Cairo'} color="gray.400">
-                      المكسرات والبسكويت، المحمصة
-                    </Text>
-                  </Box>
-                </Box>
-                <Box paddingLeft={2} alignItems={'center'}>
-                  <Text
-                    fontSize={16}
-                    fontWeight={800}
-                    color="primary.500"
-                    fontFamily={'Cairo'}>
-                    ₪60
-                  </Text>
-                  <Text fontSize={12} fontWeight={500} fontFamily={'Cairo'}>
-                    250 غرام
-                  </Text>
-                </Box>
-              </Box>
-            </Box>
+            ))}
           </Box>
           <Box
             marginTop={2}
@@ -304,11 +312,19 @@ const Order = () => {
             justifyContent="space-between"
             alignItems={'center'}
             width="100%">
-            <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              fontSize={16}
+              fontWeight={800}>
               المبلغ الكلي
             </Text>
-            <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
-              ₪ 661
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              fontSize={16}
+              fontWeight={800}>
+              ₪ {order?.data.data.attributes.total}
             </Text>
           </Box>
           <Box
@@ -317,10 +333,18 @@ const Order = () => {
             justifyContent="space-between"
             alignItems={'center'}
             width="100%">
-            <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              fontSize={16}
+              fontWeight={800}>
               طريقة الدفع
             </Text>
-            <Text fontFamily={'Cairo'} fontSize={16} fontWeight={800}>
+            <Text
+              color={isDarkMode ? '#FFF' : '#000'}
+              fontFamily={'Cairo'}
+              fontSize={16}
+              fontWeight={800}>
               بطاقة ائتمان
             </Text>
           </Box>

@@ -477,7 +477,7 @@ const Management = () => {
             bg={isDarkMode ? '#333' : '#FFF'}>
             <Container width="100%" mx="auto">
               <Text
-                color={isDarkMode ? '#FFF' : '#FFF'}
+                color={isDarkMode ? '#FFF' : '#000'}
                 fontFamily={'Cairo'}
                 textAlign={'left'}>
                 تعطيل الحساب{' '}
@@ -489,7 +489,9 @@ const Management = () => {
                 width="2/5"
                 onPress={() => setIsOpen(true)}
                 bg="danger.500">
-                <Text fontFamily={'Cairo'}>تعطيل حسابك</Text>
+                <Text fontFamily={'Cairo'} color={isDarkMode ? '#333' : '#FFF'}>
+                  تعطيل حسابك
+                </Text>
               </Button>
             </Container>
           </Box>

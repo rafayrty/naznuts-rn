@@ -47,11 +47,17 @@ const Item: React.FC<Props> = ({item, deleteItem, updateTotalPrice}) => {
         ? prevState - (item.attributes.type === 'weight' ? 250 : 1)
         : prevState,
     );
-    setPrice(prevPrice =>
-      item.attributes.price < prevPrice
-        ? prevPrice - item.attributes.price
-        : prevPrice,
+    setPrice(_ =>
+      item.attributes.price < item.original_price
+        ? item.original_price - item.attributes.price
+        : item.original_price,
     );
+    //Old Way Need To Check why it was not working?
+    // setPrice(prevPrice =>
+    //   item.attributes.price < prevPrice
+    //     ? prevPrice - item.attributes.price
+    //     : prevPrice,
+    // );
 
     //Updating Cart
     updateItem(

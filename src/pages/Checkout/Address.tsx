@@ -247,6 +247,15 @@ const AddressCheckout = () => {
                 عناوين مضافة سابقاً
               </Text>
 
+              {address?.data.data.length === 0 && !isLoading && (
+                <Text
+                  color="white"
+                  marginTop={4}
+                  fontWeight={'700'}
+                  textAlign={'left'}>
+                  لم يتم العثور على عنوان
+                </Text>
+              )}
               <Box width="100%">
                 <Radio.Group
                   width="100%"
